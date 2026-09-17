@@ -659,18 +659,13 @@ Listener {
             return this.dataComponent(var1_1, var3_3, var4_4, this.mapFont(var1_1, "player", var7_7), GuiMinimapWire.player(var5_5.yawFrom, var5_5.yawTo, var5_5.yawSettled != false ? 0L : var5_5.yawTick, var5_5.yawDuration), 57344);
         }
         var12_12 = var4_4.icon().key();
-        if (!(var3_3 instanceof PartyMapTracker.Layer)) ** GOTO lbl-1000
-        var14_18 = (PartyMapTracker.Layer)var3_3;
-        if (var14_18.head != null) {
-            v0 = -1;
-        } else lbl-1000:
-        // 2 sources
-
-        {
-            v0 = MarkerIcons.GLYPHS.indexOf(var12_12);
+        int var13_16;
+        if (var3_3 instanceof PartyMapTracker.Layer partyLayer && partyLayer.head != null) {
+            var13_16 = -1;
+        } else {
+            var13_16 = MarkerIcons.GLYPHS.indexOf(var12_12);
         }
-        var13_16 = v0;
-        var14_19 = MarkerIcons.hasGlyph((String)var12_12);
+        boolean var14_19 = MarkerIcons.hasGlyph((String)var12_12);
         if ("quest_!".equals(var12_12)) {
             var12_12 = "quest_exclamation";
         }

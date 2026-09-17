@@ -333,10 +333,13 @@ Listener {
     @Override
     public List<HudTypes.Marker> markers(Plugin plugin, Player player) {
         HudApiService.mainThread();
-        return this.markers.entrySet().stream().filter(entry -> ((Marker)entry.getValue()).owner() == plugin && ((Marker)entry.getValue()).viewer().equals(player.getUniqueId())).map((? super T entry) -> {
-            Marker marker = (Marker)entry.getValue();
-            return new HudTypes.Marker(((String)entry.getKey()).substring(((String)entry.getKey()).lastIndexOf("::") + 2), marker.position(), marker.icon(), marker.label(), marker.edge());
-        }).sorted(Comparator.comparing(HudTypes.Marker::id)).toList();
+        return this.markers.entrySet().stream()
+            .filter(entry -> ((Marker)entry.getValue()).owner() == plugin
+                && ((Marker)entry.getValue()).viewer().equals(player.getUniqueId()))
+            .map(entry -> {
+                Marker marker = (Marker)entry.getValue();
+                return new HudTypes.Marker(((String)entry.getKey()).substring(((String)entry.getKey()).lastIndexOf("::") + 2), marker.position(), marker.icon(), marker.label(), marker.edge());
+            }).sorted(Comparator.comparing(HudTypes.Marker::id)).toList();
     }
 
     private Minimap map(Player player) {
@@ -427,7 +430,8 @@ Listener {
         if (!HudAccess.has((CommandSender)player, "enorials.gps.quests")) {
             return List.of();
         }
-        return this.hud.gps().api().getQuestRouteButtons(player).values().stream().map((? super T gpsQuestRoute) -> new HudTypes.QuestRoute(gpsQuestRoute.id(), gpsQuestRoute.displayName(), HudTypes.TargetType.valueOf(gpsQuestRoute.targetType().name()), gpsQuestRoute.targetValue(), HudApiExtras.mode(gpsQuestRoute.mode()), gpsQuestRoute.source())).toList();
+        return this.hud.gps().api().getQuestRouteButtons(player).values().stream()
+            .map(gpsQuestRoute -> new HudTypes.QuestRoute(gpsQuestRoute.id(), gpsQuestRoute.displayName(), HudTypes.TargetType.valueOf(gpsQuestRoute.targetType().name()), gpsQuestRoute.targetValue(), HudApiExtras.mode(gpsQuestRoute.mode()), gpsQuestRoute.source())).toList();
     }
 
     @Override
@@ -517,7 +521,10 @@ Listener {
     @Override
     public boolean joinOpenParty(Player player, UUID uUID) {
         HudApiExtras.player(player);
-        return this.hud.getPartyService().getOpenParties().stream().filter(party -> party.getId().equals(uUID)).findFirst().map((? super T party) -> this.hud.getPartyService().joinParty((Party)party, player, this.extra.capacity())).orElse(false);
+        return this.hud.getPartyService().getOpenParties().stream()
+            .filter(party -> party.getId().equals(uUID)).findFirst()
+            .map(party -> this.hud.getPartyService().joinParty((Party)party, player, this.extra.capacity()))
+            .orElse(false);
     }
 
     @Override

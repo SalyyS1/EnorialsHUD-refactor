@@ -310,104 +310,58 @@ public class PackManager {
      * Lifted jumps to return sites
      */
     private /* synthetic */ void lambda$startBuild$0() {
-        block35: {
-            var1_1 = this.plugin.stateLock();
-            // MONITORENTER : var1_1
+        try {
             if (this.closed) {
-                // MONITOREXIT : var1_1
                 return;
             }
-            ** try [egrp 3[TRYBLOCK] [15, 14 : 76->100)] { 
-lbl-1000:
-            // 1 sources
-
-            {
-                var2_5 = this.template(this.plugin.packComposition().snapshot());
-                if (!this.closed) break block35;
-                // MONITOREXIT : var1_1
-                var3_6 = this.buildLock;
+            PreparedPack preparedPack = this.template(this.plugin.packComposition().snapshot());
+            if (this.closed) {
+                return;
             }
-            // MONITORENTER : var3_6
-            this.building = false;
-            if (this.pending && !this.closed && this.plugin.isEnabled()) {
-                this.pending = false;
-                this.scheduleBuild(0);
-            }
-            // MONITOREXIT : var3_6
-            return;
-        }
-        try {
             if (this.plugin.singlePack() != null) {
-                this.plugin.singlePack().prepare((PreparedPack)var2_5);
+                this.plugin.singlePack().prepare(preparedPack);
             }
             try {
-                this.plugin.avatars().prepareStaticPacks((PreparedPack)var2_5);
+                this.plugin.avatars().prepareStaticPacks(preparedPack);
             }
-            catch (Exception var3_7) {
-                throw new IOException("Cannot export static shared HUD packs", var3_7);
+            catch (Exception exception) {
+                throw new IOException("Cannot export static shared HUD packs", exception);
             }
             if (this.plugin.cfg().getBoolean("copy-resource-pack.enabled", true)) {
-                var3_8 = this.plugin.getDescription().getVersion();
-                var4_9 = this.plugin.cfg().getString("copy-resource-pack.zip-path");
-                if (var4_9 == null || var4_9.isBlank()) {
-                    var4_9 = "EnorialsHUD/EnorialsHUD-pack-" + var3_8 + ".zip";
+                String version = this.plugin.getDescription().getVersion();
+                String zipPath = this.plugin.cfg().getString("copy-resource-pack.zip-path");
+                if (zipPath == null || zipPath.isBlank()) {
+                    zipPath = "EnorialsHUD/EnorialsHUD-pack-" + version + ".zip";
                 }
-                var4_9 = ((String)var4_9).replace("{version}", var3_8);
-                var5_10 = new File(this.plugin.getDataFolder().getParentFile(), (String)var4_9);
-                try {
-                    Files.createDirectories(var5_10.getParentFile().toPath(), new FileAttribute[0]);
-                    var2_5.write(var5_10.toPath(), Map.of());
-                    if (!GitHubUploader.uploadIfEnabled(this.plugin, var5_10)) {
-                        this.plugin.getLogger().warning("Resource pack GitHub upload failed; keeping local zip only.");
-                    }
-                }
-                catch (IOException var6_11) {
-                    throw new UncheckedIOException("Failed to zip resource pack", var6_11);
+                zipPath = zipPath.replace("{version}", version);
+                File destination = new File(this.plugin.getDataFolder().getParentFile(), zipPath);
+                Files.createDirectories(destination.getParentFile().toPath(), new FileAttribute[0]);
+                preparedPack.write(destination.toPath(), Map.of());
+                if (!GitHubUploader.uploadIfEnabled(this.plugin, destination)) {
+                    this.plugin.getLogger().warning("Resource pack GitHub upload failed; keeping local zip only.");
                 }
             }
             this.runCallbacks();
-            // MONITOREXIT : var1_1
-            var1_1 = this.buildLock;
         }
-lbl54:
-        // 6 sources
-
-        catch (IOException | RuntimeException var1_2) {
-            try {
-                this.failedGeneration = this.generation.get();
-                var2_5 = this.completionCallbacks;
-                // MONITORENTER : var2_5
+        catch (IOException | RuntimeException exception) {
+            this.failedGeneration = this.generation.get();
+            synchronized (this.completionCallbacks) {
                 this.completionCallbacks.clear();
-                // MONITOREXIT : var2_5
-                if (!this.closed) {
-                    this.plugin.getLogger().log(Level.SEVERE, "Resource pack build failed", var1_2);
-                }
-                this.generated.buildFailed();
-                return;
             }
-            catch (Throwable var11_12) {
-                var12_13 = this.buildLock;
-                // MONITORENTER : var12_13
+            if (!this.closed) {
+                this.plugin.getLogger().log(Level.SEVERE, "Resource pack build failed", exception);
+            }
+            this.generated.buildFailed();
+        }
+        finally {
+            synchronized (this.buildLock) {
                 this.building = false;
                 if (this.pending && !this.closed && this.plugin.isEnabled()) {
                     this.pending = false;
                     this.scheduleBuild(0);
                 }
-                // MONITOREXIT : var12_13
-                throw var11_12;
             }
         }
-        finally {
-            var1_3 = this.buildLock;
-        }
-        // MONITORENTER : var1_1
-        this.building = false;
-        if (this.pending && !this.closed && this.plugin.isEnabled()) {
-            this.pending = false;
-            this.scheduleBuild(0);
-        }
-        // MONITOREXIT : var1_1
-        return;
     }
 
     private record Template(long generation, String profile, PreparedPack pack) {

@@ -510,7 +510,7 @@ implements Listener {
                 HudLayer hudLayer3 = hudElement2.getAsset().getLayers().iterator().next();
                 float f9 = f4 + packRegistry.metrics().measure((Component)textComponent2).center() + (float)hudElement2.getScreenPosition().getOffset().getX() + (float)hudLayer3.getOffset().getX();
                 if ("corehud-armor-icon".equals(hudElement2.getKey())) {
-                    void var12_14;
+                    Float var12_14 = var12_13 instanceof Float ? (Float)var12_13 : null;
                     if (var12_14 != null) {
                         int n = Math.round(var12_14.floatValue() - f9);
                         textComponent2 = RenderManager.shift((Component)textComponent2, n);

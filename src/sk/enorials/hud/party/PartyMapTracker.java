@@ -86,14 +86,11 @@ implements Runnable {
                 var10_11 = "__party::" + String.valueOf(var8_9);
                 var6_6.add((CallSite)var10_11);
                 var11_12 = var3_3.secondaryLayers().get(var10_11);
-                if (!(var11_12 instanceof Layer)) ** GOTO lbl-1000
-                var13_14 = (Layer)var11_12;
-                if (var13_14.index == var7_8 + 1 && var13_14.getWorld().equals((Object)var9_10.getWorld())) {
-                    var12_13 = var13_14;
-                } else lbl-1000:
-                // 2 sources
-
-                {
+                if (var11_12 instanceof Layer existing
+                    && existing.index == var7_8 + 1
+                    && existing.getWorld().equals(var9_10.getWorld())) {
+                    var12_13 = existing;
+                } else {
                     if (var11_12 != null) {
                         this.plugin.minimap().packetSender().despawnLayer(var2_2, var11_12.getBaseLayer());
                     }

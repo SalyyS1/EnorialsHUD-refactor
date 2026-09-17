@@ -40,12 +40,11 @@ public final class HudTypes {
     }
 
     public record Target(UUID id, String name, String entityType, Location location, HudValue health) {
-        private final Location location;
-
         public Target {
-            location = location.clone();
+            location = validLocation(location);
         }
 
+        @Override
         public Location location() {
             return this.location.clone();
         }
@@ -55,12 +54,11 @@ public final class HudTypes {
     }
 
     public record Member(UUID id, String name, boolean online, boolean npc, Location location, HudValue health) {
-        private final Location location;
-
         public Member {
             location = location == null ? null : location.clone();
         }
 
+        @Override
         public Location location() {
             return this.location == null ? null : this.location.clone();
         }
@@ -76,30 +74,28 @@ public final class HudTypes {
     }
 
     public record Navigation(String title, String source, NavigationMode mode, Location destination) {
-        private final Location destination;
-
         public Navigation {
-            location = location == null ? null : location.clone();
+            destination = destination == null ? null : destination.clone();
         }
 
+        @Override
         public Location destination() {
             return this.destination == null ? null : this.destination.clone();
         }
     }
 
     public record Marker(String id, Location location, String icon, String label, boolean keepOnEdge) {
-        private final Location location;
-
         public Marker {
-            HudTypes.requireId(string);
+            HudTypes.requireId(id);
             location = HudTypes.validLocation(location);
-            Objects.requireNonNull(string2);
-            string3 = Objects.requireNonNullElse(string3, "");
-            if (string3.length() > 256) {
+            Objects.requireNonNull(icon);
+            label = Objects.requireNonNullElse(label, "");
+            if (label.length() > 256) {
                 throw new IllegalArgumentException("Marker label exceeds 256 characters");
             }
         }
 
+        @Override
         public Location location() {
             return this.location.clone();
         }

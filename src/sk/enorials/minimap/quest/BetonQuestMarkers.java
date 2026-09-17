@@ -249,29 +249,27 @@ implements Listener {
         }
         onlineProfile = new HashSet();
         for (Map.Entry entry : linkedHashMap.entrySet()) {
-            Record record;
-            Object object2;
-            boolean bl5;
-            void var14_33;
             Target target = (Target)entry.getValue();
             if (!target.state().visibleOnMap() || target.location().getWorld() == null || !target.location().getWorld().equals((Object)player.getWorld())) continue;
             object = PREFIX + (String)entry.getKey();
             MinimapIcon minimapIcon = this.plugin.iconProvider().getIcon(target.state().icon());
             if (minimapIcon == null) {
-                MinimapIcon minimapIcon2 = this.plugin.iconProvider().getIcon(target.state() == QuestMarkerState.ACTIVE ? "quest_!" : "quest_questionmark");
+                minimapIcon = this.plugin.iconProvider().getIcon(target.state() == QuestMarkerState.ACTIVE ? "quest_!" : "quest_questionmark");
             }
-            if (var14_33 == null) continue;
-            SecondaryMinimapLayer secondaryMinimapLayer = minimap.secondaryLayers().get(object);
-            boolean bl6 = bl5 = secondaryMinimapLayer instanceof QuestMarkerLayer && target.location().getWorld().equals((Object)secondaryMinimapLayer.getWorld()) && (object2 = secondaryMinimapLayer.getRenderer()) instanceof MinimapIconRenderer && ((MinimapIconRenderer)(record = (MinimapIconRenderer)object2)).icon().key().equals(var14_33.key());
-            if (!bl5) {
+            if (minimapIcon == null) continue;
+            boolean sameLayer = secondaryMinimapLayer instanceof QuestMarkerLayer
+                && target.location().getWorld().equals(secondaryMinimapLayer.getWorld())
+                && secondaryMinimapLayer.getRenderer() instanceof MinimapIconRenderer renderer
+                && renderer.icon().key().equals(minimapIcon.key());
+            if (!sameLayer) {
                 if (secondaryMinimapLayer != null) {
                     this.plugin.packetSender().despawnLayer(player, secondaryMinimapLayer.getBaseLayer());
                 }
-                record = this.plugin.clientsideMinimapFactory().createMinimapLayer(player.getWorld(), null);
-                object2 = new QuestMarkerLayer((MinimapLayer)record, target.location(), (MinimapIcon)var14_33, target.label());
-                ((SecondaryMinimapLayer)object2).setKeepOnEdge(target.keepOnEdge());
-                minimap.secondaryLayers().put((String)object, (SecondaryMinimapLayer)object2);
-                this.plugin.packetSender().spawnLayer(player, (MinimapLayer)record);
+                MinimapLayer baseLayer = this.plugin.clientsideMinimapFactory().createMinimapLayer(player.getWorld(), null);
+                QuestMarkerLayer questLayer = new QuestMarkerLayer(baseLayer, target.location(), minimapIcon, target.label());
+                questLayer.setKeepOnEdge(target.keepOnEdge());
+                minimap.secondaryLayers().put((String)object, questLayer);
+                this.plugin.packetSender().spawnLayer(player, baseLayer);
             } else {
                 secondaryMinimapLayer.setKeepOnEdge(target.keepOnEdge());
                 secondaryMinimapLayer.setPositionX(target.location().getBlockX());

@@ -60,9 +60,8 @@ implements AutoCloseable {
             object3 = null;
         }
         if (object3 == null) {
-            void var5_7;
             object3 = new Tiles(player.getWorld().getUID());
-            boolean i = false;
+            int var5_7 = 0;
             while (var5_7 < 4) {
                 ((Tiles)object3).layers[var5_7] = this.factory.createMinimapLayer(player.getWorld(), (minimap, minimapLayer, byArray) -> {});
                 ++var5_7;

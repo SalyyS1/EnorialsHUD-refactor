@@ -178,7 +178,6 @@ public class BuildablePack {
             fileConfiguration = this.plugin.cfg();
             File file2 = new File(this.packDirectory, "assets/minecraft/shaders/core/text.vsh");
             if (file2.exists()) {
-                void var7_13;
                 String string2 = this.readAll(file2);
                 string2 = HudShaderFixes.legacyHudShadows(string2);
                 if (this.positions.usesExtendedIds()) {
@@ -189,7 +188,7 @@ public class BuildablePack {
                     String string5 = string2.replace(string3, "((id > 99.0 && id < 500.0) || (id >= 1000.0 && id < 4000.0))");
                     string5 = string5.replace("happyId >= 500.0 &&", "happyId >= 500.0 && happyId < 1000.0 &&");
                 }
-                String string8 = var7_13.replace("%BOSSBAR_OFFSET%", String.valueOf(BossBarUtil.getOffset(fileConfiguration.getInt("boss-bar.hud-position", 4))));
+                String string8 = string2.replace("%BOSSBAR_OFFSET%", String.valueOf(BossBarUtil.getOffset(fileConfiguration.getInt("boss-bar.hud-position", 4))));
                 string8 = string8.replace("%POSITIONS%", String.join((CharSequence)"\n", this.positions.build()));
                 string8 = string8.replace("HH_", "EH_");
                 this.writeAll(file2, string8);

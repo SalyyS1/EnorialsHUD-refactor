@@ -638,7 +638,7 @@ AutoCloseable {
         for (String string2 : string.split("\n", -1)) {
             object = "";
             for (String string3 : string2.split(" ")) {
-                void object2;
+                String object2 = null;
                 String string4;
                 String string5 = string4 = ((String)object).isEmpty() ? string3 : (String)object + " " + string3;
                 if (hudFontMetrics.measure(GraphicalHudMenu.letters(string4, key)).advance() <= (float)n4) {
@@ -650,11 +650,12 @@ AutoCloseable {
                     object = "";
                 }
                 if (hudFontMetrics.measure(GraphicalHudMenu.letters(string3, key)).advance() > (float)n4) {
-                    void var20_23;
-                    while (!var20_23.isEmpty() && hudFontMetrics.measure(GraphicalHudMenu.letters((String)var20_23 + "..", key)).advance() > (float)n4) {
-                        String string6 = var20_23.substring(0, var20_23.length() - 1);
+                    String var20_23 = string3;
+                    while (!var20_23.isEmpty() && hudFontMetrics.measure(GraphicalHudMenu.letters(var20_23 + "..", key)).advance() > (float)n4) {
+                        var20_23 = var20_23.substring(0, var20_23.length() - 1);
                     }
-                    String string7 = (String)var20_23 + "..";
+                    String string7 = var20_23 + "..";
+                    object2 = string7;
                 }
                 object = object2;
             }

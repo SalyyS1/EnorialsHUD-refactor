@@ -59,25 +59,15 @@ public final class HudAccess {
         return HudAccess.raw(commandSender, ADMIN) || HudAccess.raw(commandSender, string);
     }
 
-    /*
-     * Unable to fully structure code
-     */
-    private static boolean raw(CommandSender var0, String var1_1) {
-        if (var0.isPermissionSet(var1_1)) {
-            return var0.hasPermission(var1_1);
+    private static boolean raw(CommandSender sender, String permission) {
+        if (sender.isPermissionSet(permission)) {
+            return sender.hasPermission(permission);
         }
-        if (!(var0 instanceof Player)) ** GOTO lbl-1000
-        var3_2 = (Player)var0;
-        if (HudAccess.manager != null) {
-            v0 = HudAccess.manager.local(var3_2.getUniqueId(), var1_1);
-        } else lbl-1000:
-        // 2 sources
-
-        {
-            v0 = null;
+        Boolean local = null;
+        if (sender instanceof Player player && HudAccess.manager != null) {
+            local = HudAccess.manager.local(player.getUniqueId(), permission);
         }
-        var2_3 = v0;
-        return var2_3 == null ? var0.hasPermission(var1_1) : var2_3.booleanValue();
+        return local == null ? sender.hasPermission(permission) : local.booleanValue();
     }
 
     public static boolean check(CommandSender commandSender, String string) {
