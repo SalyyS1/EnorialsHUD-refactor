@@ -33,10 +33,10 @@ dependencies {
     // ORMLite: object-relational mapping over SQLite, used by the minimap database.
     implementation("com.j256.ormlite:ormlite-jdbc:${providers.gradleProperty("ormliteVersion").get()}")
 
-    // ===== Compile-time only (server or optional plugin provides these) =====
-    compileOnly("com.google.code.gson:gson:2.11.0")
-    // PlaceholderAPI is accessed through reflection; no compile-time artifact is required.
-    // Keep it out of the compile classpath so builds work without its private repository.
+    // Optional integrations are intentionally resolved as local compile stubs
+    // only when their JARs are supplied under local-libs/. Their runtime use
+    // remains capability-checked and optional.
+    compileOnly(fileTree("local-libs") { include("*.jar") })
 }
 
 // Both source roots are non-standard: the decompiled tree uses `src/` directly

@@ -47,3 +47,6 @@ credentials.*
 
 # Local Gradle cache
 .gradle-home/
+
+# Optional compile-only plugin API jars (never commit vendor JARs)
+local-libs/*.jar
