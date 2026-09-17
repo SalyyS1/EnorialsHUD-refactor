@@ -33,9 +33,8 @@ dependencies {
     // ORMLite: object-relational mapping over SQLite, used by the minimap database.
     implementation("com.j256.ormlite:ormlite-jdbc:${providers.gradleProperty("ormliteVersion").get()}")
 
-    // Optional integrations are intentionally resolved as local compile stubs
-    // only when their JARs are supplied under local-libs/. Their runtime use
-    // remains capability-checked and optional.
+    // Optional plugin APIs supplied by the local Maven cache / local-libs.
+    compileOnly(files("$rootDir/local-libs/placeholderapi-2.11.5.jar"))
     compileOnly(fileTree("local-libs") { include("*.jar") })
 }
 
