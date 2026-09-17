@@ -138,7 +138,7 @@ public final class ChatInputService {
             return;
         }
         Player player2 = Bukkit.getPlayerExact((String)string);
-        if (player2 == null) {
+        if (player2 == null || !player.canSee(player2)) {
             this.plugin.msg().send((CommandSender)player, "&cPlayer not found: &f" + string);
             return;
         }
@@ -195,6 +195,10 @@ public final class ChatInputService {
             double d = Double.parseDouble(stringArray[0]);
             double d2 = Double.parseDouble(stringArray[1]);
             double d3 = Double.parseDouble(stringArray[2]);
+            if (!Double.isFinite(d) || !Double.isFinite(d2) || !Double.isFinite(d3)) {
+                this.plugin.msg().send((CommandSender)player, "&cInvalid coordinates.");
+                return;
+            }
             String string2 = stringArray.length >= 4 ? stringArray[3] : player.getWorld().getName();
             String string3 = string2;
             if (Bukkit.getWorld((String)string2) == null) {
