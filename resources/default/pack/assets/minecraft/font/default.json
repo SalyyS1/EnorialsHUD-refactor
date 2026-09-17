@@ -1,0 +1,79 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        "": -1024,
+        "": -512,
+        "": -256,
+        "": -128,
+        "": -64,
+        "": -32,
+        "": -16,
+        "": -8,
+        "": 8,
+        "": 16,
+        "": 32,
+        "": 64,
+        "": 128,
+        "": 256,
+        "": 512,
+        "": 1024
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:font/enorials_partyhud/race_human.png",
+      "ascent": 10,
+      "height": 12,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:font/enorials_partyhud/race_dead.png",
+      "ascent": 10,
+      "height": 12,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:font/enorials_partyhud/race_elf.png",
+      "ascent": 10,
+      "height": 12,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:font/enorials_partyhud/race_orc.png",
+      "ascent": 10,
+      "height": 12,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:font/enorials_partyhud/race_dwarf.png",
+      "ascent": 10,
+      "height": 12,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:font/enorials_partyhud/crown.png",
+      "ascent": 12,
+      "height": 16,
+      "chars": [
+        ""
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+target-panel:
+  elements:
+    combat-target:
+      asset: combat-target
+      position:
+        x: 0
+        y: 0
+      offset:
+        x: 206
+        y: 15

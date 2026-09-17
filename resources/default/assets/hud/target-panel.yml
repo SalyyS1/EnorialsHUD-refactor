@@ -1,0 +1,43 @@
+combat-target:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/combat_target_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: target-heads
+      offset:
+        x: 4
+        y: 4
+        z: 2
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 36
+        y: 3
+        z: 5
+    health:
+      texture:
+        path: assets/enorialshud/combat_target_health.png
+        resolution: 4
+      offset:
+        x: 38
+        y: 17
+        z: 3
+      function:
+        listener: targethp
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: hud-secondary-mono
+      offset:
+        x: 79
+        y: 19
+        z: 5

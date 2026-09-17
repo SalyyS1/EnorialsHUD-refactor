@@ -1,0 +1,348 @@
+player:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/player_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: player-avatar
+      offset:
+        x: 7
+        y: 9
+        z: 0
+      scale:
+        x: 1.025
+        y: 1
+    shield:
+      texture:
+        path: assets/enorialshud/player_shield.png
+        resolution: 4
+      offset:
+        x: 19
+        y: 77
+        z: 1
+    armor:
+      text: ''
+      font: hud-modern-mono
+      offset:
+        x: 35
+        y: 89
+        z: 5
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/player_health.png
+        resolution: 4
+      offset:
+        x: 92
+        y: 13
+        z: 3
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: hud-modern-mono
+      offset:
+        x: 168
+        y: 16
+        z: 5
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/player_mana.png
+        resolution: 4
+      offset:
+        x: 92
+        y: 34
+        z: 3
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: hud-modern-mono
+      offset:
+        x: 168
+        y: 35
+        z: 5
+      scale:
+        x: 1
+        y: 1
+    food:
+      texture:
+        path: assets/enorialshud/player_food.png
+        resolution: 4
+      offset:
+        x: 92
+        y: 53
+        z: 3
+      function:
+        listener: food
+        increment: 1
+        orientation: horizontal
+    effect0:
+      text: ''
+      font: hud-effect-icons
+      offset:
+        x: 92
+        y: 72
+        z: 6
+      scale:
+        x: 1
+        y: 1
+    timer0:
+      text: ''
+      font: hud-effect-timers
+      offset:
+        x: 92
+        y: 74
+        z: 7
+      scale:
+        x: 1
+        y: 1
+    effect1:
+      text: ''
+      font: hud-effect-icons
+      offset:
+        x: 92
+        y: 85
+        z: 6
+      scale:
+        x: 1
+        y: 1
+    timer1:
+      text: ''
+      font: hud-effect-timers
+      offset:
+        x: 92
+        y: 87
+        z: 7
+      scale:
+        x: 1
+        y: 1
+    effect2:
+      text: ''
+      font: hud-effect-icons
+      offset:
+        x: 92
+        y: 98
+        z: 6
+      scale:
+        x: 1
+        y: 1
+    timer2:
+      text: ''
+      font: hud-effect-timers
+      offset:
+        x: 92
+        y: 100
+        z: 7
+      scale:
+        x: 1
+        y: 1
+    effect3:
+      text: ''
+      font: hud-effect-icons
+      offset:
+        x: 92
+        y: 111
+        z: 6
+      scale:
+        x: 1
+        y: 1
+    timer3:
+      text: ''
+      font: hud-effect-timers
+      offset:
+        x: 92
+        y: 113
+        z: 7
+      scale:
+        x: 1
+        y: 1
+player-compact:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/player_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: player-avatar
+      offset:
+        x: 7
+        y: 9
+        z: 0
+      scale:
+        x: 1.025
+        y: 1
+    shield:
+      texture:
+        path: assets/enorialshud/player_shield.png
+        resolution: 4
+      offset:
+        x: 19
+        y: 77
+        z: 1
+    armor:
+      text: ''
+      font: hud-modern-mono
+      offset:
+        x: 35
+        y: 89
+        z: 5
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/player_health.png
+        resolution: 4
+      offset:
+        x: 92
+        y: 13
+        z: 3
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: hud-modern-mono
+      offset:
+        x: 168
+        y: 16
+        z: 5
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/player_mana.png
+        resolution: 4
+      offset:
+        x: 92
+        y: 34
+        z: 3
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: hud-modern-mono
+      offset:
+        x: 168
+        y: 35
+        z: 5
+      scale:
+        x: 1
+        y: 1
+    food:
+      texture:
+        path: assets/enorialshud/player_food.png
+        resolution: 4
+      offset:
+        x: 92
+        y: 33
+        z: 3
+      function:
+        listener: food
+        increment: 1
+        orientation: horizontal
+    effect0:
+      text: ''
+      font: hud-effect-icons
+      offset:
+        x: 92
+        y: 52
+        z: 6
+      scale:
+        x: 1
+        y: 1
+    timer0:
+      text: ''
+      font: hud-effect-timers
+      offset:
+        x: 92
+        y: 54
+        z: 7
+      scale:
+        x: 1
+        y: 1
+    effect1:
+      text: ''
+      font: hud-effect-icons
+      offset:
+        x: 92
+        y: 65
+        z: 6
+      scale:
+        x: 1
+        y: 1
+    timer1:
+      text: ''
+      font: hud-effect-timers
+      offset:
+        x: 92
+        y: 67
+        z: 7
+      scale:
+        x: 1
+        y: 1
+    effect2:
+      text: ''
+      font: hud-effect-icons
+      offset:
+        x: 92
+        y: 78
+        z: 6
+      scale:
+        x: 1
+        y: 1
+    timer2:
+      text: ''
+      font: hud-effect-timers
+      offset:
+        x: 92
+        y: 80
+        z: 7
+      scale:
+        x: 1
+        y: 1
+    effect3:
+      text: ''
+      font: hud-effect-icons
+      offset:
+        x: 92
+        y: 91
+        z: 6
+      scale:
+        x: 1
+        y: 1
+    timer3:
+      text: ''
+      font: hud-effect-timers
+      offset:
+        x: 92
+        y: 93
+        z: 7
+      scale:
+        x: 1
+        y: 1

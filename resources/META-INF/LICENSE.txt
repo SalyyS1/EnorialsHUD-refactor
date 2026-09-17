@@ -1,0 +1,22 @@
+EnorialsHUD - All Rights Reserved License
+Copyright (c) 2026 Enorials. All rights reserved.
+
+This source code, compiled binaries, configuration templates, and documentation
+are protected by copyright law.
+
+No permission is granted to copy, modify, merge, publish, distribute, sublicense,
+sell, lease, or otherwise exploit this software, in whole or in part, except as
+explicitly permitted by the separate EULA included in this repository (`EULA.md`)
+or by written permission from the copyright holder.
+
+Unauthorized use, redistribution, reverse-engineering for redistribution, or
+repackaging is prohibited.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Third-party components remain under the separate licenses listed in THIRD_PARTY_NOTICES.md.

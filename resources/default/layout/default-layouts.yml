@@ -1,0 +1,326 @@
+enorialshud-livefix-layout:
+  elements:
+    enorialshud-panel:
+      asset: enorialshud-panel
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: 141
+        y: -1
+    enorialshud-panel-compact:
+      asset: enorialshud-panel-compact
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: 141
+        y: -1
+    enorialshud-avatar-head:
+      asset: enorialshud-avatar-head
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: -13
+        y: 0
+    enorialshud-health-fill:
+      asset: enorialshud-health-fill
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: 138
+        y: -1
+    enorialshud-health-text:
+      asset: enorialshud-health-text
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: 77
+        y: -3
+    enorialshud-mana-fill:
+      asset: enorialshud-mana-fill
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: 134
+        y: 0
+    enorialshud-mana-text:
+      asset: enorialshud-mana-text
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: 69
+        y: -4
+    enorialshud-hunger-fill:
+      asset: enorialshud-hunger-fill
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: 128
+        y: -1
+    enorialshud-hunger-fill-compact:
+      asset: enorialshud-hunger-fill
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: 128
+        y: -12
+    enorialshud-food-text:
+      asset: enorialshud-food-text
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: 66
+        y: -5
+    enorialshud-food-text-compact:
+      asset: enorialshud-food-text-compact
+      align: left
+      position:
+        x: 0.3
+        y: 0.0
+      offset:
+        x: 66
+        y: -16
+    enorialshud-air-fill:
+      asset: enorialshud-air-fill
+      align: center
+      position:
+        x: 50.0
+        y: 100.0
+      offset:
+        x: -55
+        y: -44
+    enorialshud-air-text:
+      asset: enorialshud-air-text
+      align: center
+      position:
+        x: 50.0
+        y: 100.0
+      offset:
+        x: -55
+        y: -40
+    event-info:
+      asset: event-info
+      align: center
+      position:
+        x: 48.0
+        y: 5.0
+      offset:
+        x: -5
+        y: 0
+    party-buff:
+      asset: party-buff
+      align: right
+      position:
+        x: 94.0
+        y: 5.0
+      offset:
+        x: 0
+        y: 0
+    arena-queue:
+      asset: arena-queue
+      align: left
+      position:
+        x: 7.0
+        y: 99.0
+      offset:
+        x: 14
+        y: 0
+    corehud-armor-icon:
+      asset: corehud-armor-icon
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 10
+        y: 26
+    corehud-armor-text:
+      asset: corehud-armor-text
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: -5
+        y: 26
+    target-frame:
+      asset: target-frame
+      align: center
+      position:
+        x: 50.0
+        y: 11.0
+      offset:
+        x: -55
+        y: 0
+    enorialshud-air-frame:
+      asset: enorialshud-air-frame
+      align: center
+      position:
+        x: 50.0
+        y: 100.0
+      offset:
+        x: -55
+        y: -46
+    enorialshud-effects-icons-0:
+      asset: enorialshud-effects-icons-0
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 49
+    enorialshud-effects-timers-0:
+      asset: enorialshud-effects-timers-0
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 52
+    enorialshud-effects-icons-0-compact:
+      asset: enorialshud-effects-icons-0-compact
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 38
+    enorialshud-effects-timers-0-compact:
+      asset: enorialshud-effects-timers-0-compact
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 41
+    enorialshud-effects-icons-1:
+      asset: enorialshud-effects-icons-1
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 61
+    enorialshud-effects-timers-1:
+      asset: enorialshud-effects-timers-1
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 64
+    enorialshud-effects-icons-1-compact:
+      asset: enorialshud-effects-icons-1-compact
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 50
+    enorialshud-effects-timers-1-compact:
+      asset: enorialshud-effects-timers-1-compact
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 53
+    enorialshud-effects-icons-2:
+      asset: enorialshud-effects-icons-2
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 73
+    enorialshud-effects-timers-2:
+      asset: enorialshud-effects-timers-2
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 76
+    enorialshud-effects-icons-2-compact:
+      asset: enorialshud-effects-icons-2-compact
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 62
+    enorialshud-effects-timers-2-compact:
+      asset: enorialshud-effects-timers-2-compact
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 65
+    enorialshud-effects-icons-3:
+      asset: enorialshud-effects-icons-3
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 85
+    enorialshud-effects-timers-3:
+      asset: enorialshud-effects-timers-3
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 88
+    enorialshud-effects-icons-3-compact:
+      asset: enorialshud-effects-icons-3-compact
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 74
+    enorialshud-effects-timers-3-compact:
+      asset: enorialshud-effects-timers-3-compact
+      align: left
+      position:
+        x: 0.3
+        y: 0
+      offset:
+        x: 0
+        y: 77

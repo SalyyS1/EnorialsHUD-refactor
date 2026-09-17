@@ -1,0 +1,46 @@
+# Build output
+build/
+out/
+target/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Gradle
+.gradle/
+gradle-app.setting
+.gradletasknamecache
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Logs & runtime
+*.log
+logs/
+
+# Extracted at runtime (never commit)
+natives/
+pack-cache/
+pack-host/
+hosting-export/
+
+# Never commit secrets
+.env
+.env.*
+*.token
+*.secret
+credentials.*
+
+# AgentKit local index
+.agentkit/*.db

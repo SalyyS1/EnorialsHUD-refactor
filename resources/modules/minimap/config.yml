@@ -1,0 +1,85 @@
+enabled-by-default: true
+
+#Available values: LEFT, RIGHT
+default-position: RIGHT
+#Available values: SMALL, MEDIUM, LARGE
+default-size: LARGE
+#Available values: CIRCLE, SQUARE
+default-shape: CIRCLE
+
+default-danger-ring-enabled: false
+default-fog-styling-enabled: true
+
+#Builtin renderers: vanilla, flat
+default-minimap-renderer: "vanilla"
+
+markers:
+  death-marker:
+    enabled: true
+    stick-to-border: true
+    #Remove your death marker when you move within this horizontal distance; <=0 disables removal
+    remove-radius-blocks: 3.0
+    #Maximum vertical distance from your death location for automatic removal
+    remove-vertical-range-blocks: 3.0
+  custom-markers:
+    limit: 5
+    stick-to-border: true
+
+fullscreen:
+  #1 segment = 128*128 pixels = 8*8 chunks
+  segments-x: 5
+  segments-z: 3
+
+performance:
+  #Minimum delay between minimap movement updates in ticks
+  movement-update-interval-ticks: 1
+  #Minimum delay between marker orientation updates in ticks
+  orientation-update-interval-ticks: 1
+
+poi:
+  #Default POI marker lifetime in minutes
+  default-duration-minutes: 30
+
+coordinates:
+  #Render XYZ directly on minimap overlay (recommended OFF when using HUD placeholders)
+  enabled: false
+  #Overlay text Y offset inside minimap texture (0-122)
+  text-y: 112
+
+#Render local player icon on minimap
+player-icon-enabled: true
+
+radar:
+  enabled: true
+  update-interval-ticks: 2
+  radius-blocks: 64
+  vertical-range-blocks: 15
+  max-entities: 48
+  default-aggressive-enabled: true
+  default-neutral-enabled: true
+  default-friendly-enabled: true
+  # Optional MythicMobs internal names whose faction differs from their base AI.
+  aggressive-mythic-mobs: []
+  neutral-mythic-mobs: []
+  friendly-mythic-mobs: []
+
+data-retention:
+  #Delete offline player minimap data older than this many days (<=0 disables player cleanup)
+  player-data-days: 45
+  #Cleanup interval in minutes
+  cleanup-interval-minutes: 15
+
+resource-pack:
+  enabled: false
+  required: false
+  #Render mode: gui (26.2 GUI resource pack), shader (legacy map carriers), fallback
+  render-mode: "gui"
+  #Include minimap shader files in generated RP (set false for fallback mode)
+  include-shaders: false
+  prompt: "&6This server recommends the minimap resource pack."
+  kick-message: "&cYou must accept the minimap resource pack to play."
+  #Version keys: 1_19, 1_20, 1_21
+  url:
+    v-1-19: ""
+    v-1-20: ""
+    v-1-21: ""

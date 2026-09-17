@@ -1,0 +1,8 @@
+enorialsavatar:
+  providers:
+    avatar:
+      texture: assets/enorialshud/avatars/heads/avatar.png
+      height: 40
+      ascent: 5
+      chars:
+      - 

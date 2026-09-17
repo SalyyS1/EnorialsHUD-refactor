@@ -1,0 +1,97 @@
+# Point-of-interest routes visible in POI GUI.
+poi:
+  # Master switch for POI features.
+  enabled: true
+  # GUI title for POI list.
+  list_title: "&aSelect Point of Interest"
+  points:
+    # Static coordinate target example.
+    spawn:
+      display_name: "&aServer Spawn"
+      world: "world"
+      x: 0
+      y: 64
+      z: 0
+      conditions:
+        - "permission:enorials.gps.poi.spawn"
+    # Citizens NPC target example.
+    blacksmith_npc:
+      display_name: "&6Blacksmith NPC"
+      citizens_id: 1
+      conditions:
+        - "world:world"
+    # FancyNpcs target example.
+    fancy_guard_npc:
+      display_name: "&bFancy Guard NPC"
+      fancynpc: "guard_1"
+    # Shopkeepers target example.
+    market_shopkeeper:
+      display_name: "&eMarket Shopkeeper"
+      shopkeeper: "*"
+    # MythicMobs target example.
+    mythic_boss:
+      display_name: "&cMythic Boss"
+      mythic_mob: "BossSkeleton"
+    # EliteMobs target example (hint-based).
+    elite_miniboss:
+      display_name: "&4Elite Miniboss"
+      elite_mob: "miniboss"
+      conditions:
+        - "world:world"
+    # EcoBosses target example (hint-based).
+    ecoboss_worldboss:
+      display_name: "&cEcoBoss World Boss"
+      ecoboss_mob: "worldboss"
+    # Essentials warp target example.
+    essentials_spawn_warp:
+      display_name: "&aWarp: Spawn"
+      essentials_warp: "spawn"
+    # CMI warp target example.
+    cmi_market_warp:
+      display_name: "&aCMI Warp: Market"
+      cmi_warp: "market"
+    # WorldGuard region target example.
+    worldguard_spawn_region:
+      display_name: "&dRegion: Spawn"
+      worldguard_region: "spawn_region"
+      worldguard_world: "world"
+    # Towny town-spawn target example.
+    towny_spawn_town:
+      display_name: "&6Towny: SpawnTown"
+      towny_town: "SpawnTown"
+    # DecentHolograms target example.
+    decent_spawn_hologram:
+      display_name: "&eHologram: Spawn Info"
+      decent_hologram: "spawn_info"
+    # ModelEngine target example (hint-based).
+    modelengine_guardian:
+      display_name: "&dModelEngine Guardian"
+      modelengine_model: "guardian"
+    # Generic entity by scoreboard tag.
+    tagged_event_entity:
+      display_name: "&eEvent Marker Entity"
+      entity_tag: "event_boss"
+    # Generic entity by metadata key.
+    metadata_event_entity:
+      display_name: "&bMetadata Event Entity"
+      entity_metadata: "eventMarker"
+    # Generic entity by PDC key/value.
+    pdc_event_entity:
+      display_name: "&aPDC Event Entity"
+      entity_pdc: "enorials:event_id=worldboss"
+    # Vanilla block target example (nearest matching block in range).
+    vanilla_diamond_ore:
+      display_name: "&bNearest Diamond Ore"
+      vanilla_block: "DIAMOND_ORE"
+    # ItemsAdder custom block target example.
+    ia_jade_ore:
+      display_name: "&2ItemsAdder Jade Ore"
+      itemsadder_block: "myplugin:jade_ore"
+    # Nexo custom block target example.
+    nexo_ancient_rock:
+      display_name: "&3Nexo Ancient Rock"
+      nexo_block: "ancient_rock"
+    # Oraxen custom block target example.
+    oraxen_custom_block:
+      display_name: "&5Oraxen Custom Block"
+      oraxen_block: "my_custom_block"

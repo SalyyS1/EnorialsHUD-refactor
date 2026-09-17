@@ -1,0 +1,6 @@
+mana:
+  value: '%enorialsspells_mana%'
+  max: '%enorialsspells_mana_max%'
+rage:
+  value: '%enorialsspells_rage%'
+  max: '%enorialsspells_rage_max%'

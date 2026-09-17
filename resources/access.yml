@@ -1,0 +1,27 @@
+# EnorialsHUD native access rules. No LuckPerms or other permission plugin is required.
+# Ordinary players get player features by default, never administrative access.
+# Explicit Bukkit/LuckPerms permissions override these local rules.
+# Examples of nodes: enorials.hud.basic, enorials.minimap.use, enorials.gps.use,
+# enorials.gps.quests, enorials.minimap.quests. /enohud access list shows all nodes.
+
+# Applied on each access check to all players; changing this affects existing players too.
+defaults:
+  grant:
+    - enorials.hud.all
+  deny: []
+
+# Copied to the player's stored grants ONLY on their first-ever server join.
+# Existing server players are not retroactively granted these permissions.
+# Changing this list or removing a player's grant does not re-grant it on reconnect.
+# Example:
+# first-join:
+#   grant:
+#     - enorials.hud.basic
+#     - enorials.minimap.use
+first-join:
+  grant: []
+
+# Managed by /enohud access player <name|UUID> <allow|deny|unset> <node>.
+# Player-specific local rules override defaults. Exact rules override local bundles.
+# A stored first-join-processed flag prevents repeat grants. Keep it when editing grants.
+players: {}

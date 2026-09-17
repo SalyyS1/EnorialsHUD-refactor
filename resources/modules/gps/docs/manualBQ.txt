@@ -1,0 +1,206 @@
+ENORIALSGPS + BETONQUEST MANUAL
+================================
+
+Owner contact: enorrial@gmail.com
+Owner Discord: klon_92
+
+This file explains how to use EnorialsGPS with BetonQuest 3.0-dev and includes
+copy-paste templates.
+
+
+1) WHAT THIS INTEGRATION DOES
+-----------------------------
+- BetonQuest can start/stop GPS and set mode via `/gpsapi`.
+- EnorialsGPS can send hook commands back to BetonQuest (or console commands)
+  through `plugins/EnorialsGPS/configs/betonquest.yml`.
+
+
+2) REQUIRED PLUGINS
+-------------------
+- Paper 1.19.x / 1.20.x / 1.21.x
+- EnorialsGPS
+- BetonQuest 3.0-dev
+- Optional: Citizens, MythicMobs, ItemsAdder, Nexo, Oraxen, Essentials, CMI, WorldGuard, Towny, DecentHolograms, PlaceholderAPI...
+
+
+3) IMPORTANT FILES
+------------------
+- EnorialsGPS config:
+  - `plugins/EnorialsGPS/configs/betonquest.yml`
+  - `plugins/EnorialsGPS/configs/poi.yml`
+- BetonQuest package:
+  - `plugins/BetonQuest/QuestPackages/<yourPackage>/events.yml`
+  - `plugins/BetonQuest/QuestPackages/<yourPackage>/conversations.yml`
+  - `plugins/BetonQuest/QuestPackages/<yourPackage>/objectives.yml`
+  - `plugins/BetonQuest/QuestPackages/<yourPackage>/conditions.yml`
+
+
+3.1) PERMISSIONS QUICK SETUP
+----------------------------
+Player permissions:
+- `enorials.gps.use`
+- `enorials.gps.track.player` (track players)
+- `enorials.gps.track.mob` (track mobs)
+- `enorials.gps.track.npc` (track NPCs)
+- `enorials.gps.track.block` (track block targets)
+
+Admin/staff:
+- `enorials.gps.api`
+- `enorials.gps.admin`
+
+Role bundles available:
+- `enorials.gps.role.player`
+- `enorials.gps.role.admin`
+- `enorials.gps.role.op`
+
+
+4) RECOMMENDED SETUP (MOST STABLE)
+----------------------------------
+Use BetonQuest to run `/gpsapi` commands directly.
+This is deterministic and easiest to debug.
+
+Template for BetonQuest `events.yml`:
+
+events:
+  gps_to_spawn: "command gpsapi start {player} poi spawn"
+  gps_to_blacksmith: "command gpsapi start {player} npc citizens:1"
+  gps_to_worldboss: "command gpsapi start {player} mob mythic:BossSkeleton"
+  gps_to_custom_block: "command gpsapi start {player} block itemsadder:myplugin:jade_ore"
+  gps_to_coords: "command gpsapi start {player} loc 100 65 -40 world"
+  gps_mode_bossbar: "command gpsapi mode {player} bossbar"
+  gps_mode_compass: "command gpsapi mode {player} compass"
+  gps_stop: "command gpsapi stop {player}"
+  gps_route_blacksmith_add: "command gpsapi route add {player} blacksmith_step Find_Blacksmith NPC bossbar citizens:1"
+  gps_route_spawn_add_short: "command gpsapi route add {player} poi spawn"
+  gps_route_blacksmith_remove: "command gpsapi route remove {player} blacksmith_step"
+  gps_route_clear: "command gpsapi route clear {player}"
+
+Template for BetonQuest `conversations.yml`:
+
+conversations:
+  quest_navigator:
+    first: start
+    NPC_options:
+      start:
+        text: "Need help finding your target?"
+        pointer: p_spawn,p_blacksmith,p_stop
+    player_options:
+      p_spawn:
+        text: "Guide me to spawn."
+        event: gps_to_spawn
+      p_blacksmith:
+        text: "Guide me to blacksmith."
+        event: gps_to_blacksmith
+      p_stop:
+        text: "Stop navigation."
+        event: gps_stop
+
+
+5) ENORIALSGPS BETONQUEST CONFIG TEMPLATE
+-----------------------------------------
+File: `plugins/EnorialsGPS/configs/betonquest.yml`
+
+betonquest:
+  enabled: true
+  command_templates:
+    # Default: fire BetonQuest action with payload from GPS hook.
+    event: "bq action {player} {value}"
+    objective: "bq objective add {player} {value}"
+    tag: "bq tag add {player} {value}"
+    condition: "bq condition {player} {value}"
+  hooks:
+    start_event: "gps_start"
+    stop_event: "gps_stop"
+    reach_event: "gps_reach"
+    mode_change_event: "gps_mode_change"
+  auto_routes:
+    quest_spawn:
+      display: "&aQuest: Go To Spawn"
+      type: "POI"   # PLAYER | MOB | NPC | POI | LOCATION
+      value: "spawn"
+      mode: "bossbar"
+      source: "bq-auto"
+      conditions:
+        - "world:world"
+
+Optional extra hook dispatch (events/objectives/tags/conditions):
+
+  extra_event_hooks:
+    start: []
+    stop: []
+    reach: []
+    mode_change: []
+  objective_hooks:
+    start: [ "gps_nav_started" ]
+    stop: []
+    reach: [ "gps_reached_{target}" ]
+    mode_change: []
+  tag_hooks:
+    start: [ "gps_active" ]
+    stop: [ "gps_inactive" ]
+    reach: []
+    mode_change: [ "gps_mode_{mode}" ]
+  condition_hooks:
+    start: []
+    stop: []
+    reach: [ "is_at_{target}" ]
+    mode_change: []
+
+Hook placeholders available in values:
+- `{hook}`, `{source}`, `{reason}`, `{target}`, `{mode}`, `{payload}`
+
+
+6) GPS HOOK PAYLOADS (FROM ENORIALSGPS -> BQ)
+---------------------------------------------
+EnorialsGPS sends these values to the `event` command template:
+
+- `gps_start:<source>:<targetId>`
+- `gps_stop:<reason>:<targetId>`
+- `gps_reach:<targetId>`
+- `gps_mode_change:<mode>`
+
+Examples:
+- `gps_start:poi:loc:world:0:64:0`
+- `gps_start:chat-npc:citizens:1`
+- `gps_reach:mythic:BossSkeleton`
+- `gps_mode_change:bossbar`
+
+Tip:
+- For quick debug, set:
+  - `event: "say [GPS-HOOK] {player} {value}"`
+- Then you can see exactly what payload value is produced.
+
+
+7) TARGET INPUT EXAMPLES FOR BQ EVENTS
+--------------------------------------
+- Player: `gpsapi start {player} player Steve`
+- NPC: `gpsapi start {player} npc citizens:1`
+- NPC (ZNPCsPlus): `gpsapi start {player} npc znpcs:15`
+- NPC (FancyNpcs): `gpsapi start {player} npc fancynpc:guard_1`
+- NPC (Shopkeepers): `gpsapi start {player} npc shopkeeper:*`
+- Mob (vanilla): `gpsapi start {player} mob ZOMBIE`
+- Mob (Mythic): `gpsapi start {player} mob mythic:BossSkeleton`
+- Mob (EcoBosses): `gpsapi start {player} mob ecoboss:worldboss`
+- POI: `gpsapi start {player} poi spawn`
+- Location: `gpsapi start {player} loc 250 70 -120 world`
+- Essentials warp: `gpsapi start {player} warp spawn`
+- CMI warp (via loc alias): `gpsapi start {player} loc cmi:spawn`
+- WorldGuard region: `gpsapi start {player} region spawn_region world`
+- Towny town spawn: `gpsapi start {player} town SpawnTown`
+- DecentHolograms anchor: `gpsapi start {player} hologram spawn_info`
+- Block (vanilla): `gpsapi start {player} block minecraft:diamond_ore`
+- Block (ItemsAdder): `gpsapi start {player} block itemsadder:myplugin:jade_ore`
+- Block (Nexo): `gpsapi start {player} block nexo:ancient_rock`
+- Block (Oraxen): `gpsapi start {player} block oraxen:my_custom_block`
+
+
+8) TROUBLESHOOTING CHECKLIST
+----------------------------
+1. Run `/bq version` and check BetonQuest is loaded.
+2. Run `/gpsapi` command manually from console first.
+3. Check `plugins/EnorialsGPS/configs/betonquest.yml` has `enabled: true`.
+4. If hooks do not trigger as expected, set:
+   - `event: "say [GPS-HOOK] {player} {value}"`
+   and test again.
+5. If target is unavailable, test exact ID/name and plugin availability
+   (Citizens/MythicMobs/ItemsAdder/Nexo/Oraxen).

@@ -1,0 +1,27 @@
+target-heads:
+  providers:
+    heads:
+      type: bitmap
+      texture: assets/enorialshud/target_heads.png
+      height: 24
+      chars:
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+    enorials-model-portraits:
+      type: bitmap
+      texture: assets/enorialshud/target_custom_heads.png
+      height: 24
+      chars:
+      - 

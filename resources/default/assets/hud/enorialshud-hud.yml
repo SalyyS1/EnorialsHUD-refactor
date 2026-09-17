@@ -1,0 +1,445 @@
+enorialshud-panel:
+  layers:
+    hud-panel:
+      texture:
+        path: assets/enorialshud/hud_panel.png
+        resolution: 4
+      align: left
+      offset:
+        x: 0
+        y: 0
+enorialshud-avatar-head:
+  layers:
+    avatar-head:
+      text: '%enorialshud_avatar_giantHead%'
+      font: enorialsavatar
+      align: left
+      offset:
+        x: 1
+        y: 9
+enorialshud-health-fill:
+  layers:
+    health-fill:
+      texture:
+        path: assets/enorialshud/health_neutral.png
+        resolution: 4
+      align: left
+      offset:
+        x: 54
+        y: 15
+      function:
+        listener: health
+        increment: 6
+        orientation: horizontal
+        reversed: false
+enorialshud-health-text:
+  layers:
+    health-text:
+      text: <white>%health-bar-value%/%health-bar-max%
+      font: hud-modern-mono
+      outlined: false
+      align: left
+      offset:
+        x: 84
+        y: 19
+        z: 8
+enorialshud-mana-fill:
+  layers:
+    mana-fill:
+      texture:
+        path: assets/enorialshud/mana_fill_thin.png
+        resolution: 4
+      align: left
+      offset:
+        x: 54
+        y: 27
+      function:
+        listener: resource
+        increment: 6
+        orientation: horizontal
+        reversed: false
+enorialshud-mana-text:
+  layers:
+    mana-text:
+      text: <white>%resource-bar-value%/%resource-bar-max%
+      font: hud-modern-mono
+      outlined: false
+      align: left
+      offset:
+        x: 84
+        y: 31
+        z: 8
+enorialshud-hunger-fill:
+  layers:
+    hunger-fill:
+      texture:
+        path: assets/enorialshud/hunger_fill_thin.png
+        resolution: 4
+      align: left
+      offset:
+        x: 54
+        y: 38
+      function:
+        listener: food
+        increment: 6
+        orientation: horizontal
+        reversed: false
+enorialshud-food-text:
+  layers:
+    food-text:
+      text: <white>%food-bar-value%/%food-bar-max%
+      font: hud-modern-mono
+      outlined: false
+      align: left
+      offset:
+        x: 84
+        y: 42
+        z: 8
+enorialshud-air-fill:
+  layers:
+    air-fill:
+      texture:
+        path: assets/enorialshud/mana_fill_thin.png
+        resolution: 4
+      align: center
+      offset:
+        x: 0
+        y: 0
+        z: 6
+      function:
+        listener: air
+        increment: 6
+        orientation: horizontal
+        reversed: false
+enorialshud-air-text:
+  layers:
+    air-text:
+      text: <white>%air-bar-value%/%air-bar-max%
+      font: hud-modern-mono
+      outlined: false
+      align: center
+      offset:
+        x: 0
+        y: -4
+        z: 8
+arena-queue:
+  layers:
+    queue-status:
+      text: '<white>Queue: <green>Searching'
+      outlined: true
+      align: left
+      offset:
+        x: 0
+        y: 0
+    queue-mode:
+      text: '<white>Mode: <yellow>%enorialsarena_queue_mode%'
+      outlined: true
+      align: left
+      offset:
+        x: -16
+        y: -10
+target-frame:
+  layers:
+    target-health-background:
+      texture:
+        path: assets/enorialshud/target_frame.png
+        resolution: 4
+      align: center
+      offset:
+        x: 0
+        y: 10
+        z: 4
+      conditions:
+      - placeholder{1=%target_exists%;2=true} false hide
+    target-name:
+      text: <gold>%target_name%
+      outlined: true
+      align: center
+      offset:
+        x: 0
+        y: 0
+      conditions:
+      - placeholder{1=%target_exists%;2=true} false hide
+    target-health-fill:
+      texture:
+        path: assets/enorialshud/health_fill.png
+        resolution: 4
+      align: center
+      offset:
+        x: 0
+        y: 12
+        z: 6
+      function:
+        listener: targethp
+        increment: 6
+        orientation: horizontal
+        reversed: false
+      conditions:
+      - placeholder{1=%target_exists%;2=true} false hide
+    target-health:
+      text: <white>%target_health%<gray>/<white>%target_max_health%
+      outlined: true
+      align: center
+      offset:
+        x: 0
+        y: 13
+        z: 8
+      conditions:
+      - placeholder{1=%target_exists%;2=true} false hide
+event-info:
+  layers:
+    event-title:
+      text: '<yellow>Event:'
+      outlined: true
+      align: center
+      offset:
+        x: -42.5
+        y: -3
+party-buff:
+  layers:
+    buff-icon:
+      texture:
+        path: assets/enorialshud/icon_buff.png
+      align: right
+      offset:
+        x: 0
+        y: 12
+    buff-text:
+      text: '<blue>Buffs: <white>%enorialsspells_buffs%'
+      outlined: true
+      align: right
+      offset:
+        x: 0
+        y: 0
+corehud-armor-icon:
+  layers:
+    armor-icon:
+      texture:
+        path: assets/enorialshud/icon_armor.png
+        resolution: 4
+      align: left
+      offset:
+        x: 0
+        y: 0
+corehud-armor-text:
+  layers:
+    armor-text:
+      text: <white><bold>%armor-bar-value%
+      font: hud-modern-mono
+      outlined: false
+      align: left
+      offset:
+        x: 52.5
+        y: 50
+enorialshud-panel-compact:
+  layers:
+    hud-panel:
+      texture:
+        path: assets/enorialshud/hud_panel_compact.png
+        resolution: 4
+      align: left
+      offset:
+        x: 0
+        y: 0
+enorialshud-air-frame:
+  layers:
+    air-frame:
+      texture:
+        path: assets/enorialshud/air_frame.png
+        resolution: 4
+      align: center
+      offset:
+        x: 0
+        y: 0
+        z: 4
+enorialshud-food-text-compact:
+  layers:
+    food-text:
+      text: <white>%food-bar-value%/%food-bar-max%
+      font: hud-modern-mono
+      outlined: false
+      align: left
+      offset:
+        x: 84
+        y: 42
+        z: 8
+enorialshud-effects-icons:
+  layers:
+    icons:
+      text: ''
+      font: hud-effect-icons
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 12
+enorialshud-effects-icons-0:
+  layers:
+    icons:
+      text: ''
+      font: hud-effect-icons
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 12
+enorialshud-effects-icons-0-compact:
+  layers:
+    icons:
+      text: ''
+      font: hud-effect-icons
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 12
+enorialshud-effects-icons-1:
+  layers:
+    icons:
+      text: ''
+      font: hud-effect-icons
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 12
+enorialshud-effects-icons-1-compact:
+  layers:
+    icons:
+      text: ''
+      font: hud-effect-icons
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 12
+enorialshud-effects-icons-2:
+  layers:
+    icons:
+      text: ''
+      font: hud-effect-icons
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 12
+enorialshud-effects-icons-2-compact:
+  layers:
+    icons:
+      text: ''
+      font: hud-effect-icons
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 12
+enorialshud-effects-icons-3:
+  layers:
+    icons:
+      text: ''
+      font: hud-effect-icons
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 12
+enorialshud-effects-icons-3-compact:
+  layers:
+    icons:
+      text: ''
+      font: hud-effect-icons
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 12
+enorialshud-effects-timers:
+  layers:
+    timers:
+      text: ''
+      font: hud-effect-timers
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 14
+enorialshud-effects-timers-0:
+  layers:
+    timers:
+      text: ''
+      font: hud-effect-timers
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 14
+enorialshud-effects-timers-0-compact:
+  layers:
+    timers:
+      text: ''
+      font: hud-effect-timers
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 14
+enorialshud-effects-timers-1:
+  layers:
+    timers:
+      text: ''
+      font: hud-effect-timers
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 14
+enorialshud-effects-timers-1-compact:
+  layers:
+    timers:
+      text: ''
+      font: hud-effect-timers
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 14
+enorialshud-effects-timers-2:
+  layers:
+    timers:
+      text: ''
+      font: hud-effect-timers
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 14
+enorialshud-effects-timers-2-compact:
+  layers:
+    timers:
+      text: ''
+      font: hud-effect-timers
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 14
+enorialshud-effects-timers-3:
+  layers:
+    timers:
+      text: ''
+      font: hud-effect-timers
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 14
+enorialshud-effects-timers-3-compact:
+  layers:
+    timers:
+      text: ''
+      font: hud-effect-timers
+      align: left
+      offset:
+        x: 0
+        y: 0
+        z: 14

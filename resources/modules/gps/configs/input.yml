@@ -1,0 +1,60 @@
+# Player input settings: chat prompts and clickable suggestions.
+
+# Chat prompt texts shown after GUI target selection.
+prompts:
+  # Prompt for player name input.
+  player: "&eType player name in chat. Type 'cancel' to cancel."
+  # Prompt for mob syntax input.
+  mob: "&eType mob: ZOMBIE, mythic:BossSkeleton, elite:miniboss, ecoboss:worldboss, modelengine:guardian, tag:event_boss, meta:eventMarker, pdc:enorials:event_id=worldboss. Type 'cancel'."
+  # Prompt for coordinates and integrated location aliases.
+  location: "&eType location: &fX Y Z [world]&e OR &fwarp:spawn&e / &fcmi:spawn&e OR &fwg:region&e / &ftown:MyTown&e / &fdh:spawn_info&e. Type 'cancel'."
+  # Prompt for NPC syntax input.
+  npc: "&eType NPC input: 1, citizens:1, citizens:Blacksmith, znpcs:15, fancynpc:guard_1, shopkeeper:*, denizen:QuestGiver. Type 'cancel'."
+  # Prompt for block syntax input.
+  block: "&eType block input: STONE, minecraft:diamond_ore, itemsadder:namespace:block_id, nexo:block_id, oraxen:block_id. Type 'cancel'."
+
+# Clickable chat suggestions shown with prompts.
+chat_suggestions:
+  # Master switch for clickable suggestions.
+  enabled: true
+  # Max auto-suggested online players.
+  max_player_suggestions: 6
+  # Fallback player examples if nobody else is online.
+  player_fallback: [ "Steve", "Alex" ]
+  # Mob suggestion examples.
+  mob:
+    - "ZOMBIE"
+    - "mythic:BossSkeleton"
+    - "elite:miniboss"
+    - "ecoboss:worldboss"
+    - "modelengine:guardian"
+    - "tag:event_boss"
+    - "meta:eventMarker"
+    - "pdc:enorials:event_id=worldboss"
+  # NPC suggestion examples.
+  npc:
+    - "1"
+    - "citizens:1"
+    - "citizens:Blacksmith"
+    - "znpcs:15"
+    - "znpcsplus:Blacksmith"
+    - "fancynpc:guard_1"
+    - "shopkeeper:*"
+    - "denizen:QuestGiver"
+  # Coordinate suggestion examples.
+  location:
+    - "0 64 0 world"
+    - "100 70 -200 world"
+    - "warp:spawn"
+    - "cmi:spawn"
+    - "wg:spawn_region"
+    - "wg:world:spawn_region"
+    - "town:SpawnTown"
+    - "dh:spawn_info"
+  # Block suggestion examples (vanilla + custom block providers).
+  block:
+    - "STONE"
+    - "minecraft:diamond_ore"
+    - "itemsadder:myplugin:jade_ore"
+    - "nexo:ancient_rock"
+    - "oraxen:my_custom_block"

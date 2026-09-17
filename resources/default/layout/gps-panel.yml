@@ -1,0 +1,18 @@
+gps-panel:
+  elements:
+    gps:
+      asset: gps
+      position:
+        x: 50
+        y: 100
+      offset:
+        x: -129
+        y: -128
+    gps-compact:
+      asset: gps-compact
+      position:
+        x: 50
+        y: 100
+      offset:
+        x: -111
+        y: -128

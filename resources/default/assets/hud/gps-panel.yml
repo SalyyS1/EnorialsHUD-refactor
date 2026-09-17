@@ -1,0 +1,136 @@
+gps:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/gps_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    arrow:
+      text: ''
+      font: gps-gyro
+      offset:
+        x: 5
+        y: 4
+        z: 3
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 86
+        y: 5
+        z: 3
+      scale:
+        x: 1
+        y: 1
+    details:
+      text: ''
+      font: party-native
+      offset:
+        x: 86
+        y: 18
+        z: 3
+      scale:
+        x: 1
+        y: 1
+    frame-split:
+      texture:
+        path: assets/enorialshud/gps_frame_equal_split.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    distance:
+      text: ''
+      font: party-native
+      offset:
+        x: 58
+        y: 18
+        z: 3
+      scale:
+        x: 1
+        y: 1
+    height:
+      text: ''
+      font: party-native
+      offset:
+        x: 113
+        y: 18
+        z: 3
+      scale:
+        x: 1
+        y: 1
+gps-compact:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/gps_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    arrow:
+      text: ''
+      font: gps-gyro
+      offset:
+        x: 5
+        y: 4
+        z: 3
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 68
+        y: 5
+        z: 3
+      scale:
+        x: 1
+        y: 1
+    details:
+      text: ''
+      font: party-native
+      offset:
+        x: 68
+        y: 18
+        z: 3
+      scale:
+        x: 1
+        y: 1
+    frame-split:
+      texture:
+        path: assets/enorialshud/gps_frame_compact_equal_split.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    distance:
+      text: ''
+      font: party-native
+      offset:
+        x: 49
+        y: 18
+        z: 3
+      scale:
+        x: 1
+        y: 1
+    height:
+      text: ''
+      font: party-native
+      offset:
+        x: 86
+        y: 18
+        z: 3
+      scale:
+        x: 1
+        y: 1

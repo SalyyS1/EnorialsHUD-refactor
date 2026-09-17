@@ -1,0 +1,31 @@
+Summary for D:\Project\.1_PROJECT_SL_PLUGINS\ExoticBundle\EnorialsHUD.jar
+Decompiled with CFR 0.152
+
+
+sk.enorials.hud.access.HudAccess
+----------------------------
+
+raw(org.bukkit.command.CommandSender java.lang.String )
+  Unable to fully structure code
+
+
+sk.enorials.hud.manager.PackManager
+----------------------------
+
+lambda$startBuild$0()
+  Unable to fully structure code
+
+
+sk.enorials.hud.party.PartyMapTracker
+----------------------------
+
+run()
+  Could not resolve type clashes
+  Unable to fully structure code
+
+
+sk.enorials.minimap.clientside.gui.GuiMinimapPacketSender
+----------------------------
+
+iconComponent(org.bukkit.entity.Player sk.enorials.minimap.clientside.gui.GuiMinimapPacketSender$Session sk.enorials.minimap.map.SecondaryMinimapLayer sk.enorials.minimap.map.renderer.MinimapIconRenderer sk.enorials.minimap.clientside.gui.GuiMinimapPacketSender$LayerState )
+  Unable to fully structure code

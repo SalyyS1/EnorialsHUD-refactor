@@ -1,0 +1,30 @@
+name: EnorialsParty
+version: 1.2.17-mainmenu-hide-anchorhud-events-20260212_001320-mc26.2
+main: sk.enorials.partyhud.EnorialsPartyPlugin
+api-version: '26.2'
+authors:
+- EnorialsWorld
+description: Party + Friends + Shared EXP + Party HUD (Paper/Spigot 1.19-1.21)
+softdepend:
+- PlaceholderAPI
+- ProtocolLib
+- BetonQuest
+commands:
+  party:
+    description: Opens Party GUI / Party commands
+    usage: /party
+    aliases:
+    - p
+  menu:
+    description: Opens Main Menu (Party/Spells/Stats)
+    usage: /menu
+    aliases:
+    - mainmenu
+    - hub
+permissions:
+  enorials.party.use:
+    default: true
+  enorials.party.admin:
+    default: op
+  enorials.menu.use:
+    default: true

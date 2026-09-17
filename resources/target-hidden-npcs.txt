@@ -1,0 +1,1 @@
+# Configure target-frame.hidden-name-citizens or a local target-hidden-npcs.txt.

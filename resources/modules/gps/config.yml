@@ -1,0 +1,4 @@
+# EnorialsGPS uses split configuration files in plugins/EnorialsGPS/configs/
+# (core.yml, navigation.yml, input.yml, integrations.yml, poi.yml, betonquest.yml).
+# This file is kept only for backward compatibility with older installs.
+# If a setting exists in both places, configs/*.yml has priority.

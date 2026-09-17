@@ -1,0 +1,90 @@
+name: EnorialsGPS
+main: sk.enorials.gps.EnorialsGpsPlugin
+version: 2.0.0
+api-version: 1.19
+authors: [Enorials]
+softdepend:
+  - BetonQuest
+  - Citizens
+  - MythicMobs
+  - PlaceholderAPI
+  - EliteMobs
+  - ModelEngine
+  - Denizen
+  - ZNPCsPlus
+  - MMOCore
+  - MMOItems
+  - EcoBosses
+  - ItemsAdder
+  - Oraxen
+  - Nexo
+  - Essentials
+  - CMI
+  - WorldGuard
+  - Towny
+  - DecentHolograms
+  - Shopkeepers
+  - FancyNpcs
+commands:
+  gps:
+    description: Opens the GPS navigation menu.
+    usage: /gps
+    permission: enorials.gps.use
+  enogps:
+    description: Alias for /gps.
+    usage: /enogps
+    permission: enorials.gps.use
+  gpsapi:
+    description: API command for scripts and quest plugins.
+    usage: /gpsapi <subcommand>
+    permission: enorials.gps.api
+permissions:
+  enorials.gps.use:
+    description: Allows using /gps and /enogps player navigation menu.
+    default: true
+  enorials.gps.track.player:
+    description: Allows players to start tracking other players.
+    default: false
+  enorials.gps.track.mob:
+    description: Allows players to start mob/entity tracking.
+    default: false
+  enorials.gps.track.npc:
+    description: Allows players to start NPC tracking.
+    default: false
+  enorials.gps.track.block:
+    description: Allows players to start block target tracking.
+    default: false
+  enorials.gps.track.all:
+    description: Grants all target-type tracking permissions.
+    default: false
+    children:
+      enorials.gps.track.player: true
+      enorials.gps.track.mob: true
+      enorials.gps.track.npc: true
+      enorials.gps.track.block: true
+  enorials.gps.api:
+    description: Allows using /gpsapi automation command.
+    default: op
+  enorials.gps.admin:
+    description: Admin bundle for full GPS control.
+    default: op
+    children:
+      enorials.gps.use: true
+      enorials.gps.track.all: true
+      enorials.gps.api: true
+  enorials.gps.role.player:
+    description: Player role bundle (base GPS access only).
+    default: true
+    children:
+      enorials.gps.use: true
+  enorials.gps.role.admin:
+    description: Admin role bundle (all tracking + API).
+    default: false
+    children:
+      enorials.gps.role.player: true
+      enorials.gps.admin: true
+  enorials.gps.role.op:
+    description: OP role bundle (same as admin, default for OPs).
+    default: op
+    children:
+      enorials.gps.role.admin: true

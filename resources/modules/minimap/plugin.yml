@@ -1,0 +1,8 @@
+name: EnorialsMinimap
+description: Enorials minimap for vanilla clients.
+author: Enorials
+version: '26.2-migration-gui-1'
+website: https://enorials.com
+main: sk.enorials.minimap.EnorialsMinimap
+api-version: '26.2'
+softdepend: [EnorialsAnchorHUD, BetonQuest, MythicMobs, Citizens, Sentinel, ModelEngine]

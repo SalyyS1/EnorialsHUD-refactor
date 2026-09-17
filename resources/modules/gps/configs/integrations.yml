@@ -1,0 +1,78 @@
+# Integration toggles and hint profiles for external plugins.
+integrations:
+  # Allow targeting online players.
+  allow_player_targets: true
+  # Allow mob syntax (vanilla + custom formats).
+  allow_mob_targets: true
+  # Allow NPC syntax.
+  allow_npc_targets: true
+  # Allow direct coordinate targets.
+  allow_location_targets: true
+  # Allow location aliases via Essentials warps (warp:, essentials:).
+  allow_warp_targets: true
+  # If CMI is installed, allow CMI warp aliases (cmiwarp:, cmi:).
+  allow_cmi_warp_targets: true
+  # Allow location aliases via WorldGuard regions (wg:, worldguard:).
+  allow_region_targets: true
+  # Allow location aliases via Towny town spawns (town:, towny:).
+  allow_town_targets: true
+  # Allow location aliases via DecentHolograms names (dh:, holo:).
+  allow_hologram_targets: true
+  # Allow block targets (vanilla + custom block integrations).
+  allow_block_targets: true
+  # Allow POI targets.
+  allow_poi_targets: true
+  block_search:
+    # Max horizontal search radius (in blocks) used for block targeting.
+    radius: 64
+    # Vertical scan range from player Y (set -1 to scan full world height).
+    vertical_range: 48
+  hints:
+    # Hint profile used for elite: / elitemobs: routing.
+    elitemobs:
+      plugin: "EliteMobs"
+      metadata_keys: [ "EliteMob", "elitemob", "EliteMobs" ]
+      scoreboard_tags: [ "elitemob", "elite" ]
+      pdc_keys: [ "elitemobs:mob_tier", "elitemobs:elite_id" ]
+    # Hint profile used for modelengine: routing.
+    modelengine:
+      plugin: "ModelEngine"
+      metadata_keys: [ "modelengine", "model_id", "ModelEngine" ]
+      scoreboard_tags: [ "modelengine", "model" ]
+      pdc_keys: [ "modelengine:model", "modelengine:model_id" ]
+    # Hint profile for Denizen entities.
+    denizen:
+      plugin: "Denizen"
+      metadata_keys: [ "NPC", "denizen", "dNPC" ]
+      scoreboard_tags: [ "npc", "denizen" ]
+      pdc_keys: [ "denizen:script", "denizen:npc" ]
+    # Hint profile for ZNPCsPlus.
+    znpcsplus:
+      plugin: "ZNPCsPlus"
+      metadata_keys: [ "znpcs", "znpcsplus" ]
+      scoreboard_tags: [ "znpc", "znpcsplus" ]
+      pdc_keys: [ "znpcsplus:id" ]
+    # Hint profile for MMOCore mobs.
+    mmocore:
+      plugin: "MMOCore"
+      metadata_keys: [ "mmocore", "MMOCore" ]
+      scoreboard_tags: [ "mmocore" ]
+      pdc_keys: [ "mmocore:mob", "mmocore:mob_id" ]
+    # Hint profile for MMOItems entities.
+    mmoitems:
+      plugin: "MMOItems"
+      metadata_keys: [ "mmoitems", "MMOItems" ]
+      scoreboard_tags: [ "mmoitems" ]
+      pdc_keys: [ "mmoitems:type", "mmoitems:id" ]
+    # Hint profile for EcoBosses mobs.
+    ecobosses:
+      plugin: "EcoBosses"
+      metadata_keys: [ "ecoboss", "ecobosses", "EcoBoss" ]
+      scoreboard_tags: [ "ecoboss", "boss" ]
+      pdc_keys: [ "ecobosses:boss", "ecobosses:id", "ecoboss:id" ]
+    # Hint profile for Shopkeepers entities (fallback/meta lookup).
+    shopkeepers:
+      plugin: "Shopkeepers"
+      metadata_keys: [ "shopkeeper", "Shopkeeper" ]
+      scoreboard_tags: [ "shopkeeper", "shopkeepers" ]
+      pdc_keys: [ "shopkeepers:id" ]

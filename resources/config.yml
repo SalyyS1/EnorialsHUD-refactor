@@ -1,0 +1,117 @@
+# EnorialsHUD: self-hosted resource packs. Read docs/QUICKSTART.md.
+# Choose server.properties, resource-pack.url (one ZIP), or static/local hosting.
+# The loopback listener is intended for a reverse proxy on the same host.
+# Existing configuration is preserved on upgrade; defaults do not replace your host settings.
+generate-default-files: true
+generate-unicode-files: false
+force-sync-default-files: false
+layout:
+  default:
+  - enorialshud-livefix-layout
+  global-offset:
+    x: 55
+    y: 0
+decimal-format: '#.##'
+copy-resource-pack:
+  enabled: true
+  zip-path: EnorialsHUD/EnorialsHUD-pack.zip
+server-resource-packs:
+  enabled: true
+  max-uncompressed-mb: 256
+  max-files: 20000
+pack-build:
+  max-concurrent-builds: 1
+  debounce-ticks: 40
+resource-pack:
+  # Resolve each Java client via server-side ViaVersion. Restart after changing.
+  # Managed hosting selects one shared pack per resource profile; skins never create packs.
+  clients:
+    enabled: true
+    # Static folder hosting: list client versions to export before uploading the folder.
+    # Example: ["1.19", "1.20.6", "1.21", "26.1.2"] (native is always included).
+    prebuild: []
+  # auto: server.properties URL first, then resource-pack.url, then existing static/local hosting.
+  # plugin refuses a simultaneous server.properties sender. Restart when changing delivery.
+  delivery: auto
+  single-pack:
+    # One fixed ZIP cannot swap native bar textures without another pack.
+    hide-vanilla-bars: false
+  # Optional: upload hosting-export/generated to this static web folder. No local port is needed.
+  # Used only when no direct URL is selected. Empty keeps built-in/proxy hosting.
+  static-url: ''
+  # Direct link to server-pack/EnorialsHUD-pack.zip; auto prefers a properties URL.
+  url: ''
+  # Optional for the config URL: empty uses the exported pack's calculated SHA-1.
+  sha1: ''
+  force: false
+  prompt: Enorials HUD, minimap and spells
+  send-on-join: false
+  allow-player-url: false
+  local:
+    enabled: true
+    base-url: ''
+    host:
+      enabled: true
+      bind-host: 127.0.0.1
+      port: 25599
+  betonquest:
+    enabled: true
+avatars:
+  # Optional HUD-only fallback when the server profile has no skin.
+  # Uses the official Java account with the same name, not a launcher-only skin.
+  # Does not authenticate the player or change their UUID/world skin/permissions.
+  name-lookup:
+    enabled: false
+    offline-only: true
+    cache-minutes: 1440
+    retry-minutes: 15
+  send-on-join: true
+  refresh-on-join: false
+  send-strict-hash: true
+  allow-static-url-fallback: false
+  max-retries: 6
+  retry-delay-ticks: 40
+  glyph-width: 40
+boss-bar:
+  max: 7
+  hud-position: 2
+  color: yellow
+target-frame:
+  max-distance: 32.0
+  visible-compensation-x: -2
+upload:
+  github:
+    enabled: false
+    token: ''
+generated-resource-packs:
+  enabled: true
+  startup-timeout-seconds: 120
+  debounce-ticks: 20
+  send-on-change: true
+conversations:
+  enabled: true
+  default-visible: true
+quest-log:
+  enabled: true
+  default-visible: true
+integrations:
+  betonquest:
+    suppress-expected-version-warnings: true
+minimap-terrain-cache:
+  max-idle-mib: 4
+  idle-seconds: 5
+  build-budget-ms: 2.0
+social:
+  party-invite-popup: true
+trading:
+  enabled: true
+  # Maximum 10 blocks; a smaller radius is allowed.
+  max-distance: 10
+  request-timeout-seconds: 30
+  request-cooldown-seconds: 10
+  session-timeout-seconds: 180
+  money:
+    enabled: true
+    # Vault and an economy provider are optional; without them trading uses items.
+    decimal-places: 2
+    max-offer: '100000000'

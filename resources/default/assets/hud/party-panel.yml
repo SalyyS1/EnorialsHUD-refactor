@@ -1,0 +1,1968 @@
+party-row-small-0:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_small_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_small_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-small
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_small_health.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 11
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 11
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_small_mana.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 20
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 20
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-small-1:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_small_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_small_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-small
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_small_health.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 11
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 11
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_small_mana.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 20
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 20
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-small-2:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_small_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_small_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-small
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_small_health.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 11
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 11
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_small_mana.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 20
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 20
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-small-3:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_small_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_small_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-small
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_small_health.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 11
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 11
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_small_mana.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 20
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 20
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-small-4:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_small_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_small_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-small
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_small_health.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 11
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 11
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_small_mana.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 20
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 20
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-small-5:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_small_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_small_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-small
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_small_health.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 11
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 11
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_small_mana.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 20
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 20
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-small-6:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_small_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_small_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-small
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_small_health.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 11
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 11
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_small_mana.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 20
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 20
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-small-7:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_small_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_small_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-small
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_small_health.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 11
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 11
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_small_mana.png
+        resolution: 4
+      offset:
+        x: 24
+        y: 20
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 57
+        y: 20
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-medium-0:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_medium_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_medium_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-medium
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_medium_health.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 13
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 13
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_medium_mana.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 22
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 22
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-medium-1:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_medium_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_medium_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-medium
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_medium_health.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 13
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 13
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_medium_mana.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 22
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 22
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-medium-2:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_medium_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_medium_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-medium
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_medium_health.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 13
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 13
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_medium_mana.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 22
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 22
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-medium-3:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_medium_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_medium_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-medium
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_medium_health.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 13
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 13
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_medium_mana.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 22
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 22
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-medium-4:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_medium_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_medium_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-medium
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_medium_health.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 13
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 13
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_medium_mana.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 22
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 22
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-medium-5:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_medium_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_medium_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-medium
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_medium_health.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 13
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 13
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_medium_mana.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 22
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 22
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-medium-6:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_medium_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_medium_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-medium
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_medium_health.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 13
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 13
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_medium_mana.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 22
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 22
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-medium-7:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_medium_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_medium_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-medium
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_medium_health.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 13
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 13
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_medium_mana.png
+        resolution: 4
+      offset:
+        x: 28
+        y: 22
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 69
+        y: 22
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-large-0:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_large_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_large_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-large
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_large_health.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 15
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 15
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_large_mana.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 24
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 24
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-large-1:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_large_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_large_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-large
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_large_health.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 15
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 15
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_large_mana.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 24
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 24
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-large-2:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_large_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_large_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-large
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_large_health.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 15
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 15
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_large_mana.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 24
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 24
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-large-3:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_large_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_large_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-large
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_large_health.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 15
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 15
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_large_mana.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 24
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 24
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-large-4:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_large_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_large_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-large
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_large_health.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 15
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 15
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_large_mana.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 24
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 24
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-large-5:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_large_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_large_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-large
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_large_health.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 15
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 15
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_large_mana.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 24
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 24
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-large-6:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_large_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_large_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-large
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_large_health.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 15
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 15
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_large_mana.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 24
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 24
+        z: 4
+      scale:
+        x: 1
+        y: 1
+party-row-large-7:
+  layers:
+    frame:
+      texture:
+        path: assets/enorialshud/party_large_frame.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    frame-compact:
+      texture:
+        path: assets/enorialshud/party_large_frame_compact.png
+        resolution: 4
+      offset:
+        x: 0
+        y: 0
+        z: 1
+    head:
+      text: ''
+      font: party-avatar-large
+      offset:
+        x: 2
+        y: 11
+        z: 0
+      scale:
+        x: 1
+        y: 1
+    name:
+      text: ''
+      font: party-native
+      offset:
+        x: 0
+        y: 0
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    health:
+      texture:
+        path: assets/enorialshud/party_large_health.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 15
+        z: 2
+      function:
+        listener: health
+        increment: 1
+        orientation: horizontal
+    health-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 15
+        z: 4
+      scale:
+        x: 1
+        y: 1
+    mana:
+      texture:
+        path: assets/enorialshud/party_large_mana.png
+        resolution: 4
+      offset:
+        x: 32
+        y: 24
+        z: 2
+      function:
+        listener: resource
+        increment: 1
+        orientation: horizontal
+    mana-number:
+      text: ''
+      font: party-mono
+      offset:
+        x: 83
+        y: 24
+        z: 4
+      scale:
+        x: 1
+        y: 1

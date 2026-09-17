@@ -1,0 +1,65 @@
+party:
+  max-size: 4
+  invite-timeout-seconds: 60
+  public-broadcast:
+    enabled: true
+  disband-when-alone: false
+  votekick-timeout-seconds: 45
+shared-exp:
+  enabled: true
+  mode: DUPLICATE
+  range-check:
+    enabled: true
+    blocks: 48
+hud:
+  enabled: true
+  side: RIGHT
+  update-ticks: 20
+  show-mana: false
+  show-spells-resource: true
+  show-spells-level: false
+  show-spells-buffs: true
+  show-events-status: true
+  max-members-rendered: 4
+  hide-score-numbers: true
+  hp-bar-segments: 20
+  leader-glyph: " \uE105"
+  member-format: ''
+  bar:
+    left-cap: "\u258F"
+    right-cap: "\u2595"
+    filled: "\u25AE"
+    empty: "\u25AF"
+race:
+  placeholder: '%enorials_race%'
+  icons:
+    human: "\uE101"
+    elf: "\uE102"
+    orc: "\uE103"
+    dwarf: "\uE104"
+    dead: "\uE106"
+locator:
+  enabled: true
+  update-ticks: 10
+  actionbar: true
+  compass:
+    enabled: true
+    cycle-ticks: 40
+mana:
+  enabled: true
+  max: 100
+  regen-per-second: 2
+friends:
+  enabled: true
+  storage: SQLITE
+resource-pack:
+  enabled: false
+  required: false
+  prompt: EnorialsHUD
+  url: {}
+  fallback: {}
+effects:
+  enabled: true
+  sounds: true
+  particles: true
+  particle-count: 18

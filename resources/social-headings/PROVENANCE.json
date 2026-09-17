@@ -1,0 +1,24 @@
+{
+  "generator": "verification/social/GenerateHeadings.java",
+  "description": "Rasterized display lettering. PNGs are bundled; font files are not redistributed and servers do not require installed fonts.",
+  "sha256": {
+    "astral-party.png": "f6ab576a1ed1a042a27e6ad603bb8f156b70e4c01ace53753dbb550e496169f5",
+    "astral-request.png": "5f701a684317ec6cc29f983e315cc07ff14dfa22b28718835e66b82b5613fee1",
+    "astral-trade.png": "c7e8b83754aae545515b3383613a9a74e816298018df815da772a205b75aea1c",
+    "corsair-party.png": "b2d25252debf7561f3fdd8d3c97fe15505db405e6ddebcd9f5e734bad0c142dc",
+    "corsair-request.png": "69a35b4cdf31e6f50dbf5befbd27b55cd32bbab9235c9313b10fc5634598ce07",
+    "corsair-trade.png": "6b0784536ce6d614bf85e8fad53307498e7deb6f74a49c3f3cd79d95dfa9de82",
+    "frostbound-party.png": "a08f0aa6dffdd798c163172ea15bc038a88d82308596e98bd4e4daae411e508e",
+    "frostbound-request.png": "ec46428e9292d8abb4229f684d6117ecfab67b9d634b71357449707a449ef785",
+    "frostbound-trade.png": "2f9d5de456bbd979d6d367cee79700d15442742b1cdd5d0f560ea0efcc19af87",
+    "inferno-party.png": "aeaaadf32e60334ca4ac22f8004e9d2a148ef6d671776c9d5dbd7c9f6da3fb9c",
+    "inferno-request.png": "9b7a3093fd0c70450a71bde8b9b57401b181f7bc5852e77b49aebba5adbb9c24",
+    "inferno-trade.png": "3ab6555879bce387e43ae7ef0ad9b966b1e8ad467b0e417ed20c7a4dce3a9f0c",
+    "original-party.png": "80d009895c229f44df9de714f62b589ce124f704567e4d2b72321f6780a6e498",
+    "original-request.png": "c24cac64b125560fd1c8ae1e18cbcbdd023a76fec6520328daa35180161be85a",
+    "original-trade.png": "4c1dcf0a2d411f3e52aabe6ba687b1f919ecd7a884e628b08b31fed174d677fd",
+    "wildwood-party.png": "842fd6d3f093b275514a7005eecf3de45507b110881304fb89636483aa757384",
+    "wildwood-request.png": "9b288ce84efa2ae0ffb90e75f7a52a4637c9cf39afc3d736075f92efc560fee9",
+    "wildwood-trade.png": "642ee1c4009b45a4597bdcc9b63c5b3f19ddc8db0082bd896821f051a42379ac"
+  }
+}

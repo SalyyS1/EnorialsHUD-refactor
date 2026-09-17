@@ -1,0 +1,194 @@
+party-panel:
+  elements:
+    party-row-small-0:
+      asset: party-row-small-0
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 0
+    party-row-small-1:
+      asset: party-row-small-1
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 34
+    party-row-small-2:
+      asset: party-row-small-2
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 68
+    party-row-small-3:
+      asset: party-row-small-3
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 102
+    party-row-small-4:
+      asset: party-row-small-4
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 136
+    party-row-small-5:
+      asset: party-row-small-5
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 170
+    party-row-small-6:
+      asset: party-row-small-6
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 204
+    party-row-small-7:
+      asset: party-row-small-7
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 238
+    party-row-medium-0:
+      asset: party-row-medium-0
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 0
+    party-row-medium-1:
+      asset: party-row-medium-1
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 38
+    party-row-medium-2:
+      asset: party-row-medium-2
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 76
+    party-row-medium-3:
+      asset: party-row-medium-3
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 114
+    party-row-medium-4:
+      asset: party-row-medium-4
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 152
+    party-row-medium-5:
+      asset: party-row-medium-5
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 190
+    party-row-medium-6:
+      asset: party-row-medium-6
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 228
+    party-row-medium-7:
+      asset: party-row-medium-7
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 266
+    party-row-large-0:
+      asset: party-row-large-0
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 0
+    party-row-large-1:
+      asset: party-row-large-1
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 42
+    party-row-large-2:
+      asset: party-row-large-2
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 84
+    party-row-large-3:
+      asset: party-row-large-3
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 126
+    party-row-large-4:
+      asset: party-row-large-4
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 168
+    party-row-large-5:
+      asset: party-row-large-5
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 210
+    party-row-large-6:
+      asset: party-row-large-6
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 252
+    party-row-large-7:
+      asset: party-row-large-7
+      position:
+        x: 0
+        y: 50
+      offset:
+        x: -49
+        y: 294

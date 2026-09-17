@@ -1,0 +1,274 @@
+name: EnorialsHUD
+prefix: Enorials HUD
+main: sk.enorials.hud.EnorialsHUD
+version: '1.1.16'
+description: Enorials HUD, party invitations, player trading, friends, minimap and GPS navigation.
+provides:
+- EnorialsParty
+- EnorialsMinimap
+- EnorialsGPS
+- EnorialsAnchorHUD
+api-version: '1.19'
+load: POSTWORLD
+softdepend:
+- ViaVersion
+- ViaBackwards
+- Vault
+- PlaceholderAPI
+- ProtocolLib
+- BetonQuest
+- MythicMobs
+- Citizens
+- Sentinel
+- ModelEngine
+- EliteMobs
+- Denizen
+- ZNPCsPlus
+- MMOCore
+- MMOItems
+- EcoBosses
+- ItemsAdder
+- Oraxen
+- Nexo
+- Essentials
+- CMI
+- WorldGuard
+- Towny
+- DecentHolograms
+- Shopkeepers
+- FancyNpcs
+- MythicCrucible
+commands:
+  enohud:
+    description: Enorials HUD, minimap and party settings
+    usage: /enohud
+  gpsapi:
+    description: API command for scripts and quest plugins.
+    usage: /gpsapi <subcommand>
+permissions:
+  enorials.trade.use:
+    description: Trade items and money with other players.
+    default: false
+  enorials.trade.admin:
+    description: Review and acknowledge manually reconciled trade journals.
+    default: op
+  enorials.party.use:
+    description: Create, join and manage own party.
+    default: false
+  enorials.party.admin:
+    description: Permission bundle.
+    default: op
+    children:
+      enorials.party.use: true
+      enorials.party.hud: true
+      enorials.party.friends: true
+      enorials.party.map: true
+  enorials.menu.use:
+    description: Open the EnorialsHUD menu.
+    default: false
+  enorialshud.admin:
+    description: Compatibility alias for enorials.hud.admin.
+    default: op
+    children:
+      enorials.hud.admin: true
+  enorialshud.layout:
+    description: Choose personal HUD layouts.
+    default: false
+  enorialshud.packurl:
+    description: Manage own resource-pack preference.
+    default: false
+  enorialshud.avatarrefresh:
+    description: Refresh own portrait.
+    default: false
+  enorials.gps.use:
+    description: Enable GPS and use its display settings.
+    default: false
+  enorials.gps.track.player:
+    description: Find and track arbitrary permitted players.
+    default: false
+  enorials.gps.track.mob:
+    description: Find and track mobs.
+    default: false
+  enorials.gps.track.npc:
+    description: Find and track NPCs.
+    default: false
+  enorials.gps.track.block:
+    description: Find and track block targets.
+    default: false
+  enorials.gps.track.all:
+    description: Grants all target-type tracking permissions.
+    default: false
+    children:
+      enorials.gps.track.player: true
+      enorials.gps.track.mob: true
+      enorials.gps.track.npc: true
+      enorials.gps.track.block: true
+  enorials.gps.api:
+    description: Allows using /gpsapi automation command.
+    default: false
+  enorials.gps.admin:
+    description: Permission bundle.
+    default: op
+    children:
+      enorials.gps.use: true
+      enorials.gps.quests: true
+      enorials.gps.places: true
+      enorials.gps.coordinates: true
+      enorials.gps.party: true
+      enorials.gps.track.player: true
+      enorials.gps.track.mob: true
+      enorials.gps.track.npc: true
+      enorials.gps.track.block: true
+      enorials.gps.api: true
+  enorials.gps.role.player:
+    description: Player role bundle (base GPS access only).
+    default: false
+    children:
+      enorials.gps.use: true
+  enorials.gps.role.admin:
+    description: Admin role bundle (all tracking + API).
+    default: false
+    children:
+      enorials.gps.role.player: true
+      enorials.gps.admin: true
+  enorials.gps.role.op:
+    description: OP role bundle (same as admin, default for OPs).
+    default: op
+    children:
+      enorials.gps.role.admin: true
+  enorials.hud.use:
+    description: Show the player HUD and replace vanilla bars.
+    default: false
+  enorials.hud.target:
+    description: Show target portrait, name and health.
+    default: false
+  enorials.hud.effects:
+    description: Show custom effect icons and timers.
+    default: false
+  enorials.hud.questlog:
+    description: Use the BetonQuest quest log and its size settings.
+    default: false
+  enorials.hud.conversations:
+    description: Use custom BetonQuest dialogue windows.
+    default: false
+  enorials.party.hud:
+    description: Show the party HUD.
+    default: false
+  enorials.party.friends:
+    description: Use friend requests and friends list.
+    default: false
+  enorials.party.map:
+    description: See party member locations on the minimap.
+    default: false
+  enorials.minimap.use:
+    description: Enable and customize the minimap.
+    default: false
+  enorials.minimap.fullscreen:
+    description: Open the fullscreen map.
+    default: false
+  enorials.minimap.coordinates:
+    description: Show coordinates on the minimap.
+    default: false
+  enorials.minimap.markers.use:
+    description: Create, edit and view own minimap markers.
+    default: false
+  enorials.minimap.markers.public:
+    description: See shared minimap markers.
+    default: false
+  enorials.minimap.markers.share:
+    description: Publish own markers to other players.
+    default: false
+  enorials.minimap.markers.death:
+    description: See own death marker.
+    default: false
+  enorials.minimap.markers.unlimited:
+    description: Create or extend unlimited-distance markers; configured limits still
+      apply.
+    default: false
+  enorials.minimap.quests:
+    description: See automatic BetonQuest quest markers.
+    default: false
+  enorials.minimap.radar.hostile:
+    description: See hostile entities on the minimap.
+    default: false
+  enorials.minimap.radar.neutral:
+    description: See neutral entities on the minimap.
+    default: false
+  enorials.minimap.radar.friendly:
+    description: See friendly entities and NPCs on the minimap.
+    default: false
+  enorials.gps.quests:
+    description: Navigate to the selected quest, without arbitrary NPC searching.
+    default: false
+  enorials.gps.places:
+    description: Navigate to Places and favorites.
+    default: false
+  enorials.gps.coordinates:
+    description: Navigate to entered coordinates.
+    default: false
+  enorials.gps.party:
+    description: Navigate to own party members, without tracking arbitrary players.
+    default: false
+  enorials.minimap.radar:
+    description: Permission bundle.
+    default: false
+    children:
+      enorials.minimap.radar.hostile: true
+      enorials.minimap.radar.neutral: true
+      enorials.minimap.radar.friendly: true
+  enorials.hud.basic:
+    description: Player HUD and effects only; no target health, minimap or GPS.
+    default: false
+    children:
+      enorials.menu.use: true
+      enorials.hud.use: true
+      enorials.hud.effects: true
+      enorialshud.avatarrefresh: true
+  enorials.hud.all:
+    description: All player features, including radar and tracking; no administrative
+      commands.
+    default: false
+    children:
+      enorials.trade.use: true
+      enorials.menu.use: true
+      enorials.hud.use: true
+      enorials.hud.target: true
+      enorials.hud.effects: true
+      enorials.hud.questlog: true
+      enorials.hud.conversations: true
+      enorialshud.layout: true
+      enorialshud.avatarrefresh: true
+      enorialshud.packurl: true
+      enorials.party.use: true
+      enorials.party.hud: true
+      enorials.party.friends: true
+      enorials.party.map: true
+      enorials.minimap.use: true
+      enorials.minimap.fullscreen: true
+      enorials.minimap.coordinates: true
+      enorials.minimap.markers.use: true
+      enorials.minimap.markers.public: true
+      enorials.minimap.markers.share: true
+      enorials.minimap.markers.death: true
+      enorials.minimap.markers.unlimited: true
+      enorials.minimap.quests: true
+      enorials.minimap.radar.hostile: true
+      enorials.minimap.radar.neutral: true
+      enorials.minimap.radar.friendly: true
+      enorials.gps.use: true
+      enorials.gps.quests: true
+      enorials.gps.places: true
+      enorials.gps.coordinates: true
+      enorials.gps.party: true
+      enorials.gps.track.player: true
+      enorials.gps.track.mob: true
+      enorials.gps.track.npc: true
+      enorials.gps.track.block: true
+  enorials.hud.admin:
+    description: Full EnorialsHUD access. Granted to OPs by default.
+    default: op
+    children:
+      enorials.trade.admin: true
+      enorials.hud.all: true
+      enorials.gps.admin: true
+      enorials.party.admin: true

@@ -1,0 +1,107 @@
+# Navigation behavior, timing, effects, and routing restrictions.
+navigation:
+  # Update period in ticks (20 ticks = 1 second).
+  update_interval_ticks: 20
+  # How often to fully resolve moving targets (in real ticks).
+  # Higher value = lower CPU usage, but slightly less responsive tracking for moving targets.
+  # 20 means once per second when update_interval_ticks is 20.
+  target_resolve_interval_ticks: 20
+  # Distance in blocks considered "arrived".
+  arrive_distance: 4.0
+  # Distance used to scale BossBar progress.
+  max_distance_for_bossbar: 250.0
+  # Save active route to disk for reconnect/restart restore.
+  persist_routes: true
+  # Auto-resume saved route when player joins.
+  resume_on_join: true
+  display:
+    # Default state for showing distance in meters in the HUD text.
+    show_distance_meters: true
+    # Default state for showing high/low (vertical) target indicator in the HUD text.
+    show_vertical_indicator: true
+    # Default state for showing target name in the HUD text.
+    show_target_name: true
+    # If true, HUD uses shorter compact format.
+    compact_hud: false
+  long_route_waypoints:
+    # If true, long routes are guided via temporary waypoints.
+    enabled: true
+    # Final target distance that triggers waypoint mode.
+    long_distance_threshold: 250.0
+    # Distance of each temporary waypoint segment.
+    waypoint_step_distance: 120.0
+    # How often to recalculate waypoint (ticks).
+    recalc_interval_ticks: 40
+  target_marker:
+    # Master switch for target beacon marker.
+    enabled: true
+    # Player default state (can be changed in Options menu).
+    default_for_player: true
+    # How often marker is rendered (in navigation updates).
+    interval_updates: 2
+    # Only render marker when target is at least this far away.
+    min_distance_meters: 20.0
+    # Vertical beam height.
+    beam_height: 42.0
+    # Beam point spacing (smaller = denser beam).
+    beam_step: 2.5
+    # Beam particle type.
+    beam_particle: END_ROD
+    # Beam particles per point.
+    beam_count: 2
+    # Horizontal spread of beam particles.
+    beam_spread: 0.05
+    # Top marker particle.
+    top_particle: TOTEM
+    # Number of top particles.
+    top_count: 16
+    # Top particle spread.
+    top_spread: 0.35
+  profiling:
+    # Enable lightweight navigation timing profiler.
+    # Logs avg/max/last navigation tick cost in milliseconds.
+    enabled: false
+    # Console summary interval in server ticks.
+    log_interval_ticks: 1200
+    # Mark a sample as spike if tick cost is >= this value (ms).
+    warn_above_ms: 10.0
+    # If true, also log warnings when spikes are detected.
+    log_spikes: false
+    # Reset stats after each periodic log output.
+    reset_after_log: true
+
+# Visual and audio feedback.
+effects:
+  # Enable sounds at route start/reach.
+  sounds: true
+  # Enable particles (start/reach effects).
+  particles: true
+  # Kept for compatibility (pulse sounds are currently disabled in code).
+  pulse_sound_interval_ticks: 40
+  # Sound played when route starts.
+  start_sound: ENTITY_EXPERIENCE_ORB_PICKUP
+  # Kept for compatibility (pulse sounds are disabled).
+  pulse_sound: BLOCK_NOTE_BLOCK_PLING
+  # Sound played when route is reached.
+  reach_sound: UI_TOAST_CHALLENGE_COMPLETE
+  # Kept for compatibility (trail particles are disabled).
+  trail_particle: END_ROD
+  # Particle played when route is reached.
+  reach_particle: TOTEM
+
+# Hard restrictions for navigation routing.
+restrictions:
+  # Master switch.
+  enabled: false
+  # If non-empty, only these worlds can be used.
+  allowed_worlds: []
+  # Worlds blocked from routing.
+  denied_worlds: []
+  blocked_cuboids:
+    # Example blocked area (replace or remove).
+    sample_block:
+      world: "world"
+      # Lower corner (x,y,z).
+      min: "-20,50,-20"
+      # Upper corner (x,y,z).
+      max: "20,120,20"

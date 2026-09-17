@@ -1,0 +1,50 @@
+# Core settings: message prefix, mode toggles, GUI behavior, and favorites.
+
+# Chat/message settings.
+language:
+  # Prefix added before plugin chat messages.
+  prefix: "&6[GPS] &r"
+
+# Navigation mode toggles.
+modes:
+  # Enable ActionBar mode.
+  actionbar: true
+  # Enable BossBar mode.
+  bossbar: true
+  # Enable Compass mode.
+  compass: true
+  # If player selects disabled mode, fallback to ActionBar.
+  fallback_to_actionbar: true
+  # Player default mode: actionbar | bossbar | compass
+  default_mode: bossbar
+
+# GUI labels and visual defaults.
+gui:
+  # Master switch for /gps GUI menus.
+  # If false, /gps shows gui.disabled_message and no inventories open.
+  enabled: true
+  # Message shown when a player tries to open GUI while disabled.
+  disabled_message: "&cGPS GUI is currently disabled on this server."
+  # Main menu title.
+  main_title: "&8Enorials GPS"
+  # Mode menu title.
+  mode_title: "&8Navigation Mode"
+  # Options menu title (distance + high/low toggles).
+  options_title: "&8GPS Options"
+  # Target type menu title.
+  target_title: "&8Choose Target Type"
+  # Online player head list title (opened by shift-clicking Player target button).
+  player_list_title: "&8Online Players"
+  # POI browser title.
+  poi_title: "&8Points Of Interest"
+  # Favorites menu title.
+  favorites_title: "&8Favorite Destinations"
+  # BetonQuest route menu title.
+  quest_routes_title: "&8Quest GPS Routes"
+  # Filler material for empty GUI slots.
+  filler: BLACK_STAINED_GLASS_PANE
+
+# Player favorites settings.
+favorites:
+  # Max POIs each player can save as favorite.
+  max: 30

@@ -1,0 +1,18 @@
+player-panel:
+  elements:
+    player:
+      asset: player
+      position:
+        x: 0
+        y: 0
+      offset:
+        x: -50
+        y: 5
+    player-compact:
+      asset: player-compact
+      position:
+        x: 0
+        y: 0
+      offset:
+        x: -50
+        y: 5

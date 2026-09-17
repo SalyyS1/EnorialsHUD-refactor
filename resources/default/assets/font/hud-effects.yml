@@ -1,0 +1,317 @@
+hud-effect-icons:
+  providers:
+    enorials_burning:
+      type: bitmap
+      texture: assets/enorialshud/effects/enorials_burning.png
+      height: 11
+      chars:
+      - 
+    enorials_drowning:
+      type: bitmap
+      texture: assets/enorialshud/effects/enorials_drowning.png
+      height: 11
+      chars:
+      - 
+    enorials_frozen:
+      type: bitmap
+      texture: assets/enorialshud/effects/enorials_frozen.png
+      height: 11
+      chars:
+      - 
+    minecraft_absorption:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_absorption.png
+      height: 11
+      chars:
+      - 
+    minecraft_bad_omen:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_bad_omen.png
+      height: 11
+      chars:
+      - 
+    minecraft_blindness:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_blindness.png
+      height: 11
+      chars:
+      - 
+    minecraft_breath_of_the_nautilus:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_breath_of_the_nautilus.png
+      height: 11
+      chars:
+      - 
+    minecraft_conduit_power:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_conduit_power.png
+      height: 11
+      chars:
+      - 
+    minecraft_darkness:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_darkness.png
+      height: 11
+      chars:
+      - 
+    minecraft_dolphins_grace:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_dolphins_grace.png
+      height: 11
+      chars:
+      - 
+    minecraft_fire_resistance:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_fire_resistance.png
+      height: 11
+      chars:
+      - 
+    minecraft_glowing:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_glowing.png
+      height: 11
+      chars:
+      - 
+    minecraft_haste:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_haste.png
+      height: 11
+      chars:
+      - 
+    minecraft_health_boost:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_health_boost.png
+      height: 11
+      chars:
+      - 
+    minecraft_hero_of_the_village:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_hero_of_the_village.png
+      height: 11
+      chars:
+      - 
+    minecraft_hunger:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_hunger.png
+      height: 11
+      chars:
+      - 
+    minecraft_infested:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_infested.png
+      height: 11
+      chars:
+      - 
+    minecraft_instant_damage:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_instant_damage.png
+      height: 11
+      chars:
+      - 
+    minecraft_instant_health:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_instant_health.png
+      height: 11
+      chars:
+      - 
+    minecraft_invisibility:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_invisibility.png
+      height: 11
+      chars:
+      - 
+    minecraft_jump_boost:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_jump_boost.png
+      height: 11
+      chars:
+      - 
+    minecraft_levitation:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_levitation.png
+      height: 11
+      chars:
+      - 
+    minecraft_luck:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_luck.png
+      height: 11
+      chars:
+      - 
+    minecraft_mining_fatigue:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_mining_fatigue.png
+      height: 11
+      chars:
+      - 
+    minecraft_nausea:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_nausea.png
+      height: 11
+      chars:
+      - 
+    minecraft_night_vision:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_night_vision.png
+      height: 11
+      chars:
+      - 
+    minecraft_oozing:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_oozing.png
+      height: 11
+      chars:
+      - 
+    minecraft_poison:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_poison.png
+      height: 11
+      chars:
+      - 
+    minecraft_raid_omen:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_raid_omen.png
+      height: 11
+      chars:
+      - 
+    minecraft_regeneration:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_regeneration.png
+      height: 11
+      chars:
+      - 
+    minecraft_resistance:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_resistance.png
+      height: 11
+      chars:
+      - 
+    minecraft_saturation:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_saturation.png
+      height: 11
+      chars:
+      - 
+    minecraft_slow_falling:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_slow_falling.png
+      height: 11
+      chars:
+      - 
+    minecraft_slowness:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_slowness.png
+      height: 11
+      chars:
+      - 
+    minecraft_speed:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_speed.png
+      height: 11
+      chars:
+      - 
+    minecraft_strength:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_strength.png
+      height: 11
+      chars:
+      - 
+    minecraft_trial_omen:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_trial_omen.png
+      height: 11
+      chars:
+      - 
+    minecraft_unluck:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_unluck.png
+      height: 11
+      chars:
+      - 
+    minecraft_water_breathing:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_water_breathing.png
+      height: 11
+      chars:
+      - 
+    minecraft_weakness:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_weakness.png
+      height: 11
+      chars:
+      - 
+    minecraft_weaving:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_weaving.png
+      height: 11
+      chars:
+      - 
+    minecraft_wind_charged:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_wind_charged.png
+      height: 11
+      chars:
+      - 
+    minecraft_wither:
+      type: bitmap
+      texture: assets/enorialshud/effects/minecraft_wither.png
+      height: 11
+      chars:
+      - 
+    buff:
+      type: bitmap
+      texture: assets/enorialshud/effect_buff_frame.png
+      height: 11
+      chars:
+      - 
+    debuff:
+      type: bitmap
+      texture: assets/enorialshud/effect_debuff_frame.png
+      height: 11
+      chars:
+      - 
+hud-effect-timers:
+  providers:
+    digits:
+      type: bitmap
+      texture: assets/enorialshud/effect_digits.png
+      height: 6
+      chars:
+      - 0123456789smh∞
+    digits_3:
+      type: bitmap
+      texture: assets/enorialshud/effect_digits_3.png
+      height: 6
+      chars:
+      - 
+    digits_45:
+      type: bitmap
+      texture: assets/enorialshud/effect_digits_45.png
+      height: 6
+      chars:
+      - 
+    digits_6:
+      type: bitmap
+      texture: assets/enorialshud/effect_digits_6.png
+      height: 6
+      chars:
+      - 
+  advances:
+    : 0.1
+    : 0.2
+    : 0.3
+    : 0.4
+    : 0.5
+    : 0.6
+    : 0.7
+    : 0.8
+    : 0.9
+    : -0.1
+    : -0.2
+    : -0.3
+    : -0.4
+    : -0.5
+    : -0.6
+    : -0.7
+    : -0.8
+    : -0.9

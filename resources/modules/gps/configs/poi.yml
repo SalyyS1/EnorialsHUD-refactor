@@ -1,0 +1,9 @@
+# Public destinations. Administrators can use /enohud gps place add <id> [display name].
+poi:
+  enabled: true
+  list_title: Places
+  points:
+    spawn:
+      display_name: '&aSpawn'
+      # Actual spawn of the server's first overworld; no fixed coordinates or permissions.
+      spawn: true

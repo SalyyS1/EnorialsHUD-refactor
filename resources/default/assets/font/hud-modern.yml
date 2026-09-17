@@ -1,0 +1,121 @@
+hud-modern-mono:
+  providers:
+    digits:
+      type: bitmap
+      texture: assets/enorialshud/party_digits.png
+      height: 8
+      chars:
+      - 0123456789/smh
+  advances:
+    : 0.5
+    : -0.5
+party-native:
+  providers:
+    space:
+      type: space
+      advances:
+        ' ': 4
+    letters:
+      type: bitmap
+      texture: assets/enorialshud/menu_native.png
+      height: 6
+      chars: &id001
+      - "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+      - "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+      - ' !"#$%&''()*+,-./'
+      - 0123456789:;<=>?
+      - '@ABCDEFGHIJKLMNO'
+      - PQRSTUVWXYZ[\]^_
+      - '`abcdefghijklmno'
+      - "pqrstuvwxyz{|}~\0"
+      - "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+      - "\0\0\0\0\0\0\0\0\0\0\0\0£\0\0ƒ"
+      - "\0\0\0\0\0\0ªº\0\0¬\0\0\0«»"
+      - ░▒▓│┤╡╢╖╕╣║╗╝╜╛┐
+      - └┴┬├─┼╞╟╚╔╩╦╠═╬╧
+      - ╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀
+      - "\0\0\0\0\0\0\0\0\0\0\0\0\0∅∈\0"
+      - "≡±≥≤⌠⌡÷≈°∙\0√ⁿ²■\0"
+party-level:
+  providers:
+    space:
+      type: space
+      advances:
+        ' ': 4
+    letters:
+      type: bitmap
+      texture: assets/enorialshud/menu_native.png
+      height: 6
+      chars: *id001
+player-avatar:
+  providers:
+    head:
+      type: bitmap
+      texture: assets/enorialshud/avatars/heads/portrait.png
+      height: 55
+      chars:
+      - 
+party-mono:
+  providers:
+    digits:
+      type: bitmap
+      texture: assets/enorialshud/party_digits.png
+      height: 6
+      chars:
+      - 0123456789/smh
+  advances:
+    : 0.5
+    : -0.5
+hud-secondary-mono:
+  providers:
+    digits:
+      type: bitmap
+      texture: assets/enorialshud/party_digits.png
+      height: 7
+      chars:
+      - 0123456789/smh
+  advances:
+    : 0.5
+    : -0.5
+party-avatar-small:
+  providers:
+    self:
+      type: bitmap
+      texture: assets/enorialshud/avatars/heads/avatar.png
+      height: 16
+      chars:
+      - 
+    steve:
+      type: bitmap
+      texture: assets/enorialshud/party_steve.png
+      height: 16
+      chars:
+      - 
+party-avatar-medium:
+  providers:
+    self:
+      type: bitmap
+      texture: assets/enorialshud/avatars/heads/avatar.png
+      height: 20
+      chars:
+      - 
+    steve:
+      type: bitmap
+      texture: assets/enorialshud/party_steve.png
+      height: 20
+      chars:
+      - 
+party-avatar-large:
+  providers:
+    self:
+      type: bitmap
+      texture: assets/enorialshud/avatars/heads/avatar.png
+      height: 24
+      chars:
+      - 
+    steve:
+      type: bitmap
+      texture: assets/enorialshud/party_steve.png
+      height: 24
+      chars:
+      - 

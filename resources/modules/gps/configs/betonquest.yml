@@ -1,0 +1,34 @@
+# Optional route hooks. Quest discovery works independently of auto_routes.
+betonquest:
+  enabled: true
+  command_templates:
+    event: bq action {player} {value}
+    objective: bq objective add {player} {value}
+    tag: bq tag add {player} {value}
+    condition: bq condition {player} {value}
+  hooks:
+    start_event: ''
+    stop_event: ''
+    reach_event: ''
+    mode_change_event: ''
+  extra_event_hooks:
+    start: []
+    stop: []
+    reach: []
+    mode_change: []
+  objective_hooks:
+    start: []
+    stop: []
+    reach: []
+    mode_change: []
+  tag_hooks:
+    start: []
+    stop: []
+    reach: []
+    mode_change: []
+  condition_hooks:
+    start: []
+    stop: []
+    reach: []
+    mode_change: []
+  auto_routes: {}

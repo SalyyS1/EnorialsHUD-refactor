@@ -1,0 +1,74 @@
+# BetonQuest item IDs used in npc_holograms.lines, e.g. "item:questAvailableIcon".
+# These are NOT the names of the npc_holograms entries or the NPCs.
+# HUD maps your IDs to its existing minimap icons; no resource-pack rebuild is needed.
+# The file is reread automatically about every 10 seconds while BQ integration is active.
+#
+# Each state accepts one ID or a list of aliases. Replace the lists with your IDs.
+# Omitted states keep their bundled defaults. An empty list [] disables matching for that state.
+# Matching is exact (case-insensitive), never a substring or wildcard search.
+# A bare ID matches the same local ID in any package; "MyPackage>my_id" limits an alias
+# to that package (also for a local reference in that package) and takes precedence over a bare ID.
+# The optional "item:" prefix is accepted in aliases too.
+# Do not assign the same ID to different states: conflicting aliases are ignored with a warning.
+# Existing BetonQuest conditions still control who sees the marker.
+npc-sources:
+  # BQ NPC selectors allowed to supply quest markers. Choose all plugins you use.
+  # Built-in BQ 3.2 selectors: Citizens, FancyNpcs, MythicMobs, ZNPCsPlus.
+  # Example: [Citizens, FancyNpcs, MythicMobs]. [] disables NPC-derived markers.
+  # Custom selectors work when an addon registers them with BQ's NPC API.
+  # The plugin AND its BetonQuest integration must be enabled; listing a name
+  # here does not install an integration or guess NPCs from their display names.
+  providers: [Citizens]
+  # Compatibility for old holograms with bare numeric Citizens IDs and NO BQ
+  # NPC definition. A declared BQ ID always wins, including numeric aliases.
+  # Set false for strictly BQ-managed NPCs (recommended for new quest packs).
+  legacy-citizens-ids: true
+
+# Define NPCs in your BetonQuest package, for example:
+# npcs:
+#   librarian: citizens 85
+# npc_holograms:
+#   book_offer:
+#     lines: ["item:quest_marker_available"]
+#     npcs: librarian
+#     conditions: "!book_started,!book_done"
+# Named, numeric and package-qualified BQ NPC references are supported.
+# BQ supplies each player's visible NPCs and their current/stored locations.
+# Multiple NPCs selected by one definition are supported too.
+
+marker-items:
+  # Gold !: a quest is available to accept.
+  available:
+    - quest_marker_available
+    - quest_marker_available_main
+  # Blue !: a daily quest is available to accept.
+  daily:
+    - daily_marker_available
+  # Grey ?: accepted but not ready to turn in.
+  incomplete:
+    - quest_marker_incomplete
+    - quest_marker_incomplete_main
+    - quest_marker_unfinished
+    - quest_marker_unfinished_main
+    - daily_marker_unfinished
+    - daily_marker_incomplete
+  # Gold ?: objective completed and ready to turn in.
+  complete:
+    - quest_marker_complete
+    - quest_marker_complete_main
+    - quest_marker_finished
+    - quest_marker_finished_main
+    - daily_marker_finished
+    - daily_marker_complete
+  # Unavailable markers are hidden on the minimap.
+  unavailable:
+    - quest_marker_future
+    - quest_marker_future_main
+    - quest_marker_unavailable
+    - quest_marker_unavailable_main
+    - daily_marker_unavailable
+    - daily_marker_future
+  # Optional red ! item aliases; shown only for NPCs belonging to the selected GPS quest.
+  # The selected GPS destination works independently of this alias list.
+  # Other quests' incomplete/complete NPCs remain local markers, without edge pins.
+  active: []
