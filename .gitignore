@@ -44,3 +44,6 @@ credentials.*
 
 # AgentKit local index
 .agentkit/*.db
+
+# Local Gradle cache
+.gradle-home/
