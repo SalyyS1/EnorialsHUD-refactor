@@ -19,6 +19,9 @@ dependencies {
     // ===== Server-provided (never bundled) =====
     // Paper API provides Bukkit, Adventure and Brigadier at runtime.
     compileOnly("io.papermc.paper:paper-api:${providers.gradleProperty("paperApiVersion").get()}")
+    // The selected Paper 1.21.11 server JAR exposes CraftBukkit/NMS/Netty
+    // internals used by this legacy plugin. It is compile-only and never shaded.
+    compileOnly(files(providers.gradleProperty("paperServerJar").get()))
 
     // ===== Bundled at runtime =====
     // SQLite JDBC: the original JAR embedded this library. Native binaries are
