@@ -57,7 +57,6 @@ import sk.enorials.hud.betonquest.HudQuestLog;
 import sk.enorials.hud.betonquest.QuestMarkerObjective;
 import sk.enorials.hud.party.PartyMapTracker;
 import sk.enorials.partyhud.party.Party;
-import sk.enorials.spells.api.EnorialsSpellsApi;
 
 public final class HudBetonQuest
 implements AutoCloseable {
@@ -387,40 +386,12 @@ implements AutoCloseable {
         private ResourceActions() {
         }
 
-        private static EnorialsSpellsApi api() throws QuestException {
-            if (!Bukkit.getPluginManager().isPluginEnabled("EnorialsSpells")) {
-                throw new QuestException("This action needs EnorialsSpells");
-            }
-            EnorialsSpellsApi enorialsSpellsApi = (EnorialsSpellsApi)Bukkit.getServicesManager().load(EnorialsSpellsApi.class);
-            if (enorialsSpellsApi == null) {
-                throw new QuestException("Spells resource API unavailable");
-            }
-            return enorialsSpellsApi;
+        static void resource(Player player, String operation, String resource, double amount) throws QuestException {
+            throw new QuestException("EnorialsSpells integration is unavailable in this build");
         }
 
-        static void resource(Player player, String string, String string2, double d) throws QuestException {
-            if (!Double.isFinite(d)) {
-                throw new QuestException("Resource amount must be finite");
-            }
-            if (string.equals("set")) {
-                ResourceActions.api().setResource(player, string2, d);
-            } else {
-                ResourceActions.api().addResource(player, string2, d);
-            }
-        }
-
-        static void stat(Player player, String string, Number number) throws QuestException {
-            double d = number.doubleValue();
-            if (!Double.isFinite(d) || d != Math.rint(d) || d < 0.0 || d > 100000.0) {
-                throw new QuestException("Stat value must be an integer in 0..100000");
-            }
-            EnorialsSpellsApi enorialsSpellsApi = ResourceActions.api();
-            EnorialsSpellsApi.Stats stats = enorialsSpellsApi.getStats(player);
-            int n = (int)d;
-            if (!Set.of("strength", "agility", "mana-control", "stealth", "nature").contains(string)) {
-                throw new QuestException("Unknown Spells stat");
-            }
-            enorialsSpellsApi.setStats(player, new EnorialsSpellsApi.Stats(string.equals("strength") ? n : stats.strength(), string.equals("agility") ? n : stats.agility(), string.equals("mana-control") ? n : stats.manaControl(), string.equals("stealth") ? n : stats.stealth(), string.equals("nature") ? n : stats.nature()));
+        static void stat(Player player, String stat, Number number) throws QuestException {
+            throw new QuestException("EnorialsSpells integration is unavailable in this build");
         }
     }
 }
