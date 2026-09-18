@@ -1,18 +1,9 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  org.bukkit.configuration.ConfigurationSection
- *  org.bukkit.configuration.InvalidConfigurationException
- *  org.bukkit.configuration.file.YamlConfiguration
- */
 package sk.enorials.minimap.quest;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,7 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.SequencedCollection;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
@@ -30,239 +20,231 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import sk.enorials.gps.EnorialsGpsPlugin;
-import sk.enorials.minimap.quest.QuestMarkerState;
 
 public final class QuestMarkerMappings {
-    public static final String RESOURCE = "configs/quest-markers.yml";
-    private final Map<String, QuestMarkerState> states;
-    private final Set<String> ambiguous;
-    private NpcSources npcSources = new NpcSources(Set.of("citizens"), true);
+   public static final String RESOURCE = "configs/quest-markers.yml";
+   private final Map<String, QuestMarkerState> states;
+   private final Set<String> ambiguous;
+   private QuestMarkerMappings.NpcSources npcSources = new QuestMarkerMappings.NpcSources(Set.of("citizens"), true);
 
-    public NpcSources npcSources() {
-        return this.npcSources;
-    }
+   public QuestMarkerMappings.NpcSources npcSources() {
+      return this.npcSources;
+   }
 
-    private QuestMarkerMappings(Map<String, QuestMarkerState> map, Set<String> set) {
-        this.states = Map.copyOf(map);
-        this.ambiguous = Set.copyOf(set);
-    }
+   private QuestMarkerMappings(Map<String, QuestMarkerState> var1, Set<String> var2) {
+      this.states = Map.copyOf(var1);
+      this.ambiguous = Set.copyOf(var2);
+   }
 
-    public static QuestMarkerMappings defaults() {
-        return Defaults.MAPPING;
-    }
+   public static QuestMarkerMappings defaults() {
+      return QuestMarkerMappings.Defaults.MAPPING;
+   }
 
-    public static QuestMarkerMappings fromConfig(YamlConfiguration yamlConfiguration, Consumer<String> consumer) {
-        Object object4;
-        List list;
-        SequencedCollection<String> sequencedCollection;
-        Object object2;
-        if (yamlConfiguration.contains("marker-items") && !yamlConfiguration.isConfigurationSection("marker-items")) {
-            throw new IllegalArgumentException("marker-items must be a section of state names and item ID lists");
-        }
-        QuestMarkerMappings questMarkerMappings = QuestMarkerMappings.compile(yamlConfiguration.getConfigurationSection("marker-items"), Defaults.CONFIG.getConfigurationSection("marker-items"), consumer);
-        if (yamlConfiguration.contains("npc-sources") && !yamlConfiguration.isConfigurationSection("npc-sources")) {
-            throw new IllegalArgumentException("npc-sources must be a section");
-        }
-        Object object3 = yamlConfiguration.get("npc-sources.providers", Defaults.CONFIG.get("npc-sources.providers"));
-        if (object3 instanceof String) {
-            object2 = (String)object3;
-            v0 = List.of(object2);
-        } else if (object3 instanceof List) {
-            sequencedCollection = (List)object3;
-            v0 = sequencedCollection;
-        } else {
-            v0 = list = null;
-        }
-        if (list == null) {
-            throw new IllegalArgumentException("npc-sources.providers must be a list of BetonQuest NPC selector names");
-        }
-        sequencedCollection = new LinkedHashSet();
-        for (Object object4 : list) {
-            String string;
-            if (!(object4 instanceof String) || !(string = (String)object4).trim().matches("[a-zA-Z0-9_:-]+")) {
-                throw new IllegalArgumentException("Invalid NPC provider: " + String.valueOf(object4));
-            }
-            sequencedCollection.add(string.trim().toLowerCase(Locale.ROOT));
-        }
-        object2 = yamlConfiguration.get("npc-sources.legacy-citizens-ids", Defaults.CONFIG.get("npc-sources.legacy-citizens-ids"));
-        if (!(object2 instanceof Boolean)) {
-            throw new IllegalArgumentException("npc-sources.legacy-citizens-ids must be true or false");
-        }
-        object4 = (Boolean)object2;
-        questMarkerMappings.npcSources = new NpcSources((Set<String>)((Object)sequencedCollection), (Boolean)object4);
-        return questMarkerMappings;
-    }
+   public static QuestMarkerMappings fromConfig(YamlConfiguration var0, Consumer<String> var1) {
+      if (var0.contains("marker-items") && !var0.isConfigurationSection("marker-items")) {
+         throw new IllegalArgumentException("marker-items must be a section of state names and item ID lists");
+      }
 
-    private static QuestMarkerMappings compile(ConfigurationSection configurationSection, ConfigurationSection configurationSection2, Consumer<String> consumer) {
-        LinkedHashMap<String, QuestMarkerState> linkedHashMap = new LinkedHashMap<String, QuestMarkerState>();
-        HashSet<String> hashSet = new HashSet<String>();
-        HashSet<String> hashSet2 = new HashSet<String>();
-        for (QuestMarkerState questMarkerState : QuestMarkerState.values()) {
-            List list;
-            Object object;
-            String string = questMarkerState.name().toLowerCase(Locale.ROOT);
-            hashSet2.add(string);
-            Object object2 = configurationSection != null && configurationSection.contains(string) ? configurationSection.get(string) : (object = configurationSection2 == null ? null : configurationSection2.get(string));
-            if (object == null) continue;
-            if (object instanceof String) {
-                String string2 = (String)object;
-                list = List.of(string2);
-            } else if (object instanceof List) {
-                List list2;
-                list = list2 = (List)object;
+      QuestMarkerMappings var2 = compile(
+         var0.getConfigurationSection("marker-items"), QuestMarkerMappings.Defaults.CONFIG.getConfigurationSection("marker-items"), var1
+      );
+      if (var0.contains("npc-sources") && !var0.isConfigurationSection("npc-sources")) {
+         throw new IllegalArgumentException("npc-sources must be a section");
+      }
+
+      Object var3 = var0.get("npc-sources.providers", QuestMarkerMappings.Defaults.CONFIG.get("npc-sources.providers"));
+      List var4 = var3 instanceof String var6 ? List.of(var6) : (var3 instanceof List var5 ? var5 : null);
+      if (var4 == null) {
+         throw new IllegalArgumentException("npc-sources.providers must be a list of BetonQuest NPC selector names");
+      }
+
+      LinkedHashSet var9 = new LinkedHashSet();
+
+      for (Object var7 : var4) {
+         if (!(var7 instanceof String var8) || !var8.trim().matches("[a-zA-Z0-9_:-]+")) {
+            throw new IllegalArgumentException("Invalid NPC provider: " + var7);
+         }
+
+         var9.add(var8.trim().toLowerCase(Locale.ROOT));
+      }
+
+      if (var0.get("npc-sources.legacy-citizens-ids", QuestMarkerMappings.Defaults.CONFIG.get("npc-sources.legacy-citizens-ids")) instanceof Boolean var12) {
+         var2.npcSources = new QuestMarkerMappings.NpcSources(var9, var12);
+         return var2;
+      } else {
+         throw new IllegalArgumentException("npc-sources.legacy-citizens-ids must be true or false");
+      }
+   }
+
+   private static QuestMarkerMappings compile(ConfigurationSection var0, ConfigurationSection var1, Consumer<String> var2) {
+      LinkedHashMap var3 = new LinkedHashMap();
+      HashSet var4 = new HashSet();
+      HashSet var5 = new HashSet();
+
+      for (QuestMarkerState var9 : QuestMarkerState.values()) {
+         String var10 = var9.name().toLowerCase(Locale.ROOT);
+         var5.add(var10);
+         Object var11 = var0 != null && var0.contains(var10) ? var0.get(var10) : (var1 == null ? null : var1.get(var10));
+         if (var11 != null) {
+            List var12;
+            if (var11 instanceof String var14) {
+               var12 = List.of(var14);
             } else {
-                consumer.accept("marker-items." + string + " must be an item ID or a list; this state mapping is ignored");
-                continue;
+               if (!(var11 instanceof List var13)) {
+                  var2.accept("marker-items." + var10 + " must be an item ID or a list; this state mapping is ignored");
+                  continue;
+               }
+
+               var12 = var13;
             }
-            for (Object e : list) {
-                QuestMarkerState questMarkerState2;
-                if (!(e instanceof String)) {
-                    consumer.accept("marker-items." + string + " contains a non-text item ID; entry ignored");
-                    continue;
-                }
-                String string3 = (String)e;
-                String string4 = QuestMarkerMappings.normalize(string3);
-                if (string4.isEmpty() || string4.chars().anyMatch(Character::isWhitespace) || string4.endsWith(">")) {
-                    consumer.accept("Invalid item ID in marker-items." + string + ": '" + string3 + "'; entry ignored");
-                    continue;
-                }
-                if (hashSet.contains(string4) || (questMarkerState2 = linkedHashMap.putIfAbsent(string4, questMarkerState)) == null || questMarkerState2 == questMarkerState) continue;
-                linkedHashMap.remove(string4);
-                hashSet.add(string4);
-                consumer.accept("Item ID '" + string4 + " is assigned to both " + questMarkerState2.name().toLowerCase(Locale.ROOT) + " and " + string + "; ambiguous ID ignored until corrected");
+
+            for (Object var15 : var12) {
+               if (var15 instanceof String var16) {
+                  String var17 = normalize(var16);
+                  if (var17.isEmpty() || var17.chars().anyMatch(Character::isWhitespace) || var17.endsWith(">")) {
+                     var2.accept("Invalid item ID in marker-items." + var10 + ": '" + var16 + "'; entry ignored");
+                  } else if (!var4.contains(var17)) {
+                     QuestMarkerState var18 = var3.putIfAbsent(var17, var9);
+                     if (var18 != null && var18 != var9) {
+                        var3.remove(var17);
+                        var4.add(var17);
+                        var2.accept(
+                           "Item ID '"
+                              + var17
+                              + " is assigned to both "
+                              + var18.name().toLowerCase(Locale.ROOT)
+                              + " and "
+                              + var10
+                              + "; ambiguous ID ignored until corrected"
+                        );
+                     }
+                  }
+               } else {
+                  var2.accept("marker-items." + var10 + " contains a non-text item ID; entry ignored");
+               }
             }
-        }
-        if (configurationSection != null) {
-            for (String string : configurationSection.getKeys(false)) {
-                if (hashSet2.contains(string)) continue;
-                consumer.accept("Unknown quest marker state '" + string + "'; use " + String.valueOf(new TreeSet(hashSet2)));
+         }
+      }
+
+      if (var0 != null) {
+         for (String var20 : var0.getKeys(false)) {
+            if (!var5.contains(var20)) {
+               var2.accept("Unknown quest marker state '" + var20 + "'; use " + new TreeSet(var5));
             }
-        }
-        return new QuestMarkerMappings(linkedHashMap, hashSet);
-    }
+         }
+      }
 
-    private static String normalize(String string) {
-        String string2 = string.trim().toLowerCase(Locale.ROOT);
-        return string2.startsWith("item:") ? string2.substring(5).trim() : string2;
-    }
+      return new QuestMarkerMappings(var3, var4);
+   }
 
-    public QuestMarkerState fromLines(List<String> list) {
-        return this.fromLines(list, null);
-    }
+   private static String normalize(String var0) {
+      String var1 = var0.trim().toLowerCase(Locale.ROOT);
+      return var1.startsWith("item:") ? var1.substring(5).trim() : var1;
+   }
 
-    public QuestMarkerState fromLines(List<String> list, String string) {
-        for (String string2 : list) {
-            if (string2 == null || !string2.trim().regionMatches(true, 0, "item:", 0, 5)) continue;
-            Object object = QuestMarkerMappings.normalize(string2);
-            if (((String)object).indexOf(62) < 0 && string != null && !string.isBlank()) {
-                object = QuestMarkerMappings.normalize(string) + ">" + (String)object;
+   public QuestMarkerState fromLines(List<String> var1) {
+      return this.fromLines(var1, null);
+   }
+
+   public QuestMarkerState fromLines(List<String> var1, String var2) {
+      for (String var4 : var1) {
+         if (var4 != null && var4.trim().regionMatches(true, 0, "item:", 0, 5)) {
+            String var5 = normalize(var4);
+            if (var5.indexOf(62) < 0 && var2 != null && !var2.isBlank()) {
+               var5 = normalize(var2) + ">" + var5;
             }
-            if (this.ambiguous.contains(object)) continue;
-            QuestMarkerState questMarkerState = this.states.get(object);
-            if (questMarkerState == null && ((String)object).lastIndexOf(62) >= 0) {
-                questMarkerState = this.states.get(((String)object).substring(((String)object).lastIndexOf(62) + 1));
+
+            if (!this.ambiguous.contains(var5)) {
+               QuestMarkerState var6 = this.states.get(var5);
+               if (var6 == null && var5.lastIndexOf(62) >= 0) {
+                  var6 = this.states.get(var5.substring(var5.lastIndexOf(62) + 1));
+               }
+
+               if (var6 != null) {
+                  return var6;
+               }
             }
-            if (questMarkerState == null) continue;
-            return questMarkerState;
-        }
-        return null;
-    }
+         }
+      }
 
-    public record NpcSources(Set<String> providers, boolean legacyCitizensIds) {
-        public NpcSources {
-            set = Set.copyOf(set);
-        }
+      return null;
+   }
 
-        public boolean allows(String string) {
-            String string2 = string.toLowerCase(Locale.ROOT);
-            return this.providers.contains(string2) || string2.startsWith("betonquest:") && this.providers.contains(string2.substring(11));
-        }
-    }
+   private static final class Defaults {
+      static final YamlConfiguration CONFIG = read();
+      static final QuestMarkerMappings MAPPING = QuestMarkerMappings.compile(CONFIG.getConfigurationSection("marker-items"), null, var0 -> {
+         throw new IllegalStateException("Invalid bundled quest marker mapping: " + var0);
+      });
 
-    private static final class Defaults {
-        static final YamlConfiguration CONFIG = Defaults.read();
-        static final QuestMarkerMappings MAPPING = QuestMarkerMappings.compile(CONFIG.getConfigurationSection("marker-items"), null, string -> {
-            throw new IllegalStateException("Invalid bundled quest marker mapping: " + string);
-        });
-
-        private Defaults() {
-        }
-
-        private static YamlConfiguration read() {
-            YamlConfiguration yamlConfiguration;
-            block9: {
-                InputStream inputStream = QuestMarkerMappings.class.getClassLoader().getResourceAsStream("modules/gps/configs/quest-markers.yml");
-                try {
-                    if (inputStream == null) {
-                        throw new IOException("Missing quest marker defaults");
-                    }
-                    YamlConfiguration yamlConfiguration2 = new YamlConfiguration();
-                    yamlConfiguration2.loadFromString(new String(inputStream.readAllBytes(), StandardCharsets.UTF_8));
-                    yamlConfiguration = yamlConfiguration2;
-                    if (inputStream == null) break block9;
-                }
-                catch (Throwable throwable) {
-                    try {
-                        if (inputStream != null) {
-                            try {
-                                inputStream.close();
-                            }
-                            catch (Throwable throwable2) {
-                                throwable.addSuppressed(throwable2);
-                            }
-                        }
-                        throw throwable;
-                    }
-                    catch (IOException | InvalidConfigurationException throwable3) {
-                        throw new IllegalStateException(throwable3);
-                    }
-                }
-                inputStream.close();
+      private static YamlConfiguration read() {
+         try (InputStream var0 = QuestMarkerMappings.class.getClassLoader().getResourceAsStream("modules/gps/configs/quest-markers.yml")) {
+            if (var0 == null) {
+               throw new IOException("Missing quest marker defaults");
             }
-            return yamlConfiguration;
-        }
-    }
 
-    public static final class Store {
-        private final EnorialsGpsPlugin plugin;
-        private final Path file;
-        private byte[] lastRead;
-        private String lastIoError;
-        private QuestMarkerMappings current = QuestMarkerMappings.defaults();
+            YamlConfiguration var1 = new YamlConfiguration();
+            var1.loadFromString(new String(var0.readAllBytes(), StandardCharsets.UTF_8));
+            return var1;
+         } catch (IOException | InvalidConfigurationException var5) {
+            throw new IllegalStateException(var5);
+         }
+      }
+   }
 
-        public Store(EnorialsGpsPlugin enorialsGpsPlugin) {
-            this.plugin = enorialsGpsPlugin;
-            this.file = enorialsGpsPlugin.getDataFolder().toPath().resolve(QuestMarkerMappings.RESOURCE);
-            this.reloadIfChanged();
-        }
+   public record NpcSources(Set<String> providers, boolean legacyCitizensIds) {
+      public NpcSources(Set<String> providers, boolean legacyCitizensIds) {
+         providers = Set.copyOf(providers);
+         this.providers = providers;
+         this.legacyCitizensIds = legacyCitizensIds;
+      }
 
-        public QuestMarkerMappings reloadIfChanged() {
-            try {
-                if (!Files.exists(this.file, new LinkOption[0])) {
-                    this.plugin.saveResource(QuestMarkerMappings.RESOURCE, false);
-                }
-                byte[] byArray = Files.readAllBytes(this.file);
-                this.lastIoError = null;
-                if (Arrays.equals(this.lastRead, byArray)) {
-                    return this.current;
-                }
-                this.lastRead = byArray;
-                YamlConfiguration yamlConfiguration = new YamlConfiguration();
-                yamlConfiguration.loadFromString(new String(byArray, StandardCharsets.UTF_8).replaceFirst("^\ufeff", ""));
-                this.current = QuestMarkerMappings.fromConfig(yamlConfiguration, string -> this.plugin.getLogger().warning("Quest marker config: " + string));
+      public boolean allows(String var1) {
+         String var2 = var1.toLowerCase(Locale.ROOT);
+         return this.providers.contains(var2) || var2.startsWith("betonquest:") && this.providers.contains(var2.substring(11));
+      }
+   }
+
+   public static final class Store {
+      private final EnorialsGpsPlugin plugin;
+      private final Path file;
+      private byte[] lastRead;
+      private String lastIoError;
+      private QuestMarkerMappings current = QuestMarkerMappings.defaults();
+
+      public Store(EnorialsGpsPlugin var1) {
+         this.plugin = var1;
+         this.file = var1.getDataFolder().toPath().resolve("configs/quest-markers.yml");
+         this.reloadIfChanged();
+      }
+
+      public QuestMarkerMappings reloadIfChanged() {
+         try {
+            if (!Files.exists(this.file)) {
+               this.plugin.saveResource("configs/quest-markers.yml", false);
             }
-            catch (IllegalArgumentException | InvalidConfigurationException throwable) {
-                this.plugin.getLogger().warning("Cannot read configs/quest-markers.yml; keeping the last valid marker mapping: " + throwable.getMessage());
+
+            byte[] var1 = Files.readAllBytes(this.file);
+            this.lastIoError = null;
+            if (Arrays.equals(this.lastRead, var1)) {
+               return this.current;
             }
-            catch (IOException | IllegalStateException exception) {
-                String string2 = exception.getMessage();
-                if (!Objects.equals(this.lastIoError, string2)) {
-                    this.plugin.getLogger().warning("Cannot read configs/quest-markers.yml; keeping the last valid marker mapping: " + string2);
-                }
-                this.lastIoError = string2;
+
+            this.lastRead = var1;
+            YamlConfiguration var5 = new YamlConfiguration();
+            var5.loadFromString(new String(var1, StandardCharsets.UTF_8).replaceFirst("^\ufeff", ""));
+            this.current = QuestMarkerMappings.fromConfig(var5, var1x -> this.plugin.getLogger().warning("Quest marker config: " + var1x));
+         } catch (InvalidConfigurationException | IllegalArgumentException var3) {
+            this.plugin.getLogger().warning("Cannot read configs/quest-markers.yml; keeping the last valid marker mapping: " + var3.getMessage());
+         } catch (IOException | IllegalStateException var4) {
+            String var2 = var4.getMessage();
+            if (!Objects.equals(this.lastIoError, var2)) {
+               this.plugin.getLogger().warning("Cannot read configs/quest-markers.yml; keeping the last valid marker mapping: " + var2);
             }
-            return this.current;
-        }
-    }
+
+            this.lastIoError = var2;
+         }
+
+         return this.current;
+      }
+   }
 }
-

@@ -1,48 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.kyori.adventure.text.Component
- *  net.kyori.adventure.text.format.NamedTextColor
- *  net.kyori.adventure.text.format.TextColor
- *  org.bukkit.Bukkit
- *  org.bukkit.Location
- *  org.bukkit.entity.AreaEffectCloud
- *  org.bukkit.entity.Entity
- *  org.bukkit.entity.HumanEntity
- *  org.bukkit.entity.LivingEntity
- *  org.bukkit.entity.Player
- *  org.bukkit.entity.Projectile
- *  org.bukkit.entity.TNTPrimed
- *  org.bukkit.event.EventHandler
- *  org.bukkit.event.EventPriority
- *  org.bukkit.event.HandlerList
- *  org.bukkit.event.Listener
- *  org.bukkit.event.block.BlockBreakEvent
- *  org.bukkit.event.block.BlockPlaceEvent
- *  org.bukkit.event.entity.AreaEffectCloudApplyEvent
- *  org.bukkit.event.entity.EntityAirChangeEvent
- *  org.bukkit.event.entity.EntityDamageByEntityEvent
- *  org.bukkit.event.entity.EntityDamageEvent
- *  org.bukkit.event.entity.EntityShootBowEvent
- *  org.bukkit.event.entity.FoodLevelChangeEvent
- *  org.bukkit.event.entity.PotionSplashEvent
- *  org.bukkit.event.entity.ProjectileLaunchEvent
- *  org.bukkit.event.player.PlayerInteractEntityEvent
- *  org.bukkit.event.player.PlayerInteractEvent
- *  org.bukkit.event.player.PlayerMoveEvent
- *  org.bukkit.event.player.PlayerQuitEvent
- *  org.bukkit.event.player.PlayerResourcePackStatusEvent
- *  org.bukkit.event.player.PlayerResourcePackStatusEvent$Status
- *  org.bukkit.event.player.PlayerTeleportEvent
- *  org.bukkit.event.player.PlayerVelocityEvent
- *  org.bukkit.metadata.FixedMetadataValue
- *  org.bukkit.metadata.MetadataValue
- *  org.bukkit.plugin.Plugin
- *  org.bukkit.plugin.java.JavaPlugin
- *  org.bukkit.projectiles.ProjectileSource
- *  org.bukkit.scheduler.BukkitTask
- */
 package sk.enorials.common.pack;
 
 import java.util.Arrays;
@@ -54,13 +9,10 @@ import java.util.Set;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
@@ -86,331 +38,287 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitTask;
 import sk.enorials.hud.compat.PackTransport;
 
-public class ResourcePackGuard
-implements Listener,
-AutoCloseable {
-    private static final boolean DAMAGE_SOURCE = Arrays.stream(EntityDamageEvent.class.getMethods()).anyMatch(method -> method.getName().equals("getDamageSource"));
-    private static final Component WAIT = Component.text((String)"Please wait while your resource pack is prepared and loaded...", (TextColor)NamedTextColor.YELLOW);
-    private final UUID mainPackId;
-    private final JavaPlugin plugin;
-    private final Map<UUID, Pending> pending = new HashMap<UUID, Pending>();
-    private final BukkitTask task;
+public class ResourcePackGuard implements Listener, AutoCloseable {
+   private static final boolean DAMAGE_SOURCE = Arrays.stream(EntityDamageEvent.class.getMethods()).anyMatch(var0 -> var0.getName().equals("getDamageSource"));
+   private static final Component WAIT = Component.text("Please wait while your resource pack is prepared and loaded...", NamedTextColor.YELLOW);
+   private final UUID mainPackId;
+   private final JavaPlugin plugin;
+   private final Map<UUID, ResourcePackGuard.Pending> pending = new HashMap<>();
+   private final BukkitTask task;
 
-    public static boolean isLoading(Player player) {
-        return player.hasMetadata("enorials.pack-loading");
-    }
+   public static boolean isLoading(Player var0) {
+      return var0.hasMetadata("enorials.pack-loading");
+   }
 
-    public ResourcePackGuard(JavaPlugin javaPlugin, UUID uUID) {
-        this.mainPackId = uUID;
-        this.plugin = javaPlugin;
-        Bukkit.getPluginManager().registerEvents((Listener)this, (Plugin)javaPlugin);
-        this.task = Bukkit.getScheduler().runTaskTimer((Plugin)javaPlugin, () -> {
-            for (UUID uUID : List.copyOf(this.pending.keySet())) {
-                Player player = Bukkit.getPlayer((UUID)uUID);
-                Pending pending = this.pending.get(uUID);
-                if (player == null) {
-                    this.pending.remove(uUID);
-                    continue;
-                }
-                if (pending.queuePosition > 0) {
-                    player.sendActionBar(ResourcePackGuard.queueMessage(pending.queuePosition));
-                    continue;
-                }
-                if (System.currentTimeMillis() - pending.started > 300000L) {
-                    this.fail(player, "Resource pack loading timed out. Please reconnect and try again.");
-                    continue;
-                }
-                player.sendActionBar(WAIT);
-            }
-        }, 1L, 20L);
-    }
-
-    public boolean isWaiting(Player player) {
-        return this.pending.containsKey(player.getUniqueId());
-    }
-
-    private Pending state(Player player) {
-        return this.pending.computeIfAbsent(player.getUniqueId(), uUID -> {
-            player.sendMessage(WAIT);
-            player.setMetadata("enorials.pack-loading", (MetadataValue)new FixedMetadataValue((Plugin)this.plugin, (Object)true));
-            return new Pending();
-        });
-    }
-
-    public void preparing(Player player) {
-        this.state((Player)player).preparing = true;
-    }
-
-    private static Component queueMessage(int n) {
-        return Component.text((String)("Resource pack queue: #" + n + ". Please wait for your turn..."), (TextColor)NamedTextColor.YELLOW);
-    }
-
-    public void queuePosition(Player player, int n) {
-        Pending pending = this.pending.get(player.getUniqueId());
-        if (pending == null) {
-            return;
-        }
-        if (n >= 0 && n != pending.queuePosition) {
-            pending.queuePosition = n;
-            pending.started = System.currentTimeMillis();
-            if (n > 0) {
-                player.sendMessage(ResourcePackGuard.queueMessage(n));
+   public ResourcePackGuard(JavaPlugin var1, UUID var2) {
+      this.mainPackId = var2;
+      this.plugin = var1;
+      Bukkit.getPluginManager().registerEvents(this, var1);
+      this.task = Bukkit.getScheduler().runTaskTimer(var1, () -> {
+         for (UUID var2x : List.copyOf(this.pending.keySet())) {
+            Player var3 = Bukkit.getPlayer(var2x);
+            ResourcePackGuard.Pending var4 = this.pending.get(var2x);
+            if (var3 == null) {
+               this.pending.remove(var2x);
+            } else if (var4.queuePosition > 0) {
+               var3.sendActionBar(queueMessage(var4.queuePosition));
+            } else if (System.currentTimeMillis() - var4.started > 300000L) {
+               this.fail(var3, "Resource pack loading timed out. Please reconnect and try again.");
             } else {
-                player.sendMessage((Component)Component.text((String)"It is your turn. Preparing your resource pack...", (TextColor)NamedTextColor.AQUA));
+               var3.sendActionBar(WAIT);
             }
-        }
-    }
+         }
+      }, 1L, 20L);
+   }
 
-    public void expect(Player player, UUID uUID) {
-        Pending pending = this.state(player);
-        pending.packs.add(uUID);
-        if (uUID.equals(this.mainPackId)) {
-            pending.preparing = false;
-            pending.queuePosition = -1;
-            pending.started = System.currentTimeMillis();
-        }
-    }
+   public boolean isWaiting(Player var1) {
+      return this.pending.containsKey(var1.getUniqueId());
+   }
 
-    public void complete(Player player, UUID uUID) {
-        Pending pending = this.pending.get(player.getUniqueId());
-        if (pending == null) {
-            return;
-        }
-        pending.packs.remove(uUID);
-        if (!pending.preparing && pending.packs.isEmpty()) {
-            this.pending.remove(player.getUniqueId());
-            player.removeMetadata("enorials.pack-loading", (Plugin)this.plugin);
-            player.setFallDistance(0.0f);
-            player.sendActionBar((Component)Component.text((String)"Resource pack ready.", (TextColor)NamedTextColor.GREEN));
-        }
-    }
+   private ResourcePackGuard.Pending state(Player var1) {
+      return this.pending.computeIfAbsent(var1.getUniqueId(), var2 -> {
+         var1.sendMessage(WAIT);
+         var1.setMetadata("enorials.pack-loading", new FixedMetadataValue(this.plugin, true));
+         return new ResourcePackGuard.Pending();
+      });
+   }
 
-    public void fail(Player player, String string) {
-        if (!this.isWaiting(player)) {
-            return;
-        }
-        player.kick((Component)Component.text((String)string, (TextColor)NamedTextColor.YELLOW));
-        this.pending.remove(player.getUniqueId());
-        player.removeMetadata("enorials.pack-loading", (Plugin)this.plugin);
-    }
+   public void preparing(Player var1) {
+      this.state(var1).preparing = true;
+   }
 
-    @EventHandler(priority=EventPriority.MONITOR)
-    public void status(PlayerResourcePackStatusEvent playerResourcePackStatusEvent) {
-        Pending pending = this.pending.get(playerResourcePackStatusEvent.getPlayer().getUniqueId());
-        UUID uUID = PackTransport.id(playerResourcePackStatusEvent, this.mainPackId);
-        if (pending == null || !pending.packs.contains(uUID)) {
-            return;
-        }
-        switch (playerResourcePackStatusEvent.getStatus()) {
-            case SUCCESSFULLY_LOADED: {
-                this.complete(playerResourcePackStatusEvent.getPlayer(), uUID);
-                break;
+   private static Component queueMessage(int var0) {
+      return Component.text("Resource pack queue: #" + var0 + ". Please wait for your turn...", NamedTextColor.YELLOW);
+   }
+
+   public void queuePosition(Player var1, int var2) {
+      ResourcePackGuard.Pending var3 = this.pending.get(var1.getUniqueId());
+      if (var3 != null) {
+         if (var2 >= 0 && var2 != var3.queuePosition) {
+            var3.queuePosition = var2;
+            var3.started = System.currentTimeMillis();
+            if (var2 > 0) {
+               var1.sendMessage(queueMessage(var2));
+            } else {
+               var1.sendMessage(Component.text("It is your turn. Preparing your resource pack...", NamedTextColor.AQUA));
             }
-            case DECLINED: 
-            case FAILED_DOWNLOAD: 
-            case FAILED_RELOAD: 
-            case INVALID_URL: 
-            case DISCARDED: {
-                this.plugin.getLogger().warning("Resource pack status=" + playerResourcePackStatusEvent.getStatus().name() + " player=" + playerResourcePackStatusEvent.getPlayer().getName() + " pack=" + String.valueOf(uUID));
-                String string = switch (playerResourcePackStatusEvent.getStatus()) {
-                    case PlayerResourcePackStatusEvent.Status.DECLINED -> "This server requires its resource pack. Enable server resource packs for this server and reconnect.";
-                    case PlayerResourcePackStatusEvent.Status.FAILED_DOWNLOAD -> "The server resource pack could not be downloaded. Please reconnect; if it repeats, contact the server administrator.";
-                    case PlayerResourcePackStatusEvent.Status.FAILED_RELOAD -> "Minecraft could not apply the server resource pack. Restart Minecraft and reconnect; the client log contains details if it repeats.";
-                    case PlayerResourcePackStatusEvent.Status.INVALID_URL -> "The server resource pack address is invalid. Please contact the server administrator.";
-                    default -> "Minecraft discarded the server resource pack before loading it. Please reconnect; if it repeats, contact the server administrator.";
-                };
-                this.fail(playerResourcePackStatusEvent.getPlayer(), string);
-                break;
+         }
+      }
+   }
+
+   public void expect(Player var1, UUID var2) {
+      ResourcePackGuard.Pending var3 = this.state(var1);
+      var3.packs.add(var2);
+      if (var2.equals(this.mainPackId)) {
+         var3.preparing = false;
+         var3.queuePosition = -1;
+         var3.started = System.currentTimeMillis();
+      }
+   }
+
+   public void complete(Player var1, UUID var2) {
+      ResourcePackGuard.Pending var3 = this.pending.get(var1.getUniqueId());
+      if (var3 != null) {
+         var3.packs.remove(var2);
+         if (!var3.preparing && var3.packs.isEmpty()) {
+            this.pending.remove(var1.getUniqueId());
+            var1.removeMetadata("enorials.pack-loading", this.plugin);
+            var1.setFallDistance(0.0F);
+            var1.sendActionBar(Component.text("Resource pack ready.", NamedTextColor.GREEN));
+         }
+      }
+   }
+
+   public void fail(Player var1, String var2) {
+      if (this.isWaiting(var1)) {
+         var1.kick(Component.text(var2, NamedTextColor.YELLOW));
+         this.pending.remove(var1.getUniqueId());
+         var1.removeMetadata("enorials.pack-loading", this.plugin);
+      }
+   }
+
+   @EventHandler(priority = EventPriority.MONITOR)
+   public void status(PlayerResourcePackStatusEvent var1) {
+      ResourcePackGuard.Pending var2 = this.pending.get(var1.getPlayer().getUniqueId());
+      UUID var3 = PackTransport.id(var1, this.mainPackId);
+      if (var2 != null && var2.packs.contains(var3)) {
+         switch (var1.getStatus()) {
+            case DECLINED:
+            case FAILED_DOWNLOAD:
+            case FAILED_RELOAD:
+            case INVALID_URL:
+            case DISCARDED:
+               this.plugin.getLogger().warning("Resource pack status=" + var1.getStatus().name() + " player=" + var1.getPlayer().getName() + " pack=" + var3);
+
+               String var4 = switch (var1.getStatus()) {
+                  case DECLINED -> "This server requires its resource pack. Enable server resource packs for this server and reconnect.";
+                  case FAILED_DOWNLOAD -> "The server resource pack could not be downloaded. Please reconnect; if it repeats, contact the server administrator.";
+                  case FAILED_RELOAD -> "Minecraft could not apply the server resource pack. Restart Minecraft and reconnect; the client log contains details if it repeats.";
+                  case INVALID_URL -> "The server resource pack address is invalid. Please contact the server administrator.";
+                  default -> "Minecraft discarded the server resource pack before loading it. Please reconnect; if it repeats, contact the server administrator.";
+               };
+               this.fail(var1.getPlayer(), var4);
+               break;
+            case SUCCESSFULLY_LOADED:
+               this.complete(var1.getPlayer(), var3);
+         }
+      }
+   }
+
+   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+   public void move(PlayerMoveEvent var1) {
+      if (!(var1 instanceof PlayerTeleportEvent) && this.isWaiting(var1.getPlayer()) && var1.hasChangedPosition()) {
+         Location var2 = var1.getFrom().clone();
+         var2.setYaw(var1.getTo().getYaw());
+         var2.setPitch(var1.getTo().getPitch());
+         var1.setTo(var2);
+      }
+   }
+
+   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+   public void velocity(PlayerVelocityEvent var1) {
+      if (this.isWaiting(var1.getPlayer())) {
+         var1.setCancelled(true);
+      }
+   }
+
+   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+   public void earlyDamage(EntityDamageEvent var1) {
+      this.damage(var1);
+   }
+
+   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+   public void damage(EntityDamageEvent var1) {
+      if (var1.getEntity() instanceof Player var2 && this.isWaiting(var2)) {
+         var1.setCancelled(true);
+      } else if (!DAMAGE_SOURCE
+         || !this.blockedSource(var1.getDamageSource().getCausingEntity()) && !this.blockedSource(var1.getDamageSource().getDirectEntity())) {
+         if (var1 instanceof EntityDamageByEntityEvent var7) {
+            Entity var8 = var7.getDamager();
+            if (var8 instanceof Projectile var4 && var4.getShooter() instanceof Entity var5) {
+               var8 = var5;
             }
-        }
-    }
 
-    @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
-    public void move(PlayerMoveEvent playerMoveEvent) {
-        if (!(playerMoveEvent instanceof PlayerTeleportEvent) && this.isWaiting(playerMoveEvent.getPlayer()) && playerMoveEvent.hasChangedPosition()) {
-            Location location = playerMoveEvent.getFrom().clone();
-            location.setYaw(playerMoveEvent.getTo().getYaw());
-            location.setPitch(playerMoveEvent.getTo().getPitch());
-            playerMoveEvent.setTo(location);
-        }
-    }
-
-    @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
-    public void velocity(PlayerVelocityEvent playerVelocityEvent) {
-        if (this.isWaiting(playerVelocityEvent.getPlayer())) {
-            playerVelocityEvent.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
-    public void earlyDamage(EntityDamageEvent entityDamageEvent) {
-        this.damage(entityDamageEvent);
-    }
-
-    @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
-    public void damage(EntityDamageEvent entityDamageEvent) {
-        Player player;
-        Entity entity = entityDamageEvent.getEntity();
-        if (entity instanceof Player && this.isWaiting(player = (Player)entity)) {
-            entityDamageEvent.setCancelled(true);
-            return;
-        }
-        if (DAMAGE_SOURCE && (this.blockedSource(entityDamageEvent.getDamageSource().getCausingEntity()) || this.blockedSource(entityDamageEvent.getDamageSource().getDirectEntity()))) {
-            entityDamageEvent.setCancelled(true);
-            return;
-        }
-        if (entityDamageEvent instanceof EntityDamageByEntityEvent) {
-            Projectile projectile;
-            ProjectileSource projectileSource;
-            player = (EntityDamageByEntityEvent)entityDamageEvent;
-            entity = player.getDamager();
-            if (entity instanceof Projectile && (projectileSource = (projectile = (Projectile)entity).getShooter()) instanceof Entity) {
-                Entity entity2;
-                entity = entity2 = (Entity)projectileSource;
+            if (var8 instanceof Player var9 && this.isWaiting(var9)) {
+               var1.setCancelled(true);
             }
-            if (entity instanceof Player && this.isWaiting((Player)(projectile = (Player)entity))) {
-                entityDamageEvent.setCancelled(true);
-            }
-        }
-    }
+         }
+      } else {
+         var1.setCancelled(true);
+      }
+   }
 
-    private boolean blockedSource(Entity entity) {
-        Projectile projectile;
-        ProjectileSource projectileSource;
-        if (entity instanceof Player) {
-            Player player = (Player)entity;
-            return this.isWaiting(player);
-        }
-        if (entity instanceof Projectile && (projectileSource = (projectile = (Projectile)entity).getShooter()) instanceof Player) {
-            Player player = (Player)projectileSource;
-            return this.isWaiting(player);
-        }
-        if (entity instanceof TNTPrimed && (projectileSource = (projectile = (TNTPrimed)entity).getSource()) instanceof Player) {
-            Player player = (Player)projectileSource;
-            return this.isWaiting(player);
-        }
-        if (entity instanceof AreaEffectCloud && (projectileSource = (projectile = (AreaEffectCloud)entity).getSource()) instanceof Player) {
-            Player player = (Player)projectileSource;
-            return this.isWaiting(player);
-        }
-        return false;
-    }
+   private boolean blockedSource(Entity var1) {
+      if (var1 instanceof Player var7) {
+         return this.isWaiting(var7);
+      } else if (var1 instanceof Projectile var2 && var2.getShooter() instanceof Player var9) {
+         return this.isWaiting(var9);
+      } else if (var1 instanceof TNTPrimed var5 && var5.getSource() instanceof Player var8) {
+         return this.isWaiting(var8);
+      } else {
+         return var1 instanceof AreaEffectCloud var6 && var6.getSource() instanceof Player var3 ? this.isWaiting(var3) : false;
+      }
+   }
 
-    @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
-    public void food(FoodLevelChangeEvent foodLevelChangeEvent) {
-        Player player;
-        HumanEntity humanEntity = foodLevelChangeEvent.getEntity();
-        if (humanEntity instanceof Player && this.isWaiting(player = (Player)humanEntity)) {
-            foodLevelChangeEvent.setCancelled(true);
-        }
-    }
+   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+   public void food(FoodLevelChangeEvent var1) {
+      if (var1.getEntity() instanceof Player var2 && this.isWaiting(var2)) {
+         var1.setCancelled(true);
+      }
+   }
 
-    @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
-    public void air(EntityAirChangeEvent entityAirChangeEvent) {
-        Player player;
-        Entity entity = entityAirChangeEvent.getEntity();
-        if (entity instanceof Player && this.isWaiting(player = (Player)entity)) {
-            entityAirChangeEvent.setCancelled(true);
-        }
-    }
+   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+   public void air(EntityAirChangeEvent var1) {
+      if (var1.getEntity() instanceof Player var2 && this.isWaiting(var2)) {
+         var1.setCancelled(true);
+      }
+   }
 
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
-    public void interact(PlayerInteractEvent playerInteractEvent) {
-        if (this.isWaiting(playerInteractEvent.getPlayer())) {
-            playerInteractEvent.setCancelled(true);
-        }
-    }
+   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+   public void interact(PlayerInteractEvent var1) {
+      if (this.isWaiting(var1.getPlayer())) {
+         var1.setCancelled(true);
+      }
+   }
 
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
-    public void interactEntity(PlayerInteractEntityEvent playerInteractEntityEvent) {
-        if (this.isWaiting(playerInteractEntityEvent.getPlayer())) {
-            playerInteractEntityEvent.setCancelled(true);
-        }
-    }
+   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+   public void interactEntity(PlayerInteractEntityEvent var1) {
+      if (this.isWaiting(var1.getPlayer())) {
+         var1.setCancelled(true);
+      }
+   }
 
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
-    public void breakBlock(BlockBreakEvent blockBreakEvent) {
-        if (this.isWaiting(blockBreakEvent.getPlayer())) {
-            blockBreakEvent.setCancelled(true);
-        }
-    }
+   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+   public void breakBlock(BlockBreakEvent var1) {
+      if (this.isWaiting(var1.getPlayer())) {
+         var1.setCancelled(true);
+      }
+   }
 
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
-    public void placeBlock(BlockPlaceEvent blockPlaceEvent) {
-        if (this.isWaiting(blockPlaceEvent.getPlayer())) {
-            blockPlaceEvent.setCancelled(true);
-        }
-    }
+   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+   public void placeBlock(BlockPlaceEvent var1) {
+      if (this.isWaiting(var1.getPlayer())) {
+         var1.setCancelled(true);
+      }
+   }
 
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
-    public void launch(ProjectileLaunchEvent projectileLaunchEvent) {
-        Player player;
-        ProjectileSource projectileSource = projectileLaunchEvent.getEntity().getShooter();
-        if (projectileSource instanceof Player && this.isWaiting(player = (Player)projectileSource)) {
-            projectileLaunchEvent.setCancelled(true);
-        }
-    }
+   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+   public void launch(ProjectileLaunchEvent var1) {
+      if (var1.getEntity().getShooter() instanceof Player var2 && this.isWaiting(var2)) {
+         var1.setCancelled(true);
+      }
+   }
 
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
-    public void bow(EntityShootBowEvent entityShootBowEvent) {
-        Player player;
-        LivingEntity livingEntity = entityShootBowEvent.getEntity();
-        if (livingEntity instanceof Player && this.isWaiting(player = (Player)livingEntity)) {
-            entityShootBowEvent.setCancelled(true);
-        }
-    }
+   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+   public void bow(EntityShootBowEvent var1) {
+      if (var1.getEntity() instanceof Player var2 && this.isWaiting(var2)) {
+         var1.setCancelled(true);
+      }
+   }
 
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
-    public void potion(PotionSplashEvent potionSplashEvent) {
-        Player player;
-        ProjectileSource projectileSource = potionSplashEvent.getPotion().getShooter();
-        if (projectileSource instanceof Player && this.isWaiting(player = (Player)projectileSource)) {
-            potionSplashEvent.setCancelled(true);
-        }
-    }
+   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+   public void potion(PotionSplashEvent var1) {
+      if (var1.getPotion().getShooter() instanceof Player var2 && this.isWaiting(var2)) {
+         var1.setCancelled(true);
+      }
+   }
 
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
-    public void cloud(AreaEffectCloudApplyEvent areaEffectCloudApplyEvent) {
-        Player player;
-        ProjectileSource projectileSource = areaEffectCloudApplyEvent.getEntity().getSource();
-        if (projectileSource instanceof Player && this.isWaiting(player = (Player)projectileSource)) {
-            areaEffectCloudApplyEvent.setCancelled(true);
-        }
-    }
+   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+   public void cloud(AreaEffectCloudApplyEvent var1) {
+      if (var1.getEntity().getSource() instanceof Player var2 && this.isWaiting(var2)) {
+         var1.setCancelled(true);
+      }
+   }
 
-    @EventHandler
-    public void quit(PlayerQuitEvent playerQuitEvent) {
-        this.pending.remove(playerQuitEvent.getPlayer().getUniqueId());
-        playerQuitEvent.getPlayer().removeMetadata("enorials.pack-loading", (Plugin)this.plugin);
-    }
+   @EventHandler
+   public void quit(PlayerQuitEvent var1) {
+      this.pending.remove(var1.getPlayer().getUniqueId());
+      var1.getPlayer().removeMetadata("enorials.pack-loading", this.plugin);
+   }
 
-    @Override
-    public void close() {
-        this.task.cancel();
-        HandlerList.unregisterAll((Listener)this);
-        for (UUID uUID : this.pending.keySet()) {
-            Player player = Bukkit.getPlayer((UUID)uUID);
-            if (player == null) continue;
-            player.removeMetadata("enorials.pack-loading", (Plugin)this.plugin);
-        }
-        this.pending.clear();
-    }
+   @Override
+   public void close() {
+      this.task.cancel();
+      HandlerList.unregisterAll(this);
 
-    private static final class Pending {
-        long started = System.currentTimeMillis();
-        int queuePosition = -1;
-        final Set<UUID> packs = new HashSet<UUID>();
-        boolean preparing;
+      for (UUID var2 : this.pending.keySet()) {
+         Player var3 = Bukkit.getPlayer(var2);
+         if (var3 != null) {
+            var3.removeMetadata("enorials.pack-loading", this.plugin);
+         }
+      }
 
-        private Pending() {
-        }
-    }
+      this.pending.clear();
+   }
+
+   private static final class Pending {
+      long started = System.currentTimeMillis();
+      int queuePosition = -1;
+      final Set<UUID> packs = new HashSet<>();
+      boolean preparing;
+   }
 }
-

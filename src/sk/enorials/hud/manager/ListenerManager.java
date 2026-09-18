@@ -95,14 +95,12 @@ public class ListenerManager {
         object2 = enorialsHUD.getDataFolder().toPath().resolve("target-hidden-npcs.txt");
         if (Files.isRegularFile((Path)object2, LinkOption.NOFOLLOW_LINKS)) {
             try {
-                object = Files.lines((Path)object2, StandardCharsets.UTF_8);
+                java.util.stream.Stream<String> lines = Files.lines((Path)object2, StandardCharsets.UTF_8);
                 try {
-                    object.map(String::trim).filter(string -> !string.isEmpty() && !string.startsWith("#")).forEach(this.hiddenTargetNpcs::add);
+                    lines.map(String::trim).filter(string -> !string.isEmpty() && !string.startsWith("#")).forEach(this.hiddenTargetNpcs::add);
                 }
                 finally {
-                    if (object != null) {
-                        object.close();
-                    }
+                    lines.close();
                 }
             }
             catch (IOException iOException) {
@@ -208,7 +206,7 @@ public class ListenerManager {
         if (plugin != null) {
             return ResourceState.unavailable();
         }
-        for (String string5 : new Plugin[]{"resource", "mana", "rage"}) {
+        for (String string5 : new String[]{"resource", "mana", "rage"}) {
             HudValue object;
             HudValue hudValue = object = this.plugin.api() == null ? null : this.plugin.api().read(player, string5);
             if (object == null) continue;
@@ -658,25 +656,23 @@ public class ListenerManager {
     }
 
     private Plugin findHungerPlugin() {
-        Object object;
         for (String string : new String[]{"EnorialsHunger", "EnorialsGFS"}) {
-            object = Bukkit.getPluginManager().getPlugin(string);
-            if (object == null) continue;
-            return object;
+            Plugin plugin = Bukkit.getPluginManager().getPlugin(string);
+            if (plugin == null) continue;
+            return plugin;
         }
-        for (String string : Bukkit.getPluginManager().getPlugins()) {
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
             try {
-                object = string.getClass().getDeclaredField("states");
-                ((Field)object).setAccessible(true);
-                Object object2 = ((Field)object).get(string);
-                if (!(object2 instanceof Map) && !(object2 instanceof Collection)) continue;
-                String string2 = string.getName().toLowerCase(Locale.ROOT);
-                String string3 = string.getClass().getName().toLowerCase(Locale.ROOT);
-                if (!string2.contains("hunger") && !string2.contains("gfs") && !string3.contains(".hunger.") && !string3.contains("hungerplugin")) continue;
-                return string;
+                Field states = plugin.getClass().getDeclaredField("states");
+                states.setAccessible(true);
+                Object stateValues = states.get(plugin);
+                if (!(stateValues instanceof Map) && !(stateValues instanceof Collection)) continue;
+                String pluginName = plugin.getName().toLowerCase(Locale.ROOT);
+                String className = plugin.getClass().getName().toLowerCase(Locale.ROOT);
+                if (!pluginName.contains("hunger") && !pluginName.contains("gfs") && !className.contains(".hunger.") && !className.contains("hungerplugin")) continue;
+                return plugin;
             }
-            catch (Throwable throwable) {
-                // empty catch block
+            catch (ReflectiveOperationException | LinkageError ignored) {
             }
         }
         return null;

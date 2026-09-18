@@ -1,45 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  me.clip.placeholderapi.PlaceholderAPI
- *  net.kyori.adventure.bossbar.BossBar
- *  net.kyori.adventure.bossbar.BossBar$Color
- *  net.kyori.adventure.bossbar.BossBar$Overlay
- *  net.kyori.adventure.key.Key
- *  net.kyori.adventure.text.Component
- *  net.kyori.adventure.text.TextComponent
- *  net.kyori.adventure.text.TextComponent$Builder
- *  net.kyori.adventure.text.format.TextColor
- *  net.kyori.adventure.text.format.TextDecoration
- *  net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
- *  org.bukkit.Bukkit
- *  org.bukkit.ChatColor
- *  org.bukkit.Material
- *  org.bukkit.command.CommandSender
- *  org.bukkit.entity.Entity
- *  org.bukkit.entity.HumanEntity
- *  org.bukkit.entity.LivingEntity
- *  org.bukkit.entity.Mob
- *  org.bukkit.entity.Player
- *  org.bukkit.entity.Projectile
- *  org.bukkit.event.EventHandler
- *  org.bukkit.event.EventPriority
- *  org.bukkit.event.Listener
- *  org.bukkit.event.entity.EntityDamageByEntityEvent
- *  org.bukkit.event.entity.EntityDeathEvent
- *  org.bukkit.event.inventory.InventoryClickEvent
- *  org.bukkit.event.player.PlayerItemHeldEvent
- *  org.bukkit.event.player.PlayerJoinEvent
- *  org.bukkit.event.player.PlayerQuitEvent
- *  org.bukkit.inventory.Inventory
- *  org.bukkit.inventory.ItemStack
- *  org.bukkit.inventory.meta.ItemMeta
- *  org.bukkit.plugin.Plugin
- *  org.bukkit.projectiles.ProjectileSource
- *  org.bukkit.scheduler.BukkitTask
- *  org.bukkit.util.RayTraceResult
- */
 package sk.enorials.hud.manager;
 
 import java.io.IOException;
@@ -53,22 +11,24 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBar.Color;
+import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextComponent.Builder;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -85,8 +45,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 import sk.enorials.hud.EnorialsHUD;
@@ -95,7 +53,6 @@ import sk.enorials.hud.compat.HudAttributes;
 import sk.enorials.hud.compat.LegacyText;
 import sk.enorials.hud.compat.TextCompat;
 import sk.enorials.hud.condition.ConditionHolder;
-import sk.enorials.hud.manager.DisplayManager;
 import sk.enorials.hud.model.FunctionData;
 import sk.enorials.hud.model.HudAlignment;
 import sk.enorials.hud.model.HudElement;
@@ -121,1064 +78,1192 @@ import sk.enorials.hud.util.SizedComponent;
 import sk.enorials.hud.util.SpaceUtil;
 import sk.enorials.hud.util.TextWidthEstimator;
 
-public class RenderManager
-implements Listener {
-    private final EnorialsHUD plugin;
-    private final Map<UUID, BossBar> bars = new HashMap<UUID, BossBar>();
-    private final Map<UUID, BossBar> airBars = new HashMap<UUID, BossBar>();
-    private final Map<UUID, BossBarHandler> protocolBars = new HashMap<UUID, BossBarHandler>();
-    private final Map<UUID, Component> minimapOverlays = new HashMap<UUID, Component>();
-    private final Map<UUID, Component> conversationOverlays = new HashMap<UUID, Component>();
-    private final Map<UUID, Component> questLogOverlays = new HashMap<UUID, Component>();
-    private final Map<UUID, PopupState> popups = new HashMap<UUID, PopupState>();
-    private final Map<UUID, CombatTarget> combatTargets = new HashMap<UUID, CombatTarget>();
-    private final boolean protocolEnabled;
-    private final Properties effectGlyphs = new Properties();
-    private BukkitTask task;
-    private final PartyPanel partyPanel;
-    private final PlayerPanel playerPanel;
-    private final GpsPanel gpsPanel;
-    private final TargetPanel targetPanel;
-    private long renderTick;
-    private long idleRenderPeriod = 5L;
+public class RenderManager implements Listener {
+   private final EnorialsHUD plugin;
+   private final Map<UUID, BossBar> bars = new HashMap<>();
+   private final Map<UUID, BossBar> airBars = new HashMap<>();
+   private final Map<UUID, BossBarHandler> protocolBars = new HashMap<>();
+   private final Map<UUID, Component> minimapOverlays = new HashMap<>();
+   private final Map<UUID, Component> conversationOverlays = new HashMap<>();
+   private final Map<UUID, Component> questLogOverlays = new HashMap<>();
+   private final Map<UUID, RenderManager.PopupState> popups = new HashMap<>();
+   private final Map<UUID, RenderManager.CombatTarget> combatTargets = new HashMap<>();
+   private final boolean protocolEnabled;
+   private final Properties effectGlyphs = new Properties();
+   private BukkitTask task;
+   private final PartyPanel partyPanel;
+   private final PlayerPanel playerPanel;
+   private final GpsPanel gpsPanel;
+   private final TargetPanel targetPanel;
+   private long renderTick;
+   private long idleRenderPeriod = 5L;
 
-    public RenderManager(EnorialsHUD enorialsHUD) {
-        this.plugin = enorialsHUD;
-        this.partyPanel = new PartyPanel(enorialsHUD);
-        this.playerPanel = new PlayerPanel(enorialsHUD);
-        this.gpsPanel = new GpsPanel(enorialsHUD);
-        this.targetPanel = new TargetPanel(enorialsHUD);
-        try (InputStream inputStream = enorialsHUD.getResource("effect-icons.properties");){
-            if (inputStream != null) {
-                this.effectGlyphs.load(inputStream);
+   public RenderManager(EnorialsHUD var1) {
+      this.plugin = var1;
+      this.partyPanel = new PartyPanel(var1);
+      this.playerPanel = new PlayerPanel(var1);
+      this.gpsPanel = new GpsPanel(var1);
+      this.targetPanel = new TargetPanel(var1);
+
+      try (InputStream var2 = var1.getResource("effect-icons.properties")) {
+         if (var2 != null) {
+            this.effectGlyphs.load(var2);
+         }
+      } catch (IOException var7) {
+         var1.getLogger().warning("Could not read HUD effect glyphs: " + var7.getMessage());
+      }
+
+      this.protocolEnabled = true;
+      Bukkit.getPluginManager().registerEvents(this, var1);
+   }
+
+   public void start() {
+      if (this.task == null) {
+         this.idleRenderPeriod = Math.max(1L, this.plugin.cfg().getLong("render.update_ticks", 5L));
+         this.task = Bukkit.getScheduler().runTaskTimer(this.plugin, this::tick, 1L, 1L);
+      }
+   }
+
+   public void stop() {
+      if (this.task != null) {
+         this.task.cancel();
+         this.task = null;
+      }
+
+      for (Entry var2 : this.bars.entrySet()) {
+         Player var3 = Bukkit.getPlayer((UUID)var2.getKey());
+         if (var3 != null) {
+            var3.hideBossBar((BossBar)var2.getValue());
+         }
+      }
+
+      this.bars.clear();
+
+      for (Entry var6 : this.airBars.entrySet()) {
+         Player var8 = Bukkit.getPlayer((UUID)var6.getKey());
+         if (var8 != null) {
+            var8.hideBossBar((BossBar)var6.getValue());
+         }
+      }
+
+      this.airBars.clear();
+
+      for (BossBarHandler var7 : this.protocolBars.values()) {
+         var7.disable();
+      }
+
+      this.protocolBars.clear();
+      this.minimapOverlays.clear();
+      this.conversationOverlays.clear();
+      this.questLogOverlays.clear();
+      this.popups.clear();
+   }
+
+   public void attach(Player var1) {
+      if (PackHostingSetup.ready(var1)) {
+         if (this.protocolEnabled) {
+            BossBarHandler var2 = new BossBarHandler(var1);
+            BossBarHandler var3 = this.protocolBars.put(var1.getUniqueId(), var2);
+            if (var3 != null) {
+               var3.disable();
             }
-        }
-        catch (IOException iOException) {
-            enorialsHUD.getLogger().warning("Could not read HUD effect glyphs: " + iOException.getMessage());
-        }
-        this.protocolEnabled = true;
-        Bukkit.getPluginManager().registerEvents((Listener)this, (Plugin)enorialsHUD);
-    }
 
-    public void start() {
-        if (this.task == null) {
-            this.idleRenderPeriod = Math.max(1L, this.plugin.cfg().getLong("render.update_ticks", 5L));
-            this.task = Bukkit.getScheduler().runTaskTimer((Plugin)this.plugin, this::tick, 1L, 1L);
-        }
-    }
+            var2.setMinimapOverlay(this.minimapOverlays.getOrDefault(var1.getUniqueId(), Component.empty()));
+            var2.setConversationOverlay(this.conversationOverlays.getOrDefault(var1.getUniqueId(), Component.empty()));
+            var2.setQuestLogOverlay(this.questLogOverlays.getOrDefault(var1.getUniqueId(), Component.empty()));
+            var2.init();
+         } else {
+            BossBar var4 = BossBar.bossBar(Component.empty(), 0.0F, Color.YELLOW, Overlay.PROGRESS);
+            this.bars.put(var1.getUniqueId(), var4);
+            var1.showBossBar(var4);
+         }
+      }
+   }
 
-    public void stop() {
-        Player player;
-        if (this.task != null) {
-            this.task.cancel();
-            this.task = null;
-        }
-        for (Map.Entry<UUID, BossBar> entry : this.bars.entrySet()) {
-            player = Bukkit.getPlayer((UUID)entry.getKey());
-            if (player == null) continue;
-            player.hideBossBar(entry.getValue());
-        }
-        this.bars.clear();
-        for (Map.Entry<UUID, BossBar> entry : this.airBars.entrySet()) {
-            player = Bukkit.getPlayer((UUID)entry.getKey());
-            if (player == null) continue;
-            player.hideBossBar(entry.getValue());
-        }
-        this.airBars.clear();
-        for (BossBarHandler bossBarHandler : this.protocolBars.values()) {
-            bossBarHandler.disable();
-        }
-        this.protocolBars.clear();
-        this.minimapOverlays.clear();
-        this.conversationOverlays.clear();
-        this.questLogOverlays.clear();
-        this.popups.clear();
-    }
+   public void detach(Player var1) {
+      this.minimapOverlays.remove(var1.getUniqueId());
+      this.conversationOverlays.remove(var1.getUniqueId());
+      this.questLogOverlays.remove(var1.getUniqueId());
+      if (this.protocolEnabled) {
+         BossBarHandler var2 = this.protocolBars.remove(var1.getUniqueId());
+         if (var2 != null) {
+            var2.disable();
+         }
+      } else {
+         BossBar var4 = this.bars.remove(var1.getUniqueId());
+         if (var4 != null) {
+            var1.hideBossBar(var4);
+         }
 
-    public void attach(Player player) {
-        if (!PackHostingSetup.ready(player)) {
-            return;
-        }
-        if (this.protocolEnabled) {
-            BossBarHandler bossBarHandler = new BossBarHandler(player);
-            BossBarHandler bossBarHandler2 = this.protocolBars.put(player.getUniqueId(), bossBarHandler);
-            if (bossBarHandler2 != null) {
-                bossBarHandler2.disable();
+         BossBar var3 = this.airBars.remove(var1.getUniqueId());
+         if (var3 != null) {
+            var1.hideBossBar(var3);
+         }
+      }
+
+      this.popups.remove(var1.getUniqueId());
+      this.combatTargets.remove(var1.getUniqueId());
+   }
+
+   public boolean setMinimapOverlay(Player var1, Component var2) {
+      if (!var1.isOnline()) {
+         return false;
+      }
+
+      UUID var3 = var1.getUniqueId();
+      boolean var4 = var2 == null || var2.equals(Component.empty());
+      Object var5 = var4 ? Component.empty() : var2.style(var0 -> TextCompat.shadow(var0, 0));
+      if (var4) {
+         this.minimapOverlays.remove(var3);
+      } else {
+         this.minimapOverlays.put(var3, (Component)var5);
+      }
+
+      BossBarHandler var6 = this.protocolBars.get(var3);
+      if (var6 != null) {
+         var6.setMinimapOverlay((Component)var5);
+         return true;
+      } else {
+         return !this.protocolEnabled && this.bars.containsKey(var3);
+      }
+   }
+
+   public void clearMinimapOverlay(Player var1) {
+      this.setMinimapOverlay(var1, Component.empty());
+   }
+
+   public void setConversationOverlay(Player var1, Component var2) {
+      Object var3 = var2 == null ? Component.empty() : var2;
+      if (var3.equals(Component.empty())) {
+         this.conversationOverlays.remove(var1.getUniqueId());
+      } else {
+         this.conversationOverlays.put(var1.getUniqueId(), (Component)var3);
+      }
+
+      BossBarHandler var4 = this.protocolBars.get(var1.getUniqueId());
+      if (var4 != null) {
+         var4.setConversationOverlay((Component)var3);
+      }
+   }
+
+   public void setQuestLogOverlay(Player var1, Component var2) {
+      Object var3 = var2 == null ? Component.empty() : var2;
+      if (var3.equals(Component.empty())) {
+         this.questLogOverlays.remove(var1.getUniqueId());
+      } else {
+         this.questLogOverlays.put(var1.getUniqueId(), (Component)var3);
+      }
+
+      BossBarHandler var4 = this.protocolBars.get(var1.getUniqueId());
+      if (var4 != null) {
+         var4.setQuestLogOverlay((Component)var3);
+      }
+   }
+
+   public void refreshTheme(Player var1) {
+      BossBarHandler var2 = this.protocolBars.get(var1.getUniqueId());
+      if (var2 != null) {
+         var2.refreshTheme();
+      }
+   }
+
+   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+   public void onHeldItem(PlayerItemHeldEvent var1) {
+      if (PackHostingSetup.ready(var1.getPlayer()) && HotbarOverlay.enabled(this.plugin, var1.getPlayer())) {
+         BossBarHandler var2 = this.protocolBars.get(var1.getPlayer().getUniqueId());
+         if (var2 != null) {
+            var2.refreshHotbar(var1.getNewSlot());
+         }
+      }
+   }
+
+   public boolean hasMinimapOverlay(Player var1) {
+      UUID var2 = var1.getUniqueId();
+      return this.minimapOverlays.containsKey(var2) && (this.protocolEnabled ? this.protocolBars.containsKey(var2) : this.bars.containsKey(var2));
+   }
+
+   public void showPopup(Player var1, String var2, String[] var3, long var4) {
+      if (this.plugin.popups().has(var2)) {
+         long var6 = System.currentTimeMillis() + var4 * 50L;
+         this.popups.put(var1.getUniqueId(), new RenderManager.PopupState(var2, var3, var6));
+      }
+   }
+
+   private void tick() {
+      if (PackHostingSetup.ready()) {
+         boolean var1 = this.renderTick++ % this.idleRenderPeriod == 0L;
+         PackRegistry var2 = this.plugin.packs().registry();
+
+         for (Player var4 : Bukkit.getOnlinePlayers()) {
+            if (!PackHostingSetup.ready(var4)) {
+               this.detach(var4);
+            } else if (var1 || this.plugin.gps() != null && this.plugin.gps().navigation().hasActiveNavigation(var4)) {
+               Component var5 = Component.empty();
+               Object var6 = Component.empty();
+               String var7 = this.plugin.storage().getLayout(var4.getUniqueId());
+               if (var7 != null && this.plugin.layouts().has(var7)) {
+                  HudLayout var19 = this.plugin.layouts().get(var7);
+                  ArrayList var22 = new ArrayList();
+                  ArrayList var25 = new ArrayList();
+                  this.splitAirElements(var19.getElements(), var22, var25);
+                  var5 = var5.append(this.renderHolder("layout", var19.getKey(), var22, var4, var2, null));
+                  var6 = var6.append(this.renderHolder("layout", var19.getKey(), var25, var4, var2, null));
+               } else if (this.plugin.displays().hasDisplays()) {
+                  for (DisplayManager.DisplayEntry var9 : this.plugin.displays().getDisplays()) {
+                     if (!var9.conditions().result(var4).isHidden()) {
+                        HudLayout var10 = var9.layout();
+                        ArrayList var11 = new ArrayList();
+                        ArrayList var12 = new ArrayList();
+                        this.splitAirElements(var10.getElements(), var11, var12);
+                        var5 = var5.append(this.renderHolder("layout", var9.layoutKey(), var11, var4, var2, null));
+                        var6 = var6.append(this.renderHolder("layout", var9.layoutKey(), var12, var4, var2, null));
+                     }
+                  }
+               } else {
+                  for (HudLayout var21 : this.plugin.layouts().getDefaults()) {
+                     ArrayList var24 = new ArrayList();
+                     ArrayList var27 = new ArrayList();
+                     this.splitAirElements(var21.getElements(), var24, var27);
+                     var5 = var5.append(this.renderHolder("layout", var21.getKey(), var24, var4, var2, null));
+                     var6 = var6.append(this.renderHolder("layout", var21.getKey(), var27, var4, var2, null));
+                  }
+               }
+
+               RenderManager.PopupState var20 = this.popups.get(var4.getUniqueId());
+               HudPopup var23;
+               if (var20 != null && System.currentTimeMillis() <= var20.expireAt() && (var23 = this.plugin.popups().get(var20.popupKey())) != null) {
+                  var5 = var5.append(this.renderHolder("popup", var23.getKey(), var23.getElements(), var4, var2, var20.args()));
+               }
+
+               int var26 = Math.round(var2.metrics().measure(var5).advance());
+               var5 = var5.append(shift(this.playerPanel.render(var4, var2).append(this.targetPanel.render(var4, var2)), var26 / 2 - var26));
+               if (!HudAccess.hud(var4) || !this.plugin.storage().preference(var4.getUniqueId(), "hud", true)) {
+                  var5 = Component.empty();
+                  var6 = Component.empty();
+               }
+
+               Component var28 = this.partyPanel.render(var4, var2).append(this.gpsPanel.render(var4, var2));
+               int var29 = Math.round(var2.metrics().measure((Component)var5).advance());
+               var5 = var5.append(shift(var28, var29 / 2 - var29));
+               if (this.protocolEnabled) {
+                  BossBarHandler var13 = this.protocolBars.get(var4.getUniqueId());
+                  if (var13 == null) {
+                     var13 = new BossBarHandler(var4);
+                     this.protocolBars.put(var4.getUniqueId(), var13);
+                     var13.setMinimapOverlay(this.minimapOverlays.getOrDefault(var4.getUniqueId(), Component.empty()));
+                     var13.init();
+                  }
+
+                  int var14 = Math.round(var2.metrics().measure(var5).advance());
+                  var13.setHud(var5.append(shift((Component)var6, var14 / 2 - var14)).style(var0 -> TextCompat.shadow(var0, 0)));
+               } else {
+                  BossBar var30 = this.bars.computeIfAbsent(var4.getUniqueId(), var1x -> {
+                     BossBar var2x = BossBar.bossBar(Component.empty(), 0.0F, Color.YELLOW, Overlay.PROGRESS);
+                     var4.showBossBar(var2x);
+                     return var2x;
+                  });
+                  Component var31 = ThemeStyle.paint(var5.style(var0 -> TextCompat.shadow(var0, 0)), this.plugin.storage().theme(var4.getUniqueId()));
+                  var31 = this.plugin.avatars().paint(var4, var31);
+                  var30.name(
+                     BossBarHandler.combineCentered(
+                        this.minimapOverlays.getOrDefault(var4.getUniqueId(), Component.empty()).append(HotbarOverlay.render(this.plugin, var4)),
+                        var31,
+                        (int)Math.ceil(var2.metrics().measure(var31).advance())
+                     )
+                  );
+                  if (this.isUnderwater(var4)) {
+                     BossBar var15 = this.airBars.computeIfAbsent(var4.getUniqueId(), var1x -> {
+                        BossBar var2x = BossBar.bossBar(Component.empty(), 0.0F, Color.YELLOW, Overlay.PROGRESS);
+                        var4.showBossBar(var2x);
+                        return var2x;
+                     });
+                     var15.name(var6.style(var0 -> TextCompat.shadow(var0, 0)));
+                  } else {
+                     BossBar var33 = this.airBars.remove(var4.getUniqueId());
+                     if (var33 != null) {
+                        var4.hideBossBar(var33);
+                     }
+                  }
+               }
             }
-            bossBarHandler.setMinimapOverlay(this.minimapOverlays.getOrDefault(player.getUniqueId(), (Component)Component.empty()));
-            bossBarHandler.setConversationOverlay(this.conversationOverlays.getOrDefault(player.getUniqueId(), (Component)Component.empty()));
-            bossBarHandler.setQuestLogOverlay(this.questLogOverlays.getOrDefault(player.getUniqueId(), (Component)Component.empty()));
-            bossBarHandler.init();
-        } else {
-            BossBar bossBar = BossBar.bossBar((Component)Component.empty(), (float)0.0f, (BossBar.Color)BossBar.Color.YELLOW, (BossBar.Overlay)BossBar.Overlay.PROGRESS);
-            this.bars.put(player.getUniqueId(), bossBar);
-            player.showBossBar(bossBar);
-        }
-    }
+         }
+      }
+   }
 
-    public void detach(Player player) {
-        this.minimapOverlays.remove(player.getUniqueId());
-        this.conversationOverlays.remove(player.getUniqueId());
-        this.questLogOverlays.remove(player.getUniqueId());
-        if (this.protocolEnabled) {
-            BossBarHandler bossBarHandler = this.protocolBars.remove(player.getUniqueId());
-            if (bossBarHandler != null) {
-                bossBarHandler.disable();
-            }
-        } else {
-            BossBar bossBar;
-            BossBar bossBar2 = this.bars.remove(player.getUniqueId());
-            if (bossBar2 != null) {
-                player.hideBossBar(bossBar2);
-            }
-            if ((bossBar = this.airBars.remove(player.getUniqueId())) != null) {
-                player.hideBossBar(bossBar);
-            }
-        }
-        this.popups.remove(player.getUniqueId());
-        this.combatTargets.remove(player.getUniqueId());
-    }
+   private void splitAirElements(Iterable<HudElement> var1, List<HudElement> var2, List<HudElement> var3) {
+      for (HudElement var5 : var1) {
+         if (var5 != null && var5.getKey().startsWith("enorialshud-air-")) {
+            var3.add(var5);
+         } else {
+            var2.add(var5);
+         }
+      }
+   }
 
-    public boolean setMinimapOverlay(Player player, Component component) {
-        TextComponent textComponent;
-        if (!player.isOnline()) {
+   private Component renderHolder(String var1, String var2, Iterable<HudElement> var3, Player var4, PackRegistry var5, String[] var6) {
+      Object var7 = Component.empty();
+      ArrayList var8 = new ArrayList();
+      ArrayList var9 = new ArrayList();
+      ArrayList var10 = new ArrayList();
+
+      for (HudElement var12 : var3) {
+         if ("layout".equalsIgnoreCase(var1) && var12.getKey().startsWith("enorialshud-air-")) {
+            var9.add(var12);
+         } else if ("layout".equalsIgnoreCase(var1) && "target-frame".equalsIgnoreCase(var12.getKey())) {
+            var10.add(var12);
+         } else {
+            var8.add(var12);
+         }
+      }
+
+      var9.sort(Comparator.comparingInt(var0 -> "enorialshud-air-frame".equals(var0.getKey()) ? 0 : 1));
+      var8.addAll(var9);
+      var8.addAll(var10);
+      Float var28 = null;
+      Float var29 = null;
+      Float var13 = null;
+      Float var14 = null;
+      float var15 = 0.0F;
+      float var16 = 0.0F;
+
+      for (HudElement var18 : var8) {
+         if (this.shouldRenderDynamicElement(var1, var18, var4)) {
+            ConditionHolder.ConditionResult var19 = var18.getAsset().getConditions().result(var4);
+            if (!var19.isHidden()) {
+               Object var20 = Component.empty();
+               RelativeWidth var21 = null;
+
+               for (HudLayer var23 : var18.getAsset().getLayers()) {
+                  ConditionHolder.ConditionResult var24 = var23.getConditions().result(var4);
+                  if (!var24.isHidden()) {
+                     if (var23 instanceof TextureLayer var25) {
+                        String var26 = var24.hasTexturePath() ? var24.getTexturePath() : var25.getTexturePath();
+                        RenderManager.RenderedTexture var27 = this.renderTexture(var1, var2, var18, var25, var4, var5, var26);
+                        if (var27 != null && var27.component() != null) {
+                           var20 = var20.append(var27.component());
+                           if (var27.relativeWidth() != null) {
+                              var21 = var21 == null ? var27.relativeWidth() : var21.merge(var27.relativeWidth());
+                           }
+                        }
+                     } else {
+                        RenderManager.RenderedText var36 = null;
+                        TextLayer var40;
+                        if (var23 instanceof TextLayer
+                           && (var36 = this.renderText(var1, var2, var18, var40 = (TextLayer)var23, var4, var5, var6, var24)) != null
+                           && var36.component() != null) {
+                           var20 = var20.append(var36.component());
+                           if (var36.relativeWidth() != null) {
+                              var21 = var21 == null ? var36.relativeWidth() : var21.merge(var36.relativeWidth());
+                           }
+                        }
+                     }
+                  }
+               }
+
+               if (var21 != null) {
+                  var20 = var18.getAlignment().relativeAlign((Component)var20, var21);
+               }
+
+               if (var19.hasColor()) {
+                  var20 = var20.color(var19.getColor());
+               }
+
+               String var30 = var18.getKey().replace("-compact", "");
+               HudLayer var31 = var18.getAsset().getLayers().iterator().next();
+               float var32 = var18.getScreenPosition().getOffset().getX() + var31.getOffset().getX();
+               if ("enorialshud-panel".equals(var30)) {
+                  float var33 = var16 + var5.metrics().measure((Component)var20).left() + var32;
+                  var13 = var33 + 124.0F;
+                  var14 = var33 + 52.0F;
+               }
+
+               if ("enorialshud-avatar-head".equals(var30)) {
+                  var29 = var16 + var5.metrics().measure((Component)var20).center() + var32;
+               }
+
+               if (var13 != null && Set.of("enorialshud-health-text", "enorialshud-mana-text", "enorialshud-food-text").contains(var30)) {
+                  float var34 = var5.metrics().firstCenter((Component)var20, 47);
+                  if (Float.isFinite(var34)) {
+                     int var38 = Math.round(var13 - var16 - var32 - var34);
+                     var20 = shift((Component)var20, var38);
+                  }
+               }
+
+               if (var30.startsWith("enorialshud-effects-") && var14 != null) {
+                  var20 = shift((Component)var20, Math.round(var14 - var16 - var32));
+               }
+
+               if ("corehud-armor-icon".equals(var18.getKey()) || "corehud-armor-text".equals(var18.getKey())) {
+                  HudLayer var35 = var18.getAsset().getLayers().iterator().next();
+                  float var39 = var16
+                     + var5.metrics().measure((Component)var20).center()
+                     + var18.getScreenPosition().getOffset().getX()
+                     + var35.getOffset().getX();
+                  if ("corehud-armor-icon".equals(var18.getKey())) {
+                     if (var29 != null) {
+                        int var41 = Math.round(var29 - var39);
+                        var20 = shift((Component)var20, var41);
+                        var39 += var41;
+                     }
+
+                     var28 = var39;
+                     var15 = var18.getScreenPosition().getRelativeX();
+                  } else if (var28 != null && var15 == var18.getScreenPosition().getRelativeX()) {
+                     int var42 = Math.round(var28 - var39);
+                     var20 = ((TextComponent)((TextComponent)Component.empty().append(SpaceUtil.space(var42))).append((Component)var20))
+                        .append(SpaceUtil.space(-var42));
+                  }
+               }
+
+               if ("target-frame".equals(var18.getKey())
+                  || "popup".equals(var1)
+                  || var30.startsWith("enorialshud-air-")
+                  || var30.startsWith("enorialshud-effects-")) {
+                  var20 = var5.metrics().neutral((Component)var20);
+               }
+
+               if ("target-frame".equals(var30)) {
+                  var20 = shift((Component)var20, (int)(var16 / 2.0F) - Math.round(var16));
+               }
+
+               if (("enorialshud-mana-fill".equals(var30) || "enorialshud-mana-text".equals(var30)) && !this.plugin.listeners().hasResource(var4)) {
+                  var20 = SpaceUtil.space(Math.round(var5.metrics().measure((Component)var20).advance()));
+               }
+
+               var16 += var5.metrics().measure((Component)var20).advance();
+               var7 = var7.append((Component)var20);
+            }
+         }
+      }
+
+      return (Component)var7;
+   }
+
+   private boolean shouldRenderDynamicElement(String var1, HudElement var2, Player var3) {
+      if (!"layout".equalsIgnoreCase(var1) || var2 == null || var2.getKey() == null) {
+         return true;
+      }
+
+      if ("target-frame".equals(var2.getKey()) && this.getCombatTarget(var3) != null) {
+         return false;
+      }
+
+      String var4 = var2.getKey().replace("-compact", "");
+      if (!var4.startsWith("enorialshud-effects-")
+         && !Set.of(
+               "enorialshud-panel",
+               "enorialshud-avatar-head",
+               "enorialshud-health-fill",
+               "enorialshud-health-text",
+               "enorialshud-mana-fill",
+               "enorialshud-mana-text",
+               "enorialshud-hunger-fill",
+               "enorialshud-food-text",
+               "corehud-armor-icon",
+               "corehud-armor-text"
+            )
+            .contains(var4)) {
+         if ((Set.of("enorialshud-panel", "enorialshud-hunger-fill", "enorialshud-food-text").contains(var4) || var4.startsWith("enorialshud-effects-"))
+            && var2.getKey().endsWith("-compact") == this.plugin.listeners().hasResource(var3)) {
             return false;
-        }
-        UUID uUID = player.getUniqueId();
-        boolean bl = component == null || component.equals((Object)Component.empty());
-        Object object = textComponent = bl ? Component.empty() : component.style(builder -> TextCompat.shadow(builder, 0));
-        if (bl) {
-            this.minimapOverlays.remove(uUID);
-        } else {
-            this.minimapOverlays.put(uUID, (Component)textComponent);
-        }
-        BossBarHandler bossBarHandler = this.protocolBars.get(uUID);
-        if (bossBarHandler != null) {
-            bossBarHandler.setMinimapOverlay((Component)textComponent);
-            return true;
-        }
-        return !this.protocolEnabled && this.bars.containsKey(uUID);
-    }
+         }
 
-    public void clearMinimapOverlay(Player player) {
-        this.setMinimapOverlay(player, (Component)Component.empty());
-    }
+         if (var4.startsWith("enorialshud-air-")) {
+            return this.isUnderwater(var3);
+         }
 
-    public void setConversationOverlay(Player player, Component component) {
-        TextComponent textComponent;
-        Object object = textComponent = component == null ? Component.empty() : component;
-        if (textComponent.equals((Object)Component.empty())) {
-            this.conversationOverlays.remove(player.getUniqueId());
-        } else {
-            this.conversationOverlays.put(player.getUniqueId(), (Component)textComponent);
-        }
-        BossBarHandler bossBarHandler = this.protocolBars.get(player.getUniqueId());
-        if (bossBarHandler != null) {
-            bossBarHandler.setConversationOverlay((Component)textComponent);
-        }
-    }
+         return switch (var2.getKey().toLowerCase(Locale.ROOT)) {
+            case "event-info" -> this.isEventActiveOrAnnounced(var3);
+            case "arena-queue" -> this.isArenaQueueActive(var3);
+            case "party-buff" -> this.hasActiveBuffs(var3);
+            case "enorialshud-air-fill", "enorialshud-air-text" -> this.isUnderwater(var3);
+            default -> true;
+         };
+      } else {
+         return false;
+      }
+   }
 
-    public void setQuestLogOverlay(Player player, Component component) {
-        TextComponent textComponent;
-        Object object = textComponent = component == null ? Component.empty() : component;
-        if (textComponent.equals((Object)Component.empty())) {
-            this.questLogOverlays.remove(player.getUniqueId());
-        } else {
-            this.questLogOverlays.put(player.getUniqueId(), (Component)textComponent);
-        }
-        BossBarHandler bossBarHandler = this.protocolBars.get(player.getUniqueId());
-        if (bossBarHandler != null) {
-            bossBarHandler.setQuestLogOverlay((Component)textComponent);
-        }
-    }
+   private static Component shift(Component var0, int var1) {
+      return var1 == 0 ? var0 : ((TextComponent)((TextComponent)Component.empty().append(SpaceUtil.space(var1))).append(var0)).append(SpaceUtil.space(-var1));
+   }
 
-    public void refreshTheme(Player player) {
-        BossBarHandler bossBarHandler = this.protocolBars.get(player.getUniqueId());
-        if (bossBarHandler != null) {
-            bossBarHandler.refreshTheme();
-        }
-    }
+   private boolean isUnderwater(Player var1) {
+      if (var1.getRemainingAir() < var1.getMaximumAir()) {
+         return true;
+      }
 
-    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
-    public void onHeldItem(PlayerItemHeldEvent playerItemHeldEvent) {
-        if (!PackHostingSetup.ready(playerItemHeldEvent.getPlayer()) || !HotbarOverlay.enabled(this.plugin, playerItemHeldEvent.getPlayer())) {
-            return;
-        }
-        BossBarHandler bossBarHandler = this.protocolBars.get(playerItemHeldEvent.getPlayer().getUniqueId());
-        if (bossBarHandler != null) {
-            bossBarHandler.refreshHotbar(playerItemHeldEvent.getNewSlot());
-        }
-    }
+      Material var2 = var1.getEyeLocation().getBlock().getType();
+      return var2 == Material.WATER || var2 == Material.BUBBLE_COLUMN;
+   }
 
-    public boolean hasMinimapOverlay(Player player) {
-        UUID uUID = player.getUniqueId();
-        return this.minimapOverlays.containsKey(uUID) && (this.protocolEnabled ? this.protocolBars.containsKey(uUID) : this.bars.containsKey(uUID));
-    }
+   private boolean isEventActiveOrAnnounced(Player var1) {
+      if (!this.isTruthyPlaceholder(var1, "%enorialsevents_active%")
+         && !this.isTruthyPlaceholder(var1, "%enorialsevents_in_progress%")
+         && !this.isTruthyPlaceholder(var1, "%enorialsevents_announced%")) {
+         String[] var2 = new String[]{
+            "%enorialsevents_event%", "%enorialsevents_event_name%", "%enorialsevents_current_event%", "%enorialsevents_status%", "%enorialsevents_type%"
+         };
+         Set var3 = Set.of("none", "no_event", "no event", "idle", "false", "0", "-", "n/a", "null", "unknown");
 
-    public void showPopup(Player player, String string, String[] stringArray, long l) {
-        if (this.plugin.popups().has(string)) {
-            long l2 = System.currentTimeMillis() + l * 50L;
-            this.popups.put(player.getUniqueId(), new PopupState(string, stringArray, l2));
-        }
-    }
+         for (String var7 : var2) {
+            if (this.isMeaningfulPlaceholder(var1, var7, var3)) {
+               return true;
+            }
+         }
 
-    private void tick() {
-        if (!PackHostingSetup.ready()) {
-            return;
-        }
-        boolean bl = this.renderTick++ % this.idleRenderPeriod == 0L;
-        PackRegistry packRegistry = this.plugin.packs().registry();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            BossBar bossBar;
-            BossBarHandler bossBarHandler;
-            HudPopup hudPopup;
-            Component component;
-            Object object2;
-            if (!PackHostingSetup.ready(player)) {
-                this.detach(player);
-                continue;
-            }
-            if (!bl && (this.plugin.gps() == null || !this.plugin.gps().navigation().hasActiveNavigation(player))) continue;
-            TextComponent textComponent = Component.empty();
-            TextComponent textComponent2 = Component.empty();
-            String string = this.plugin.storage().getLayout(player.getUniqueId());
-            if (string != null && this.plugin.layouts().has(string)) {
-                object2 = this.plugin.layouts().get(string);
-                ArrayList<HudElement> arrayList = new ArrayList<HudElement>();
-                ArrayList<HudElement> arrayList2 = new ArrayList<HudElement>();
-                this.splitAirElements(((HudLayout)object2).getElements(), arrayList, arrayList2);
-                textComponent = textComponent.append(this.renderHolder("layout", ((HudLayout)object2).getKey(), arrayList, player, packRegistry, null));
-                textComponent2 = textComponent2.append(this.renderHolder("layout", ((HudLayout)object2).getKey(), arrayList2, player, packRegistry, null));
-            } else if (this.plugin.displays().hasDisplays()) {
-                for (DisplayManager.DisplayEntry displayEntry : this.plugin.displays().getDisplays()) {
-                    if (displayEntry.conditions().result(player).isHidden()) continue;
-                    HudLayout hudLayout = displayEntry.layout();
-                    component = new ArrayList();
-                    ArrayList<HudElement> arrayList = new ArrayList<HudElement>();
-                    this.splitAirElements(hudLayout.getElements(), (List<HudElement>)component, (List<HudElement>)arrayList);
-                    textComponent = textComponent.append(this.renderHolder("layout", displayEntry.layoutKey(), (Iterable<HudElement>)component, player, packRegistry, null));
-                    textComponent2 = textComponent2.append(this.renderHolder("layout", displayEntry.layoutKey(), arrayList, player, packRegistry, null));
-                }
-            } else {
-                for (HudLayout hudLayout : this.plugin.layouts().getDefaults()) {
-                    ArrayList<HudElement> arrayList = new ArrayList<HudElement>();
-                    component = new ArrayList();
-                    this.splitAirElements(hudLayout.getElements(), (List<HudElement>)arrayList, (List<HudElement>)component);
-                    textComponent = textComponent.append(this.renderHolder("layout", hudLayout.getKey(), arrayList, player, packRegistry, null));
-                    textComponent2 = textComponent2.append(this.renderHolder("layout", hudLayout.getKey(), (Iterable<HudElement>)component, player, packRegistry, null));
-                }
-            }
-            object2 = this.popups.get(player.getUniqueId());
-            if (object2 != null && System.currentTimeMillis() <= ((PopupState)object2).expireAt() && (hudPopup = this.plugin.popups().get(((PopupState)object2).popupKey())) != null) {
-                textComponent = textComponent.append(this.renderHolder("popup", hudPopup.getKey(), hudPopup.getElements(), player, packRegistry, ((PopupState)object2).args()));
-            }
-            int n = Math.round(packRegistry.metrics().measure((Component)textComponent).advance());
-            textComponent = textComponent.append(RenderManager.shift(this.playerPanel.render(player, packRegistry).append(this.targetPanel.render(player, packRegistry)), n / 2 - n));
-            if (!HudAccess.hud(player) || !this.plugin.storage().preference(player.getUniqueId(), "hud", true)) {
-                textComponent = Component.empty();
-                textComponent2 = Component.empty();
-            }
-            component = this.partyPanel.render(player, packRegistry).append(this.gpsPanel.render(player, packRegistry));
-            int n2 = Math.round(packRegistry.metrics().measure((Component)textComponent).advance());
-            textComponent = textComponent.append(RenderManager.shift(component, n2 / 2 - n2));
-            if (this.protocolEnabled) {
-                bossBarHandler = this.protocolBars.get(player.getUniqueId());
-                if (bossBarHandler == null) {
-                    bossBarHandler = new BossBarHandler(player);
-                    this.protocolBars.put(player.getUniqueId(), bossBarHandler);
-                    bossBarHandler.setMinimapOverlay(this.minimapOverlays.getOrDefault(player.getUniqueId(), (Component)Component.empty()));
-                    bossBarHandler.init();
-                }
-                int n3 = Math.round(packRegistry.metrics().measure((Component)textComponent).advance());
-                bossBarHandler.setHud(textComponent.append(RenderManager.shift((Component)textComponent2, n3 / 2 - n3)).style(builder -> TextCompat.shadow(builder, 0)));
-                continue;
-            }
-            bossBarHandler = this.bars.computeIfAbsent(player.getUniqueId(), uUID -> {
-                BossBar bossBar = BossBar.bossBar((Component)Component.empty(), (float)0.0f, (BossBar.Color)BossBar.Color.YELLOW, (BossBar.Overlay)BossBar.Overlay.PROGRESS);
-                player.showBossBar(bossBar);
-                return bossBar;
-            });
-            Component component2 = ThemeStyle.paint(textComponent.style(builder -> TextCompat.shadow(builder, 0)), this.plugin.storage().theme(player.getUniqueId()));
-            component2 = this.plugin.avatars().paint(player, component2);
-            bossBarHandler.name(BossBarHandler.combineCentered(this.minimapOverlays.getOrDefault(player.getUniqueId(), (Component)Component.empty()).append(HotbarOverlay.render(this.plugin, player)), component2, (int)Math.ceil(packRegistry.metrics().measure(component2).advance())));
-            if (this.isUnderwater(player)) {
-                bossBar = this.airBars.computeIfAbsent(player.getUniqueId(), uUID -> {
-                    BossBar bossBar = BossBar.bossBar((Component)Component.empty(), (float)0.0f, (BossBar.Color)BossBar.Color.YELLOW, (BossBar.Overlay)BossBar.Overlay.PROGRESS);
-                    player.showBossBar(bossBar);
-                    return bossBar;
-                });
-                bossBar.name(textComponent2.style(builder -> TextCompat.shadow(builder, 0)));
-                continue;
-            }
-            bossBar = this.airBars.remove(player.getUniqueId());
-            if (bossBar == null) continue;
-            player.hideBossBar(bossBar);
-        }
-    }
+         return false;
+      } else {
+         return true;
+      }
+   }
 
-    private void splitAirElements(Iterable<HudElement> iterable, List<HudElement> list, List<HudElement> list2) {
-        for (HudElement hudElement : iterable) {
-            if (hudElement == null || !hudElement.getKey().startsWith("enorialshud-air-")) {
-                list.add(hudElement);
-                continue;
-            }
-            list2.add(hudElement);
-        }
-    }
+   private boolean isArenaQueueActive(Player var1) {
+      return !this.isTruthyPlaceholder(var1, "%enorialsarena_in_queue%")
+            && !this.isTruthyPlaceholder(var1, "%enorialsarena_queueing%")
+            && !this.isTruthyPlaceholder(var1, "%enorialsarena_queue_active%")
+         ? this.isMeaningfulPlaceholder(var1, "%enorialsarena_queue_mode%", Set.of("none", "false", "0", "-", "n/a", "null", "off", "unknown"))
+         : true;
+   }
 
-    /*
-     * WARNING - void declaration
-     */
-    private Component renderHolder(String string, String string2, Iterable<HudElement> iterable, Player player, PackRegistry packRegistry, String[] stringArray) {
-        TextComponent textComponent = Component.empty();
-        ArrayList<HudElement> arrayList = new ArrayList<HudElement>();
-        ArrayList<HudElement> arrayList2 = new ArrayList<HudElement>();
-        ArrayList<HudElement> arrayList3 = new ArrayList<HudElement>();
-        for (HudElement object2 : iterable) {
-            if (!"layout".equalsIgnoreCase(string) || !object2.getKey().startsWith("enorialshud-air-")) {
-                if ("layout".equalsIgnoreCase(string) && "target-frame".equalsIgnoreCase(object2.getKey())) {
-                    arrayList3.add(object2);
-                    continue;
-                }
-                arrayList.add(object2);
-                continue;
-            }
-            arrayList2.add(object2);
-        }
-        arrayList2.sort(Comparator.comparingInt(hudElement -> "enorialshud-air-frame".equals(hudElement.getKey()) ? 0 : 1));
-        arrayList.addAll(arrayList2);
-        arrayList.addAll(arrayList3);
-        Object object3 = null;
-        Object var12_13 = null;
-        Float f = null;
-        Float f2 = null;
-        float f3 = 0.0f;
-        float f4 = 0.0f;
-        for (HudElement hudElement2 : arrayList) {
-            float f5;
-            HudLayer hudLayer2;
-            ConditionHolder.ConditionResult conditionResult;
-            if (!this.shouldRenderDynamicElement(string, hudElement2, player) || (conditionResult = hudElement2.getAsset().getConditions().result(player)).isHidden()) continue;
-            TextComponent textComponent2 = Component.empty();
-            RelativeWidth relativeWidth = null;
-            for (HudLayer hudLayer2 : hudElement2.getAsset().getLayers()) {
-                Object object;
-                Object object2;
-                ConditionHolder.ConditionResult conditionResult2 = hudLayer2.getConditions().result(player);
-                if (conditionResult2.isHidden()) continue;
-                if (hudLayer2 instanceof TextureLayer) {
-                    TextureLayer hudLayer3 = (TextureLayer)hudLayer2;
-                    object2 = conditionResult2.hasTexturePath() ? conditionResult2.getTexturePath() : hudLayer3.getTexturePath();
-                    object = this.renderTexture(string, string2, hudElement2, hudLayer3, player, packRegistry, (String)object2);
-                    if (object == null || ((RenderedTexture)object).component() == null) continue;
-                    textComponent2 = textComponent2.append(((RenderedTexture)object).component());
-                    if (((RenderedTexture)object).relativeWidth() == null) continue;
-                    relativeWidth = relativeWidth == null ? ((RenderedTexture)object).relativeWidth() : relativeWidth.merge(((RenderedTexture)object).relativeWidth());
-                    continue;
-                }
-                object2 = null;
-                if (!(hudLayer2 instanceof TextLayer) || (object2 = this.renderText(string, string2, hudElement2, (TextLayer)(object = (TextLayer)hudLayer2), player, packRegistry, stringArray, conditionResult2)) == null || ((RenderedText)object2).component() == null) continue;
-                textComponent2 = textComponent2.append(((RenderedText)object2).component());
-                if (((RenderedText)object2).relativeWidth() == null) continue;
-                relativeWidth = relativeWidth == null ? ((RenderedText)object2).relativeWidth() : relativeWidth.merge(((RenderedText)object2).relativeWidth());
-            }
-            if (relativeWidth != null) {
-                textComponent2 = hudElement2.getAlignment().relativeAlign((Component)textComponent2, relativeWidth);
-            }
-            if (conditionResult.hasColor()) {
-                textComponent2 = textComponent2.color(conditionResult.getColor());
-            }
-            String string3 = hudElement2.getKey().replace("-compact", "");
-            hudLayer2 = hudElement2.getAsset().getLayers().iterator().next();
-            float f6 = hudElement2.getScreenPosition().getOffset().getX() + hudLayer2.getOffset().getX();
-            if ("enorialshud-panel".equals(string3)) {
-                float f7 = f4 + packRegistry.metrics().measure((Component)textComponent2).left() + f6;
-                f = Float.valueOf(f7 + 124.0f);
-                f2 = Float.valueOf(f7 + 52.0f);
-            }
-            if ("enorialshud-avatar-head".equals(string3)) {
-                Float f8 = Float.valueOf(f4 + packRegistry.metrics().measure((Component)textComponent2).center() + f6);
-            }
-            if (f != null && Set.of("enorialshud-health-text", "enorialshud-mana-text", "enorialshud-food-text").contains(string3) && Float.isFinite(f5 = packRegistry.metrics().firstCenter((Component)textComponent2, 47))) {
-                int n = Math.round(f.floatValue() - f4 - f6 - f5);
-                textComponent2 = RenderManager.shift((Component)textComponent2, n);
-            }
-            if (string3.startsWith("enorialshud-effects-") && f2 != null) {
-                textComponent2 = RenderManager.shift((Component)textComponent2, Math.round(f2.floatValue() - f4 - f6));
-            }
-            if ("corehud-armor-icon".equals(hudElement2.getKey()) || "corehud-armor-text".equals(hudElement2.getKey())) {
-                HudLayer hudLayer3 = hudElement2.getAsset().getLayers().iterator().next();
-                float f9 = f4 + packRegistry.metrics().measure((Component)textComponent2).center() + (float)hudElement2.getScreenPosition().getOffset().getX() + (float)hudLayer3.getOffset().getX();
-                if ("corehud-armor-icon".equals(hudElement2.getKey())) {
-                    Float var12_14 = var12_13 instanceof Float ? (Float)var12_13 : null;
-                    if (var12_14 != null) {
-                        int n = Math.round(var12_14.floatValue() - f9);
-                        textComponent2 = RenderManager.shift((Component)textComponent2, n);
-                        f9 += (float)n;
-                    }
-                    object3 = Float.valueOf(f9);
-                    f3 = hudElement2.getScreenPosition().getRelativeX();
-                } else if (object3 != null && f3 == hudElement2.getScreenPosition().getRelativeX()) {
-                    int n = Math.round(((Float)object3).floatValue() - f9);
-                    textComponent2 = ((TextComponent)((TextComponent)Component.empty().append(SpaceUtil.space(n))).append((Component)textComponent2)).append(SpaceUtil.space(-n));
-                }
-            }
-            if ("target-frame".equals(hudElement2.getKey()) || "popup".equals(string) || string3.startsWith("enorialshud-air-") || string3.startsWith("enorialshud-effects-")) {
-                textComponent2 = packRegistry.metrics().neutral((Component)textComponent2);
-            }
-            if ("target-frame".equals(string3)) {
-                textComponent2 = RenderManager.shift((Component)textComponent2, (int)(f4 / 2.0f) - Math.round(f4));
-            }
-            if (("enorialshud-mana-fill".equals(string3) || "enorialshud-mana-text".equals(string3)) && !this.plugin.listeners().hasResource(player)) {
-                textComponent2 = SpaceUtil.space(Math.round(packRegistry.metrics().measure((Component)textComponent2).advance()));
-            }
-            f4 += packRegistry.metrics().measure((Component)textComponent2).advance();
-            textComponent = textComponent.append((Component)textComponent2);
-        }
-        return textComponent;
-    }
+   private boolean hasActiveBuffs(Player var1) {
+      return this.isMeaningfulPlaceholder(var1, "%enorialsspells_buffs%", Set.of("none", "no buffs", "false", "0", "-", "n/a", "null", "empty"));
+   }
 
-    private boolean shouldRenderDynamicElement(String string, HudElement hudElement, Player player) {
-        if ("layout".equalsIgnoreCase(string) && hudElement != null && hudElement.getKey() != null) {
-            if ("target-frame".equals(hudElement.getKey()) && this.getCombatTarget(player) != null) {
-                return false;
-            }
-            String string2 = hudElement.getKey().replace("-compact", "");
-            if (string2.startsWith("enorialshud-effects-") || Set.of("enorialshud-panel", "enorialshud-avatar-head", "enorialshud-health-fill", "enorialshud-health-text", "enorialshud-mana-fill", "enorialshud-mana-text", "enorialshud-hunger-fill", "enorialshud-food-text", "corehud-armor-icon", "corehud-armor-text").contains(string2)) {
-                return false;
-            }
-            if ((Set.of("enorialshud-panel", "enorialshud-hunger-fill", "enorialshud-food-text").contains(string2) || string2.startsWith("enorialshud-effects-")) && hudElement.getKey().endsWith("-compact") == this.plugin.listeners().hasResource(player)) {
-                return false;
-            }
-            if (string2.startsWith("enorialshud-air-")) {
-                return this.isUnderwater(player);
-            }
-            return switch (hudElement.getKey().toLowerCase(Locale.ROOT)) {
-                case "event-info" -> this.isEventActiveOrAnnounced(player);
-                case "arena-queue" -> this.isArenaQueueActive(player);
-                case "party-buff" -> this.hasActiveBuffs(player);
-                case "enorialshud-air-fill", "enorialshud-air-text" -> this.isUnderwater(player);
-                default -> true;
-            };
-        }
-        return true;
-    }
+   private boolean isTruthyPlaceholder(Player var1, String var2) {
+      String var3 = this.resolvePlaceholderValue(var1, var2);
+      if (var3 == null) {
+         return false;
+      }
 
-    private static Component shift(Component component, int n) {
-        return n == 0 ? component : ((TextComponent)((TextComponent)Component.empty().append(SpaceUtil.space(n))).append(component)).append(SpaceUtil.space(-n));
-    }
+      String var4 = var3.trim().toLowerCase(Locale.ROOT);
+      return var4.equals("true") || var4.equals("1") || var4.equals("yes") || var4.equals("on");
+   }
 
-    private boolean isUnderwater(Player player) {
-        if (player.getRemainingAir() < player.getMaximumAir()) {
-            return true;
-        }
-        Material material = player.getEyeLocation().getBlock().getType();
-        return material == Material.WATER || material == Material.BUBBLE_COLUMN;
-    }
+   private boolean isMeaningfulPlaceholder(Player var1, String var2, Set<String> var3) {
+      String var4 = this.resolvePlaceholderValue(var1, var2);
+      if (var4 == null) {
+         return false;
+      }
 
-    private boolean isEventActiveOrAnnounced(Player player) {
-        if (!(this.isTruthyPlaceholder(player, "%enorialsevents_active%") || this.isTruthyPlaceholder(player, "%enorialsevents_in_progress%") || this.isTruthyPlaceholder(player, "%enorialsevents_announced%"))) {
-            String[] stringArray = new String[]{"%enorialsevents_event%", "%enorialsevents_event_name%", "%enorialsevents_current_event%", "%enorialsevents_status%", "%enorialsevents_type%"};
-            Set<String> set = Set.of("none", "no_event", "no event", "idle", "false", "0", "-", "n/a", "null", "unknown");
-            for (String string : stringArray) {
-                if (!this.isMeaningfulPlaceholder(player, string, set)) continue;
-                return true;
-            }
-            return false;
-        }
-        return true;
-    }
+      String var5 = var4.trim();
+      if (var5.isEmpty()) {
+         return false;
+      }
 
-    private boolean isArenaQueueActive(Player player) {
-        return !this.isTruthyPlaceholder(player, "%enorialsarena_in_queue%") && !this.isTruthyPlaceholder(player, "%enorialsarena_queueing%") && !this.isTruthyPlaceholder(player, "%enorialsarena_queue_active%") ? this.isMeaningfulPlaceholder(player, "%enorialsarena_queue_mode%", Set.of("none", "false", "0", "-", "n/a", "null", "off", "unknown")) : true;
-    }
+      String var6 = var5.toLowerCase(Locale.ROOT);
+      return var6.contains("%") ? false : !var3.contains(var6);
+   }
 
-    private boolean hasActiveBuffs(Player player) {
-        return this.isMeaningfulPlaceholder(player, "%enorialsspells_buffs%", Set.of("none", "no buffs", "false", "0", "-", "n/a", "null", "empty"));
-    }
+   private String resolvePlaceholderValue(Player var1, String var2) {
+      if (var2 != null && !var2.isEmpty()) {
+         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            return var2;
+         }
 
-    private boolean isTruthyPlaceholder(Player player, String string) {
-        String string2 = this.resolvePlaceholderValue(player, string);
-        if (string2 == null) {
-            return false;
-        }
-        String string3 = string2.trim().toLowerCase(Locale.ROOT);
-        return string3.equals("true") || string3.equals("1") || string3.equals("yes") || string3.equals("on");
-    }
+         try {
+            return PlaceholderAPI.setPlaceholders(var1, var2);
+         } catch (Throwable var4) {
+            return var2;
+         }
+      } else {
+         return null;
+      }
+   }
 
-    private boolean isMeaningfulPlaceholder(Player player, String string, Set<String> set) {
-        String string2 = this.resolvePlaceholderValue(player, string);
-        if (string2 == null) {
-            return false;
-        }
-        String string3 = string2.trim();
-        if (string3.isEmpty()) {
-            return false;
-        }
-        String string4 = string3.toLowerCase(Locale.ROOT);
-        return string4.contains("%") ? false : !set.contains(string4);
-    }
-
-    private String resolvePlaceholderValue(Player player, String string) {
-        if (string != null && !string.isEmpty()) {
-            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-                return string;
-            }
-            try {
-                return PlaceholderAPI.setPlaceholders((Player)player, (String)string);
-            }
-            catch (Throwable throwable) {
-                return string;
-            }
-        }
-        return null;
-    }
-
-    private RenderedTexture renderTexture(String string, String string2, HudElement hudElement, TextureLayer textureLayer, Player player, PackRegistry packRegistry, String string3) {
-        PackRegistry.TextureSteps textureSteps = packRegistry.getTextureSteps(string, string2, hudElement.getKey(), textureLayer.getKey(), string3);
-        if (textureSteps != null) {
-            int n = this.getStepIndex(player, textureSteps.function(), textureSteps.steps().size());
-            if (n <= 0) {
-                return null;
-            }
-            PackRegistry.GlyphInfo glyphInfo = textureSteps.steps().get(n - 1);
-            Component component = glyphInfo.component(packRegistry);
-            if ("target-frame".equals(hudElement.getKey()) || "enorialshud-air-fill".equals(hudElement.getKey())) {
-                int n2 = textureSteps.steps().get((int)(textureSteps.steps().size() - 1)).width;
-                return new RenderedTexture(packRegistry.metrics().neutral(RenderManager.shift(component, -n2 / 2)), null);
-            }
-            if ("enorialshud-health-fill".equals(hudElement.getKey())) {
-                component = component.color(TextColor.color((int)HudStatus.snapshot(player).tone().rgb()));
-            }
-            SizedComponent sizedComponent = new SizedComponent(component, glyphInfo.width);
-            RelativeWidth relativeWidth = textureLayer.getAlignment().calculateRelativeWidth(glyphInfo.width, textureLayer.getOffset());
-            Component component2 = textureLayer.getAlignment().align(sizedComponent);
-            component2 = this.applyHorizontalOffset(component2, player, hudElement, textureLayer);
-            return new RenderedTexture(component2, relativeWidth);
-        }
-        PackRegistry.GlyphInfo glyphInfo = packRegistry.getTexture(string, string2, hudElement.getKey(), textureLayer.getKey(), string3);
-        if (glyphInfo == null) {
+   private RenderManager.RenderedTexture renderTexture(
+      String var1, String var2, HudElement var3, TextureLayer var4, Player var5, PackRegistry var6, String var7
+   ) {
+      PackRegistry.TextureSteps var8 = var6.getTextureSteps(var1, var2, var3.getKey(), var4.getKey(), var7);
+      if (var8 != null) {
+         int var15 = this.getStepIndex(var5, var8.function(), var8.steps().size());
+         if (var15 <= 0) {
             return null;
-        }
-        SizedComponent sizedComponent = new SizedComponent(glyphInfo.component(packRegistry), glyphInfo.width);
-        RelativeWidth relativeWidth = textureLayer.getAlignment().calculateRelativeWidth(glyphInfo.width, textureLayer.getOffset());
-        Component component = textureLayer.getAlignment().align(sizedComponent);
-        component = this.applyHorizontalOffset(component, player, hudElement, textureLayer);
-        return new RenderedTexture(component, relativeWidth);
-    }
+         }
 
-    private RenderedText renderText(String string, String string2, HudElement hudElement, TextLayer textLayer, Player player, PackRegistry packRegistry, String[] stringArray, ConditionHolder.ConditionResult conditionResult) {
-        int n;
-        String string3;
-        String string4 = packRegistry.getTextFont(string, string2, hudElement.getKey(), textLayer.getKey());
-        if (hudElement.getKey().startsWith("enorialshud-effects-")) {
-            String string5 = hudElement.getKey().replace("-compact", "");
-            int n2 = Integer.parseInt(string5.substring(string5.lastIndexOf(45) + 1));
-            Component component = this.renderEffects(player, string4, hudElement.getKey().contains("timers"), n2, packRegistry);
-            return new RenderedText(packRegistry.metrics().neutral(component), null);
-        }
-        String string6 = this.resolveText(player, textLayer.getText(), stringArray);
-        Component component = this.legacyToComponent(string6);
-        if (string4 != null) {
-            component = LegacyText.font(component, Key.key((String)string4));
-        }
-        component = component.style(builder -> TextCompat.shadow(builder, 0));
-        if (conditionResult != null && conditionResult.hasColor()) {
-            component = component.color(conditionResult.getColor());
-        }
-        if (("target-frame".equals(hudElement.getKey()) || "enorialshud-air-text".equals(hudElement.getKey())) && textLayer.getAlignment() == HudAlignment.CENTER) {
-            Component component2 = RenderManager.shift(component, -Math.round(packRegistry.metrics().measure(component).center()));
-            component2 = packRegistry.metrics().neutral(component2);
-            return new RenderedText(this.applyHorizontalOffset(component2, player, hudElement, textLayer), null);
-        }
-        switch (hudElement.getKey().replace("-compact", "")) {
-            case "enorialshud-health-text": 
-            case "enorialshud-food-text": {
-                String string7 = "88/88";
-                break;
+         PackRegistry.GlyphInfo var16 = var8.steps().get(var15 - 1);
+         Component var17 = var16.component(var6);
+         if (!"target-frame".equals(var3.getKey()) && !"enorialshud-air-fill".equals(var3.getKey())) {
+            if ("enorialshud-health-fill".equals(var3.getKey())) {
+               var17 = var17.color(TextColor.color(HudStatus.snapshot(var5).tone().rgb()));
             }
-            case "enorialshud-mana-text": {
-                String string7 = "888/888";
-                break;
-            }
-            case "corehud-armor-text": {
-                String string7 = "88";
-                break;
-            }
-            default: {
-                String string7 = string3 = null;
-            }
-        }
-        if (string3 != null) {
-            Component component3 = Component.text((String)string3).style(component.style());
-            if ("corehud-armor-text".equals(hudElement.getKey())) {
-                component3 = component3.decorate(TextDecoration.BOLD);
-            }
-            component = string3.contains("/") ? packRegistry.metrics().fieldAt(component, component3, 47) : packRegistry.metrics().field(component, component3);
-            n = this.estimateMonoDigitsWidth(string3);
-        } else {
-            n = this.estimateTextWidth(hudElement, textLayer, string4, string6);
-        }
-        SizedComponent sizedComponent = new SizedComponent(component, n);
-        RelativeWidth relativeWidth = textLayer.getAlignment().calculateRelativeWidth(n, textLayer.getOffset());
-        Component component4 = textLayer.getAlignment().align(sizedComponent);
-        component4 = this.applyHorizontalOffset(component4, player, hudElement, textLayer);
-        return new RenderedText(component4, relativeWidth);
-    }
 
-    public Component renderEffects(Player player, String string, boolean bl, int n, PackRegistry packRegistry) {
-        if (!HudAccess.has((CommandSender)player, "enorials.hud.effects") || !this.plugin.storage().preference(player.getUniqueId(), "effects", true)) {
-            return Component.empty();
-        }
-        TextComponent textComponent = Component.empty();
-        List list = HudStatus.snapshot(player).effects().stream().skip((long)n * 12L).limit(12L).toList();
-        if (string == null) {
-            return textComponent;
-        }
-        for (HudStatus.Effect effect : list) {
-            TextComponent textComponent2 = Component.empty();
-            if (bl) {
-                var11_11 = effect.timer();
-                if (((String)var11_11).endsWith("s")) {
-                    var11_11 = ((String)var11_11).substring(0, ((String)var11_11).length() - 1);
-                }
-                if (((String)var11_11).length() > 3 && effect.remainingTicks() > 0) {
-                    var11_11 = Math.max(1, effect.remainingTicks() / 72000) + "h";
-                }
-                var12_12 = HudEffectText.timer((String)var11_11, string);
-                textComponent2 = HudEffectText.center(var12_12, string, packRegistry.metrics());
+            SizedComponent var20 = new SizedComponent(var17, var16.width);
+            RelativeWidth var13 = var4.getAlignment().calculateRelativeWidth(var16.width, var4.getOffset());
+            Component var14 = var4.getAlignment().align(var20);
+            var14 = this.applyHorizontalOffset(var14, var5, var3, var4);
+            return new RenderManager.RenderedTexture(var14, var13);
+         } else {
+            int var19 = var8.steps().get(var8.steps().size() - 1).width;
+            return new RenderManager.RenderedTexture(var6.metrics().neutral(shift(var17, -var19 / 2)), null);
+         }
+      } else {
+         PackRegistry.GlyphInfo var9 = var6.getTexture(var1, var2, var3.getKey(), var4.getKey(), var7);
+         if (var9 == null) {
+            return null;
+         }
+
+         SizedComponent var10 = new SizedComponent(var9.component(var6), var9.width);
+         RelativeWidth var11 = var4.getAlignment().calculateRelativeWidth(var9.width, var4.getOffset());
+         Component var12 = var4.getAlignment().align(var10);
+         var12 = this.applyHorizontalOffset(var12, var5, var3, var4);
+         return new RenderManager.RenderedTexture(var12, var11);
+      }
+   }
+
+   private RenderManager.RenderedText renderText(
+      String var1, String var2, HudElement var3, TextLayer var4, Player var5, PackRegistry var6, String[] var7, ConditionHolder.ConditionResult var8
+   ) {
+      String var9 = var6.getTextFont(var1, var2, var3.getKey(), var4.getKey());
+      if (var3.getKey().startsWith("enorialshud-effects-")) {
+         String var17 = var3.getKey().replace("-compact", "");
+         int var19 = Integer.parseInt(var17.substring(var17.lastIndexOf(45) + 1));
+         Component var22 = this.renderEffects(var5, var9, var3.getKey().contains("timers"), var19, var6);
+         return new RenderManager.RenderedText(var6.metrics().neutral(var22), null);
+      }
+
+      String var10 = this.resolveText(var5, var4.getText(), var7);
+      Component var11 = this.legacyToComponent(var10);
+      if (var9 != null) {
+         var11 = LegacyText.font(var11, Key.key(var9));
+      }
+
+      var11 = var11.style(var0 -> TextCompat.shadow(var0, 0));
+      if (var8 != null && var8.hasColor()) {
+         var11 = var11.color(var8.getColor());
+      }
+
+      if (("target-frame".equals(var3.getKey()) || "enorialshud-air-text".equals(var3.getKey())) && var4.getAlignment() == HudAlignment.CENTER) {
+         Component var20 = shift(var11, -Math.round(var6.metrics().measure(var11).center()));
+         var20 = var6.metrics().neutral(var20);
+         return new RenderManager.RenderedText(this.applyHorizontalOffset(var20, var5, var3, var4), null);
+      }
+
+      String var12 = switch (var3.getKey().replace("-compact", "")) {
+         case "enorialshud-health-text", "enorialshud-food-text" -> "88/88";
+         case "enorialshud-mana-text" -> "888/888";
+         case "corehud-armor-text" -> "88";
+         default -> null;
+      };
+      int var23;
+      if (var12 != null) {
+         Component var24 = Component.text(var12).style(var11.style());
+         if ("corehud-armor-text".equals(var3.getKey())) {
+            var24 = var24.decorate(TextDecoration.BOLD);
+         }
+
+         var11 = var12.contains("/") ? var6.metrics().fieldAt(var11, var24, 47) : var6.metrics().field(var11, var24);
+         var23 = this.estimateMonoDigitsWidth(var12);
+      } else {
+         var23 = this.estimateTextWidth(var3, var4, var9, var10);
+      }
+
+      SizedComponent var25 = new SizedComponent(var11, var23);
+      RelativeWidth var15 = var4.getAlignment().calculateRelativeWidth(var23, var4.getOffset());
+      Component var16 = var4.getAlignment().align(var25);
+      var16 = this.applyHorizontalOffset(var16, var5, var3, var4);
+      return new RenderManager.RenderedText(var16, var15);
+   }
+
+   public Component renderEffects(Player var1, String var2, boolean var3, int var4, PackRegistry var5) {
+      if (HudAccess.has(var1, "enorials.hud.effects") && this.plugin.storage().preference(var1.getUniqueId(), "effects", true)) {
+         Object var6 = Component.empty();
+         List var7 = HudStatus.snapshot(var1).effects().stream().skip(var4 * 12L).limit(12L).toList();
+         if (var2 == null) {
+            return (Component)var6;
+         }
+
+         for (HudStatus.Effect var9 : var7) {
+            Object var10 = Component.empty();
+            if (var3) {
+               String var11 = var9.timer();
+               if (var11.endsWith("s")) {
+                  var11 = var11.substring(0, var11.length() - 1);
+               }
+
+               if (var11.length() > 3 && var9.remainingTicks() > 0) {
+                  var11 = Math.max(1, var9.remainingTicks() / 72000) + "h";
+               }
+
+               Component var12 = HudEffectText.timer(var11, var2);
+               var10 = HudEffectText.center(var12, var2, var5.metrics());
             } else {
-                var11_11 = this.effectGlyphs.getProperty(effect.key());
-                if (var11_11 != null) {
-                    var12_12 = LegacyText.font((Component)Component.text((char)((char)Integer.parseInt((String)var11_11))), Key.key((String)string));
-                    Component component = LegacyText.font((Component)Component.text((char)(effect.harmful() ? (char)'\ue901' : '\ue900')), Key.key((String)string));
-                    textComponent2 = packRegistry.metrics().neutral(var12_12).append(component);
-                }
+               String var14 = this.effectGlyphs.getProperty(var9.key());
+               if (var14 != null) {
+                  Component var15 = LegacyText.font(Component.text((char)Integer.parseInt(var14)), Key.key(var2));
+                  Component var13 = LegacyText.font(Component.text((char)(var9.harmful() ? '\ue901' : '\ue900')), Key.key(var2));
+                  var10 = var5.metrics().neutral(var15).append(var13);
+               }
             }
-            textComponent = textComponent.append(packRegistry.metrics().neutral((Component)textComponent2)).append(SpaceUtil.space(12));
-        }
-        return packRegistry.metrics().neutral((Component)textComponent).style(builder -> TextCompat.shadow(builder, 0));
-    }
 
-    private int estimateTextWidth(HudElement hudElement, TextLayer textLayer, String string, String string2) {
-        String string3;
-        if (hudElement != null && "target-frame".equalsIgnoreCase(hudElement.getKey())) {
-            return this.estimateVanillaWidth(string2);
-        }
-        String string4 = textLayer != null ? textLayer.getFont() : "";
-        String string5 = string3 = string != null ? string.toLowerCase() : "";
-        if ("enorialsavatar".equalsIgnoreCase(string4) || string3.contains("enorialsavatar")) {
+            var6 = var6.append(var5.metrics().neutral((Component)var10)).append(SpaceUtil.space(12));
+         }
+
+         return var5.metrics().neutral((Component)var6).style(var0 -> TextCompat.shadow(var0, 0));
+      } else {
+         return Component.empty();
+      }
+   }
+
+   private int estimateTextWidth(HudElement var1, TextLayer var2, String var3, String var4) {
+      if (var1 != null && "target-frame".equalsIgnoreCase(var1.getKey())) {
+         return this.estimateVanillaWidth(var4);
+      } else {
+         String var5 = var2 != null ? var2.getFont() : "";
+         String var6 = var3 != null ? var3.toLowerCase() : "";
+         if (!"enorialsavatar".equalsIgnoreCase(var5) && !var6.contains("enorialsavatar")) {
+            return !"default-small-mono".equalsIgnoreCase(var5) && !var6.contains("mono")
+               ? TextWidthEstimator.estimate(var4)
+               : this.estimateMonoDigitsWidth(var4);
+         } else {
             return Math.max(1, this.plugin.cfg().getInt("avatars.glyph-width", 40));
-        }
-        return !"default-small-mono".equalsIgnoreCase(string4) && !string3.contains("mono") ? TextWidthEstimator.estimate(string2) : this.estimateMonoDigitsWidth(string2);
-    }
+         }
+      }
+   }
 
-    private int estimateMonoDigitsWidth(String string) {
-        if (string != null && !string.isEmpty()) {
-            String string2 = string.replaceAll("\u0102\u201a\u00c2\u00a7[0-9A-FK-ORa-fk-or]", "");
-            string2 = string2.replaceAll("<#[0-9a-fA-F]{6}>", "");
-            string2 = string2.replaceAll("<[^>]+>", "");
-            int n = 0;
-            for (int i = 0; i < string2.length(); ++i) {
-                char c = string2.charAt(i);
-                n += (switch (c) {
-                    case ' ', '\u200c' -> 4;
-                    case '-', '.', '/', ':' -> 4;
-                    case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> 4;
-                    default -> 6;
-                });
+   private int estimateMonoDigitsWidth(String var1) {
+      if (var1 != null && !var1.isEmpty()) {
+         String var2 = var1.replaceAll("Ă‚Â§[0-9A-FK-ORa-fk-or]", "");
+         var2 = var2.replaceAll("<#[0-9a-fA-F]{6}>", "");
+         var2 = var2.replaceAll("<[^>]+>", "");
+         byte var3 = 0;
+
+         for (int var4 = 0; var4 < var2.length(); var4++) {
+            char var5 = var2.charAt(var4);
+
+            var3 += switch (var5) {
+               case ' ', '\u200c' -> 4;
+               case '-', '.', '/', ':' -> 4;
+               case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> 4;
+               default -> 6;
+            };
+         }
+
+         return var3;
+      } else {
+         return 0;
+      }
+   }
+
+   private int estimateVanillaWidth(String var1) {
+      if (var1 != null && !var1.isEmpty()) {
+         String var2 = var1.replaceAll("Ă‚Â§[0-9A-FK-ORa-fk-or]", "");
+         var2 = var2.replaceAll("<#[0-9a-fA-F]{6}>", "");
+         var2 = var2.replaceAll("<[^>]+>", "");
+         int var3 = 0;
+
+         for (int var4 = 0; var4 < var2.length(); var4++) {
+            var3 += this.vanillaCharWidth(var2.charAt(var4));
+         }
+
+         return var3;
+      } else {
+         return 0;
+      }
+   }
+
+   private int vanillaCharWidth(char var1) {
+      return switch (var1) {
+         case ' ', '\u200c' -> 4;
+         case '!', '\'', ',', '.', ':', ';', 'i', '|' -> 2;
+         case '"', '(', ')', 'I', '[', ']', '`', 'l', 't', '{', '}' -> 4;
+         case '<', '>', 'f', 'k' -> 5;
+         case '@', '~' -> 7;
+         default -> 6;
+      };
+   }
+
+   private int getStepIndex(Player var1, FunctionData var2, int var3) {
+      if (var2 != null && var3 > 0) {
+         double var4 = this.plugin.listeners().getCurrent(var1, var2.listener());
+         double var6 = this.plugin.listeners().getMax(var1, var2.listener());
+         if (var6 <= 0.0) {
+            return 0;
+         }
+
+         double var8 = Math.max(0.0, Math.min(1.0, var4 / var6));
+         return (int)Math.ceil(var8 * var3);
+      } else {
+         return 0;
+      }
+   }
+
+   private String resolveText(Player var1, String var2, String[] var3) {
+      String var4 = var2;
+      if (var3 != null) {
+         for (int var5 = 0; var5 < var3.length; var5++) {
+            var4 = var4.replace("%arg-" + (var5 + 1) + "%", var3[var5]);
+         }
+      }
+
+      String var36 = this.plugin.cfg().getString("decimal-format", "00##");
+      var4 = var4.replace("%health-bar-value%", this.formatListenerValue("health", this.plugin.listeners().getCurrent(var1, "health"), var36));
+      var4 = var4.replace("%health-bar-max%", this.formatListenerValue("health", this.plugin.listeners().getMax(var1, "health"), var36));
+      var4 = var4.replace("%resource-bar-value%", this.formatListenerValue("resource", this.plugin.listeners().getCurrent(var1, "resource"), var36));
+      var4 = var4.replace("%resource-bar-max%", this.formatListenerValue("resource", this.plugin.listeners().getMax(var1, "resource"), var36));
+      var4 = var4.replace("%food-bar-value%", this.formatListenerValue("food", this.plugin.listeners().getCurrent(var1, "food"), var36));
+      var4 = var4.replace("%food-bar-max%", this.formatListenerValue("food", this.plugin.listeners().getMax(var1, "food"), var36));
+      var4 = var4.replace("%armor-bar-value%", this.formatListenerValue("armor", this.plugin.listeners().getCurrent(var1, "armor"), var36));
+      var4 = var4.replace("%armor-bar-max%", this.formatListenerValue("armor", this.plugin.listeners().getMax(var1, "armor"), var36));
+      var4 = var4.replace("%air-bar-value%", this.formatListenerValue("air", this.plugin.listeners().getCurrent(var1, "air"), var36));
+      var4 = var4.replace("%air-bar-max%", this.formatListenerValue("air", this.plugin.listeners().getMax(var1, "air"), var36));
+      var4 = var4.replace("%coord-x%", String.valueOf(var1.getLocation().getBlockX()));
+      var4 = var4.replace("%coord-y%", String.valueOf(var1.getLocation().getBlockY()));
+      var4 = var4.replace("%coord-z%", String.valueOf(var1.getLocation().getBlockZ()));
+      var4 = var4.replace("%enorialshud_avatar_giantHead%", this.plugin.avatars().getAvatarGlyph(var1));
+      RenderManager.TargetSnapshot var6 = this.resolveTarget(var1);
+      var4 = var4.replace("%target_exists%", var6.exists ? "true" : "false");
+      var4 = var4.replace("%target_name%", var6.name);
+      var4 = var4.replace("%target_health%", var6.health);
+      var4 = var4.replace("%target_max_health%", var6.maxHealth);
+      var4 = var4.replace("%target_distance%", var6.distance);
+      var4 = var4.replace("%target_hp_percent%", var6.hpPercent);
+      var4 = var4.replace("%target_hp_bar%", var6.hpBar);
+
+      for (String var8 : this.plugin.listeners().getListeners().keySet()) {
+         double var9 = this.plugin.listeners().getCurrent(var1, var8);
+         double var11 = this.plugin.listeners().getMax(var1, var8);
+         var4 = var4.replace("%" + var8 + "-bar-value%", this.formatListenerValue(var8, var9, var36));
+         var4 = var4.replace("%" + var8 + "-bar-max%", this.formatListenerValue(var8, var11, var36));
+      }
+
+      if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+         try {
+            var4 = PlaceholderAPI.setPlaceholders(var1, var4);
+         } catch (Throwable var13) {
+         }
+      }
+
+      return var4;
+   }
+
+   private String formatListenerValue(String var1, double var2, String var4) {
+      if (!Double.isFinite(var2)) {
+         return "0";
+      } else if ("air".equalsIgnoreCase(var1)) {
+         return String.valueOf((int)Math.round(Math.max(0.0, var2)));
+      } else if ("resource".equalsIgnoreCase(var1) || "mana".equalsIgnoreCase(var1)) {
+         return String.format(Locale.ROOT, "%03d", (int)Math.round(var2));
+      } else if ("armor".equalsIgnoreCase(var1)) {
+         return String.format(Locale.ROOT, "%02d", (int)Math.round(var2));
+      } else {
+         return this.shouldUseWholeNumber(var1) ? String.valueOf((int)Math.round(var2)) : FunctionalListeners.format(var2, var4);
+      }
+   }
+
+   private boolean shouldUseWholeNumber(String var1) {
+      if (var1 == null) {
+         return false;
+      }
+
+      return switch (var1.toLowerCase()) {
+         case "health", "resource", "food", "armor", "air", "mana", "rage", "targethp" -> true;
+         default -> false;
+      };
+   }
+
+   private RenderManager.TargetSnapshot resolveTarget(Player var1) {
+      LivingEntity var2 = this.getCurrentTarget(var1);
+      if (var2 == null) {
+         return RenderManager.TargetSnapshot.empty();
+      }
+
+      double var3 = Math.max(0.0, var2.getHealth());
+      double var5 = Math.max(
+         1.0, var2.getAttribute(HudAttributes.MAX_HEALTH) != null ? var2.getAttribute(HudAttributes.MAX_HEALTH).getValue() : var2.getMaxHealth()
+      );
+      double var7 = var1.getLocation().distance(var2.getLocation());
+      double var9 = Math.max(0.0, Math.min(1.0, var3 / var5));
+      byte var11 = 14;
+      int var12 = (int)Math.round(var9 * var11);
+      String var13 = "<green>" + "|".repeat(Math.max(0, var12)) + "<dark_gray>" + "|".repeat(Math.max(0, var11 - var12));
+      String var14 = this.plugin.cfg().getString("decimal-format", "00##");
+      String var15 = String.valueOf((int)Math.round(var3));
+      String var16 = String.valueOf((int)Math.round(var5));
+      String var17 = String.valueOf((int)Math.round(var7));
+      String var18 = String.valueOf((int)Math.round(var9 * 100.0));
+      String var19 = this.plugin.listeners().getTargetName(var1, var2);
+      return new RenderManager.TargetSnapshot(true, var19, var15, var16, var17, var18, var13);
+   }
+
+   public LivingEntity getCombatTarget(Player var1) {
+      if (var1 != null && var1.isOnline()) {
+         RenderManager.CombatTarget var2 = this.combatTargets.get(var1.getUniqueId());
+         if (var2 == null) {
+            return null;
+         }
+
+         if (Bukkit.getEntity(var2.targetId()) instanceof LivingEntity var4
+            && var4.isValid()
+            && !var4.isDead()
+            && var4.getWorld().equals(var1.getWorld())
+            && !(
+               var4.getLocation().distanceSquared(var1.getLocation())
+                  > Math.pow(Math.max(8.0, this.plugin.cfg().getDouble("target-frame.combat-max-distance", 64.0)), 2.0)
+            )) {
+            boolean var5 = var4 instanceof Mob var6 && var6.getTarget() != null && var6.getTarget().isValid() && !var6.getTarget().isDead();
+            long var8 = System.currentTimeMillis();
+            if (var5) {
+               this.combatTargets.put(var1.getUniqueId(), new RenderManager.CombatTarget(var4.getUniqueId(), var8));
+            } else if (var8 - var2.lastHitAtMs() > this.getTargetFrameTimeoutMs()) {
+               this.combatTargets.remove(var1.getUniqueId());
+               return null;
             }
-            return n;
-        }
-        return 0;
-    }
 
-    private int estimateVanillaWidth(String string) {
-        if (string != null && !string.isEmpty()) {
-            String string2 = string.replaceAll("\u0102\u201a\u00c2\u00a7[0-9A-FK-ORa-fk-or]", "");
-            string2 = string2.replaceAll("<#[0-9a-fA-F]{6}>", "");
-            string2 = string2.replaceAll("<[^>]+>", "");
-            int n = 0;
-            for (int i = 0; i < string2.length(); ++i) {
-                n += this.vanillaCharWidth(string2.charAt(i));
+            return var4;
+         } else {
+            this.combatTargets.remove(var1.getUniqueId());
+            return null;
+         }
+      } else {
+         return null;
+      }
+   }
+
+   public LivingEntity getCurrentTarget(Player var1) {
+      LivingEntity var2 = this.getCombatTarget(var1);
+      return var2 != null ? var2 : (var1 != null && var1.isOnline() ? this.resolveLookTarget(var1) : null);
+   }
+
+   private LivingEntity resolveLookTarget(Player var1) {
+      double var2 = Math.max(3.0, this.plugin.cfg().getDouble("target-frame.max-distance", 32.0));
+      RayTraceResult var4 = var1.getWorld().rayTraceEntities(var1.getEyeLocation(), var1.getEyeLocation().getDirection(), var2, var1x -> {
+         if (var1x instanceof LivingEntity var2x) {
+            if (var1x.equals(var1)) {
+               return false;
+            } else {
+               return var2x instanceof Player ? false : !var1x.isDead();
             }
-            return n;
-        }
-        return 0;
-    }
-
-    private int vanillaCharWidth(char c) {
-        return switch (c) {
-            case ' ', '\u200c' -> 4;
-            case '!', '\'', ',', '.', ':', ';', 'i', '|' -> 2;
-            case '\"', '(', ')', 'I', '[', ']', '`', 'l', 't', '{', '}' -> 4;
-            case '<', '>', 'f', 'k' -> 5;
-            case '@', '~' -> 7;
-            default -> 6;
-        };
-    }
-
-    private int getStepIndex(Player player, FunctionData functionData, int n) {
-        if (functionData != null && n > 0) {
-            double d = this.plugin.listeners().getCurrent(player, functionData.listener());
-            double d2 = this.plugin.listeners().getMax(player, functionData.listener());
-            if (d2 <= 0.0) {
-                return 0;
-            }
-            double d3 = Math.max(0.0, Math.min(1.0, d / d2));
-            return (int)Math.ceil(d3 * (double)n);
-        }
-        return 0;
-    }
-
-    private String resolveText(Player player, String string, String[] stringArray) {
-        String string2 = string;
-        if (stringArray != null) {
-            for (int i = 0; i < stringArray.length; ++i) {
-                string2 = string2.replace("%arg-" + (i + 1) + "%", stringArray[i]);
-            }
-        }
-        String string3 = this.plugin.cfg().getString("decimal-format", "00##");
-        string2 = string2.replace("%health-bar-value%", this.formatListenerValue("health", this.plugin.listeners().getCurrent(player, "health"), string3));
-        string2 = string2.replace("%health-bar-max%", this.formatListenerValue("health", this.plugin.listeners().getMax(player, "health"), string3));
-        string2 = string2.replace("%resource-bar-value%", this.formatListenerValue("resource", this.plugin.listeners().getCurrent(player, "resource"), string3));
-        string2 = string2.replace("%resource-bar-max%", this.formatListenerValue("resource", this.plugin.listeners().getMax(player, "resource"), string3));
-        string2 = string2.replace("%food-bar-value%", this.formatListenerValue("food", this.plugin.listeners().getCurrent(player, "food"), string3));
-        string2 = string2.replace("%food-bar-max%", this.formatListenerValue("food", this.plugin.listeners().getMax(player, "food"), string3));
-        string2 = string2.replace("%armor-bar-value%", this.formatListenerValue("armor", this.plugin.listeners().getCurrent(player, "armor"), string3));
-        string2 = string2.replace("%armor-bar-max%", this.formatListenerValue("armor", this.plugin.listeners().getMax(player, "armor"), string3));
-        string2 = string2.replace("%air-bar-value%", this.formatListenerValue("air", this.plugin.listeners().getCurrent(player, "air"), string3));
-        string2 = string2.replace("%air-bar-max%", this.formatListenerValue("air", this.plugin.listeners().getMax(player, "air"), string3));
-        string2 = string2.replace("%coord-x%", String.valueOf(player.getLocation().getBlockX()));
-        string2 = string2.replace("%coord-y%", String.valueOf(player.getLocation().getBlockY()));
-        string2 = string2.replace("%coord-z%", String.valueOf(player.getLocation().getBlockZ()));
-        string2 = string2.replace("%enorialshud_avatar_giantHead%", this.plugin.avatars().getAvatarGlyph(player));
-        TargetSnapshot targetSnapshot = this.resolveTarget(player);
-        string2 = string2.replace("%target_exists%", targetSnapshot.exists ? "true" : "false");
-        string2 = string2.replace("%target_name%", targetSnapshot.name);
-        string2 = string2.replace("%target_health%", targetSnapshot.health);
-        string2 = string2.replace("%target_max_health%", targetSnapshot.maxHealth);
-        string2 = string2.replace("%target_distance%", targetSnapshot.distance);
-        string2 = string2.replace("%target_hp_percent%", targetSnapshot.hpPercent);
-        string2 = string2.replace("%target_hp_bar%", targetSnapshot.hpBar);
-        for (String string4 : this.plugin.listeners().getListeners().keySet()) {
-            double d = this.plugin.listeners().getCurrent(player, string4);
-            double d2 = this.plugin.listeners().getMax(player, string4);
-            string2 = string2.replace("%" + string4 + "-bar-value%", this.formatListenerValue(string4, d, string3));
-            string2 = string2.replace("%" + string4 + "-bar-max%", this.formatListenerValue(string4, d2, string3));
-        }
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            try {
-                string2 = PlaceholderAPI.setPlaceholders((Player)player, (String)string2);
-            }
-            catch (Throwable throwable) {
-                // empty catch block
-            }
-        }
-        return string2;
-    }
-
-    private String formatListenerValue(String string, double d, String string2) {
-        if (!Double.isFinite(d)) {
-            return "0";
-        }
-        if ("air".equalsIgnoreCase(string)) {
-            return String.valueOf((int)Math.round(Math.max(0.0, d)));
-        }
-        if ("resource".equalsIgnoreCase(string) || "mana".equalsIgnoreCase(string)) {
-            return String.format(Locale.ROOT, "%03d", (int)Math.round(d));
-        }
-        if ("armor".equalsIgnoreCase(string)) {
-            return String.format(Locale.ROOT, "%02d", (int)Math.round(d));
-        }
-        return this.shouldUseWholeNumber(string) ? String.valueOf((int)Math.round(d)) : FunctionalListeners.format(d, string2);
-    }
-
-    private boolean shouldUseWholeNumber(String string) {
-        if (string == null) {
+         } else {
             return false;
-        }
-        return switch (string.toLowerCase()) {
-            case "health", "resource", "food", "armor", "air", "mana", "rage", "targethp" -> true;
-            default -> false;
-        };
-    }
+         }
+      });
+      return (var4 != null ? var4.getHitEntity() : null) instanceof LivingEntity var5 ? var5 : null;
+   }
 
-    private TargetSnapshot resolveTarget(Player player) {
-        LivingEntity livingEntity = this.getCurrentTarget(player);
-        if (livingEntity == null) {
-            return TargetSnapshot.empty();
-        }
-        double d = Math.max(0.0, livingEntity.getHealth());
-        double d2 = Math.max(1.0, livingEntity.getAttribute(HudAttributes.MAX_HEALTH) != null ? livingEntity.getAttribute(HudAttributes.MAX_HEALTH).getValue() : livingEntity.getMaxHealth());
-        double d3 = player.getLocation().distance(livingEntity.getLocation());
-        double d4 = Math.max(0.0, Math.min(1.0, d / d2));
-        int n = 14;
-        int n2 = (int)Math.round(d4 * (double)n);
-        String string = "<green>" + "|".repeat(Math.max(0, n2)) + "<dark_gray>" + "|".repeat(Math.max(0, n - n2));
-        String string2 = this.plugin.cfg().getString("decimal-format", "00##");
-        String string3 = String.valueOf((int)Math.round(d));
-        String string4 = String.valueOf((int)Math.round(d2));
-        String string5 = String.valueOf((int)Math.round(d3));
-        String string6 = String.valueOf((int)Math.round(d4 * 100.0));
-        String string7 = this.plugin.listeners().getTargetName(player, livingEntity);
-        return new TargetSnapshot(true, string7, string3, string4, string5, string6, string);
-    }
+   private Player resolveAttacker(Entity var1) {
+      if (var1 instanceof Player var2) {
+         return var2;
+      } else {
+         return var1 instanceof Projectile var4 && var4.getShooter() instanceof Player var3 ? var3 : null;
+      }
+   }
 
-    public LivingEntity getCombatTarget(Player player) {
-        Mob mob;
-        LivingEntity livingEntity;
-        if (player == null || !player.isOnline()) {
-            return null;
-        }
-        CombatTarget combatTarget = this.combatTargets.get(player.getUniqueId());
-        if (combatTarget == null) {
-            return null;
-        }
-        Entity entity = Bukkit.getEntity((UUID)combatTarget.targetId());
-        if (!(entity instanceof LivingEntity) || !(livingEntity = (LivingEntity)entity).isValid() || livingEntity.isDead() || !livingEntity.getWorld().equals((Object)player.getWorld()) || livingEntity.getLocation().distanceSquared(player.getLocation()) > Math.pow(Math.max(8.0, this.plugin.cfg().getDouble("target-frame.combat-max-distance", 64.0)), 2.0)) {
-            this.combatTargets.remove(player.getUniqueId());
-            return null;
-        }
-        boolean bl = livingEntity instanceof Mob && (mob = (Mob)livingEntity).getTarget() != null && mob.getTarget().isValid() && !mob.getTarget().isDead();
-        long l = System.currentTimeMillis();
-        if (bl) {
-            this.combatTargets.put(player.getUniqueId(), new CombatTarget(livingEntity.getUniqueId(), l));
-        } else if (l - combatTarget.lastHitAtMs() > this.getTargetFrameTimeoutMs()) {
-            this.combatTargets.remove(player.getUniqueId());
-            return null;
-        }
-        return livingEntity;
-    }
+   private long getTargetFrameTimeoutMs() {
+      return Math.max(1000L, this.plugin.cfg().getLong("target-frame.timeout-ms", 10000L));
+   }
 
-    public LivingEntity getCurrentTarget(Player player) {
-        LivingEntity livingEntity = this.getCombatTarget(player);
-        return livingEntity != null ? livingEntity : (player != null && player.isOnline() ? this.resolveLookTarget(player) : null);
-    }
+   private Component legacyToComponent(String var1) {
+      String var2 = this.convertMiniToLegacy(var1);
+      return LegacyComponentSerializer.legacySection().deserialize(var2);
+   }
 
-    private LivingEntity resolveLookTarget(Player player) {
-        LivingEntity livingEntity;
-        double d = Math.max(3.0, this.plugin.cfg().getDouble("target-frame.max-distance", 32.0));
-        RayTraceResult rayTraceResult = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), d, entity -> {
-            if (entity instanceof LivingEntity) {
-                LivingEntity livingEntity = (LivingEntity)entity;
-                if (entity.equals((Object)player)) {
-                    return false;
-                }
-                return livingEntity instanceof Player ? false : !entity.isDead();
+   private String convertMiniToLegacy(String var1) {
+      String var2 = var1;
+      var2 = var2.replace("<white>", ChatColor.WHITE.toString());
+      var2 = var2.replace("<black>", ChatColor.BLACK.toString());
+      var2 = var2.replace("<red>", ChatColor.RED.toString());
+      var2 = var2.replace("<green>", ChatColor.GREEN.toString());
+      var2 = var2.replace("<blue>", ChatColor.BLUE.toString());
+      var2 = var2.replace("<yellow>", ChatColor.YELLOW.toString());
+      var2 = var2.replace("<gray>", ChatColor.GRAY.toString());
+      var2 = var2.replace("<dark_gray>", ChatColor.DARK_GRAY.toString());
+      var2 = var2.replace("<gold>", ChatColor.GOLD.toString());
+      var2 = var2.replace("<dark_red>", ChatColor.DARK_RED.toString());
+      var2 = var2.replace("<dark_green>", ChatColor.DARK_GREEN.toString());
+      var2 = var2.replace("<dark_blue>", ChatColor.DARK_BLUE.toString());
+      var2 = var2.replace("<aqua>", ChatColor.AQUA.toString());
+      var2 = var2.replace("<dark_aqua>", ChatColor.DARK_AQUA.toString());
+      var2 = var2.replace("<light_purple>", ChatColor.LIGHT_PURPLE.toString());
+      var2 = var2.replace("<dark_purple>", ChatColor.DARK_PURPLE.toString());
+      var2 = var2.replace("<bold>", ChatColor.BOLD.toString());
+      var2 = var2.replace("</bold>", ChatColor.RESET.toString());
+      var2 = var2.replace("<b>", ChatColor.BOLD.toString());
+      var2 = var2.replace("</b>", ChatColor.RESET.toString());
+      var2 = var2.replace("<reset>", ChatColor.RESET.toString());
+      Pattern var3 = Pattern.compile("<#[0-9a-fA-F]{6}>");
+      Matcher var4 = var3.matcher(var2);
+      StringBuffer var5 = new StringBuffer();
+
+      while (var4.find()) {
+         String var6 = var4.group();
+         String var7 = var6.substring(2, var6.length() - 1);
+         String var8 = "Ă‚Â§x";
+
+         for (char var12 : var7.toCharArray()) {
+            var8 = var8 + "Ă‚Â§" + var12;
+         }
+
+         var4.appendReplacement(var5, var8);
+      }
+
+      var4.appendTail(var5);
+      return var5.toString();
+   }
+
+   public void openLayoutGui(Player var1) {
+      int var2 = this.plugin.layouts().getLayouts().size();
+      int var3 = Math.min(54, Math.max(9, (var2 + 1 + 8) / 9 * 9));
+      Inventory var4 = Bukkit.createInventory(null, var3, "HUD Layouts");
+      String var5 = this.plugin.storage().getLayout(var1.getUniqueId());
+      int var6 = 0;
+
+      for (HudLayout var8 : this.plugin.layouts().getLayouts()) {
+         if (var6 >= var3 - 1) {
+            break;
+         }
+
+         boolean var9 = var8.getKey().equalsIgnoreCase(var5);
+         ItemStack var10 = this.button(Material.PAPER, (var9 ? ChatColor.GREEN : ChatColor.YELLOW) + var8.getKey(), var9 ? "Selected" : "Click to select");
+         ItemMeta var11 = var10.getItemMeta();
+         var11.setLore(List.of(ChatColor.GRAY + (var9 ? "Selected" : "Click to select"), ChatColor.DARK_GRAY + var8.getKey()));
+         var10.setItemMeta(var11);
+         var4.setItem(var6++, var10);
+      }
+
+      var4.setItem(var3 - 1, this.button(Material.BARRIER, ChatColor.RED + "Reset to default", "Use server default HUD"));
+      var1.openInventory(var4);
+   }
+
+   private ItemStack button(Material var1, String var2, String var3) {
+      ItemStack var4 = new ItemStack(var1);
+      ItemMeta var5 = var4.getItemMeta();
+      var5.setDisplayName(var2);
+      var5.setLore(List.of(ChatColor.GRAY + var3));
+      var4.setItemMeta(var5);
+      return var4;
+   }
+
+   @EventHandler
+   public void onJoin(PlayerJoinEvent var1) {
+      this.attach(var1.getPlayer());
+      this.plugin.avatars().handleJoin(var1.getPlayer());
+   }
+
+   @EventHandler
+   public void onQuit(PlayerQuitEvent var1) {
+      this.detach(var1.getPlayer());
+   }
+
+   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+   public void onEntityDamageByEntity(EntityDamageByEntityEvent var1) {
+      if (!(var1.getFinalDamage() <= 0.0)) {
+         long var2 = System.currentTimeMillis();
+         UUID var4 = var1.getEntity().getUniqueId();
+         Entity var5 = var1.getDamager() instanceof Projectile var7 && var7.getShooter() instanceof Entity var6 ? var6 : var1.getDamager();
+         this.combatTargets
+            .replaceAll(
+               (var4x, var5x) -> (RenderManager.CombatTarget)(!var5x.targetId().equals(var4) && !var5x.targetId().equals(var5.getUniqueId())
+                  ? var5x
+                  : new RenderManager.CombatTarget(var5x.targetId(), var2))
+            );
+         if (var1.getEntity() instanceof LivingEntity var9 && (!(var9 instanceof Player) || var9.hasMetadata("NPC"))) {
+            Player var11 = this.resolveAttacker(var1.getDamager());
+            if (var11 != null && var11.isOnline() && !var9.isDead()) {
+               this.combatTargets.put(var11.getUniqueId(), new RenderManager.CombatTarget(var9.getUniqueId(), System.currentTimeMillis()));
             }
-            return false;
-        });
-        Entity entity2 = rayTraceResult != null ? rayTraceResult.getHitEntity() : null;
-        return entity2 instanceof LivingEntity ? (livingEntity = (LivingEntity)entity2) : null;
-    }
+         }
+      }
+   }
 
-    private Player resolveAttacker(Entity entity) {
-        Player player;
-        Projectile projectile;
-        ProjectileSource projectileSource;
-        if (entity instanceof Player) {
-            Player player2 = (Player)entity;
-            return player2;
-        }
-        return entity instanceof Projectile && (projectileSource = (projectile = (Projectile)entity).getShooter()) instanceof Player ? (player = (Player)projectileSource) : null;
-    }
+   @EventHandler(priority = EventPriority.MONITOR)
+   public void onEntityDeath(EntityDeathEvent var1) {
+      LivingEntity var2 = var1.getEntity();
+      UUID var3 = var2.getUniqueId();
+      this.combatTargets.entrySet().removeIf(var1x -> var3.equals(var1x.getValue().targetId()));
+   }
 
-    private long getTargetFrameTimeoutMs() {
-        return Math.max(1000L, this.plugin.cfg().getLong("target-frame.timeout-ms", 10000L));
-    }
-
-    private Component legacyToComponent(String string) {
-        String string2 = this.convertMiniToLegacy(string);
-        return LegacyComponentSerializer.legacySection().deserialize(string2);
-    }
-
-    private String convertMiniToLegacy(String string) {
-        String string2 = string;
-        string2 = string2.replace("<white>", ChatColor.WHITE.toString());
-        string2 = string2.replace("<black>", ChatColor.BLACK.toString());
-        string2 = string2.replace("<red>", ChatColor.RED.toString());
-        string2 = string2.replace("<green>", ChatColor.GREEN.toString());
-        string2 = string2.replace("<blue>", ChatColor.BLUE.toString());
-        string2 = string2.replace("<yellow>", ChatColor.YELLOW.toString());
-        string2 = string2.replace("<gray>", ChatColor.GRAY.toString());
-        string2 = string2.replace("<dark_gray>", ChatColor.DARK_GRAY.toString());
-        string2 = string2.replace("<gold>", ChatColor.GOLD.toString());
-        string2 = string2.replace("<dark_red>", ChatColor.DARK_RED.toString());
-        string2 = string2.replace("<dark_green>", ChatColor.DARK_GREEN.toString());
-        string2 = string2.replace("<dark_blue>", ChatColor.DARK_BLUE.toString());
-        string2 = string2.replace("<aqua>", ChatColor.AQUA.toString());
-        string2 = string2.replace("<dark_aqua>", ChatColor.DARK_AQUA.toString());
-        string2 = string2.replace("<light_purple>", ChatColor.LIGHT_PURPLE.toString());
-        string2 = string2.replace("<dark_purple>", ChatColor.DARK_PURPLE.toString());
-        string2 = string2.replace("<bold>", ChatColor.BOLD.toString());
-        string2 = string2.replace("</bold>", ChatColor.RESET.toString());
-        string2 = string2.replace("<b>", ChatColor.BOLD.toString());
-        string2 = string2.replace("</b>", ChatColor.RESET.toString());
-        string2 = string2.replace("<reset>", ChatColor.RESET.toString());
-        Pattern pattern = Pattern.compile("<#[0-9a-fA-F]{6}>");
-        Matcher matcher = pattern.matcher(string2);
-        StringBuffer stringBuffer = new StringBuffer();
-        while (matcher.find()) {
-            String string3 = matcher.group();
-            String string4 = string3.substring(2, string3.length() - 1);
-            Object object = "\u0102\u201a\u00c2\u00a7x";
-            for (char c : string4.toCharArray()) {
-                object = (String)object + "\u0102\u201a\u00c2\u00a7" + c;
+   @EventHandler
+   public void onClick(InventoryClickEvent var1) {
+      if (var1.getView() != null) {
+         String var2 = var1.getView().getTitle();
+         if ("HUD Layouts".equals(var2)) {
+            var1.setCancelled(true);
+            if (!(var1.getWhoClicked() instanceof Player var3)) {
+               return;
             }
-            matcher.appendReplacement(stringBuffer, (String)object);
-        }
-        matcher.appendTail(stringBuffer);
-        return stringBuffer.toString();
-    }
 
-    public void openLayoutGui(Player player) {
-        int n = this.plugin.layouts().getLayouts().size();
-        int n2 = Math.min(54, Math.max(9, (n + 1 + 8) / 9 * 9));
-        Inventory inventory = Bukkit.createInventory(null, (int)n2, (String)"HUD Layouts");
-        String string = this.plugin.storage().getLayout(player.getUniqueId());
-        int n3 = 0;
-        for (HudLayout hudLayout : this.plugin.layouts().getLayouts()) {
-            if (n3 >= n2 - 1) break;
-            boolean bl = hudLayout.getKey().equalsIgnoreCase(string);
-            ItemStack itemStack = this.button(Material.PAPER, String.valueOf(bl ? ChatColor.GREEN : ChatColor.YELLOW) + hudLayout.getKey(), bl ? "Selected" : "Click to select");
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.setLore(List.of(String.valueOf(ChatColor.GRAY) + (bl ? "Selected" : "Click to select"), String.valueOf(ChatColor.DARK_GRAY) + hudLayout.getKey()));
-            itemStack.setItemMeta(itemMeta);
-            inventory.setItem(n3++, itemStack);
-        }
-        inventory.setItem(n2 - 1, this.button(Material.BARRIER, String.valueOf(ChatColor.RED) + "Reset to default", "Use server default HUD"));
-        player.openInventory(inventory);
-    }
-
-    private ItemStack button(Material material, String string, String string2) {
-        ItemStack itemStack = new ItemStack(material);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(string);
-        itemMeta.setLore(List.of(String.valueOf(ChatColor.GRAY) + string2));
-        itemStack.setItemMeta(itemMeta);
-        return itemStack;
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent playerJoinEvent) {
-        this.attach(playerJoinEvent.getPlayer());
-        this.plugin.avatars().handleJoin(playerJoinEvent.getPlayer());
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent playerQuitEvent) {
-        this.detach(playerQuitEvent.getPlayer());
-    }
-
-    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent entityDamageByEntityEvent) {
-        Entity entity;
-        Projectile projectile;
-        if (entityDamageByEntityEvent.getFinalDamage() <= 0.0) {
-            return;
-        }
-        long l = System.currentTimeMillis();
-        UUID uUID = entityDamageByEntityEvent.getEntity().getUniqueId();
-        Entity entity2 = entityDamageByEntityEvent.getDamager();
-        Entity entity3 = entity2 instanceof Projectile && (entity2 = (projectile = (Projectile)entity2).getShooter()) instanceof Entity ? (entity = entity2) : entityDamageByEntityEvent.getDamager();
-        this.combatTargets.replaceAll((uUID2, combatTarget) -> combatTarget.targetId().equals(uUID) || combatTarget.targetId().equals(entity3.getUniqueId()) ? new CombatTarget(combatTarget.targetId(), l) : combatTarget);
-        projectile = entityDamageByEntityEvent.getEntity();
-        if (projectile instanceof LivingEntity && (!((entity = (LivingEntity)projectile) instanceof Player) || entity.hasMetadata("NPC")) && (projectile = this.resolveAttacker(entityDamageByEntityEvent.getDamager())) != null && projectile.isOnline() && !entity.isDead()) {
-            this.combatTargets.put(projectile.getUniqueId(), new CombatTarget(entity.getUniqueId(), System.currentTimeMillis()));
-        }
-    }
-
-    @EventHandler(priority=EventPriority.MONITOR)
-    public void onEntityDeath(EntityDeathEvent entityDeathEvent) {
-        LivingEntity livingEntity = entityDeathEvent.getEntity();
-        UUID uUID = livingEntity.getUniqueId();
-        this.combatTargets.entrySet().removeIf(entry -> uUID.equals(((CombatTarget)entry.getValue()).targetId()));
-    }
-
-    @EventHandler
-    public void onClick(InventoryClickEvent inventoryClickEvent) {
-        String string;
-        if (inventoryClickEvent.getView() != null && "HUD Layouts".equals(string = inventoryClickEvent.getView().getTitle())) {
-            inventoryClickEvent.setCancelled(true);
-            HumanEntity humanEntity = inventoryClickEvent.getWhoClicked();
-            if (!(humanEntity instanceof Player)) {
-                return;
+            if (!HudAccess.has(var3, "enorialshud.layout")) {
+               var3.sendMessage(ChatColor.RED + "No permission.");
+               return;
             }
-            Player player = (Player)humanEntity;
-            if (!HudAccess.has((CommandSender)player, "enorialshud.layout")) {
-                player.sendMessage(String.valueOf(ChatColor.RED) + "No permission.");
-                return;
+
+            ItemStack var7 = var1.getCurrentItem();
+            if (var7 == null || !var7.hasItemMeta()) {
+               return;
             }
-            humanEntity = inventoryClickEvent.getCurrentItem();
-            if (humanEntity == null || !humanEntity.hasItemMeta()) {
-                return;
+
+            if (var7.getType() == Material.BARRIER) {
+               this.plugin.storage().clearLayout(var3.getUniqueId());
+               var3.sendMessage(ChatColor.YELLOW + "HUD layout reset to default.");
+               var3.closeInventory();
+               return;
             }
-            if (humanEntity.getType() == Material.BARRIER) {
-                this.plugin.storage().clearLayout(player.getUniqueId());
-                player.sendMessage(String.valueOf(ChatColor.YELLOW) + "HUD layout reset to default.");
-                player.closeInventory();
-                return;
+
+            ItemMeta var5 = var7.getItemMeta();
+            if (var5.getLore() == null || var5.getLore().isEmpty()) {
+               return;
             }
-            ItemMeta itemMeta = humanEntity.getItemMeta();
-            if (itemMeta.getLore() == null || itemMeta.getLore().isEmpty()) {
-                return;
+
+            String var6 = ChatColor.stripColor((String)var5.getLore().get(var5.getLore().size() - 1));
+            if (var6 == null || var6.isBlank() || !this.plugin.layouts().has(var6)) {
+               return;
             }
-            String string2 = ChatColor.stripColor((String)((String)itemMeta.getLore().get(itemMeta.getLore().size() - 1)));
-            if (string2 == null || string2.isBlank() || !this.plugin.layouts().has(string2)) {
-                return;
-            }
-            this.plugin.storage().setLayout(player.getUniqueId(), string2);
-            player.sendMessage(String.valueOf(ChatColor.GREEN) + "HUD layout set to " + string2 + ".");
-            player.closeInventory();
-        }
-    }
 
-    private Component applyHorizontalOffset(Component component, Player player, HudElement hudElement, HudLayer hudLayer) {
-        int n;
-        int n2 = 0;
-        int n3 = Math.max(0, this.plugin.cfg().getInt("layout.runtime-shift-left", 0));
-        String string = hudElement.getAsset().getKey();
-        if (n3 > 0 && string.startsWith("enorialshud-") && !"enorialshud-panel".equals(string)) {
-            n2 -= n3;
-        }
-        return (n = n2) == 0 ? component : ((TextComponent.Builder)((TextComponent.Builder)((TextComponent.Builder)Component.text().append(SpaceUtil.space(n))).append(component)).append(SpaceUtil.space(n * -1))).asComponent();
-    }
+            this.plugin.storage().setLayout(var3.getUniqueId(), var6);
+            var3.sendMessage(ChatColor.GREEN + "HUD layout set to " + var6 + ".");
+            var3.closeInventory();
+         }
+      }
+   }
 
-    private record PopupState(String popupKey, String[] args, long expireAt) {
-    }
+   private Component applyHorizontalOffset(Component var1, Player var2, HudElement var3, HudLayer var4) {
+      int var5 = 0;
+      int var6 = Math.max(0, this.plugin.cfg().getInt("layout.runtime-shift-left", 0));
+      String var7 = var3.getAsset().getKey();
+      if (var6 > 0 && var7.startsWith("enorialshud-") && !"enorialshud-panel".equals(var7)) {
+         var5 -= var6;
+      }
 
-    private record RenderedTexture(Component component, RelativeWidth relativeWidth) {
-    }
+      int var8 = var5;
+      return var5 == 0
+         ? var1
+         : ((Builder)((Builder)((Builder)Component.text().append(SpaceUtil.space(var8))).append(var1)).append(SpaceUtil.space(var8 * -1))).asComponent();
+   }
 
-    private record RenderedText(Component component, RelativeWidth relativeWidth) {
-    }
+   private record CombatTarget(UUID targetId, long lastHitAtMs) {
+   }
 
-    private static class TargetSnapshot {
-        final boolean exists;
-        final String name;
-        final String health;
-        final String maxHealth;
-        final String distance;
-        final String hpPercent;
-        final String hpBar;
+   private record PopupState(String popupKey, String[] args, long expireAt) {
+   }
 
-        private TargetSnapshot(boolean bl, String string, String string2, String string3, String string4, String string5, String string6) {
-            this.exists = bl;
-            this.name = string;
-            this.health = string2;
-            this.maxHealth = string3;
-            this.distance = string4;
-            this.hpPercent = string5;
-            this.hpBar = string6;
-        }
+   private record RenderedText(Component component, RelativeWidth relativeWidth) {
+   }
 
-        static TargetSnapshot empty() {
-            return new TargetSnapshot(false, "-", "0", "0", "0", "0", "<dark_gray>||||||||||||||");
-        }
-    }
+   private record RenderedTexture(Component component, RelativeWidth relativeWidth) {
+   }
 
-    private record CombatTarget(UUID targetId, long lastHitAtMs) {
-    }
+   private static class TargetSnapshot {
+      final boolean exists;
+      final String name;
+      final String health;
+      final String maxHealth;
+      final String distance;
+      final String hpPercent;
+      final String hpBar;
+
+      private TargetSnapshot(boolean var1, String var2, String var3, String var4, String var5, String var6, String var7) {
+         this.exists = var1;
+         this.name = var2;
+         this.health = var3;
+         this.maxHealth = var4;
+         this.distance = var5;
+         this.hpPercent = var6;
+         this.hpBar = var7;
+      }
+
+      static RenderManager.TargetSnapshot empty() {
+         return new RenderManager.TargetSnapshot(false, "-", "0", "0", "0", "0", "<dark_gray>||||||||||||||");
+      }
+   }
 }
-

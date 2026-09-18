@@ -234,8 +234,8 @@ public class PackManager {
             }
             this.building = true;
         }
-        object = this::lambda$startBuild$0;
-        if (!this.plugin.packBuildQueue().submit(this, null, (Runnable)object)) {
+        Runnable buildTask = this::lambda$startBuild$0;
+        if (!this.plugin.packBuildQueue().submit(this, null, buildTask)) {
             Object object2 = this.buildLock;
             synchronized (object2) {
                 this.building = false;

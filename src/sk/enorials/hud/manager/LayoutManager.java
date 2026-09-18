@@ -27,10 +27,10 @@ public class LayoutManager {
         this.layouts.clear();
         File[] fileArray = new File(enorialsHUD.getDataFolder(), "layout").listFiles((file, string) -> string.endsWith(".yml"));
         if (fileArray != null) {
-            object = fileArray;
-            int n = ((File[])object).length;
+            File[] files = fileArray;
+            int n = files.length;
             for (int i = 0; i < n; ++i) {
-                File file2 = object[i];
+                File file2 = files[i];
                 YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration((File)file2);
                 for (String string2 : yamlConfiguration.getKeys(false)) {
                     if (!yamlConfiguration.isConfigurationSection(string2)) continue;

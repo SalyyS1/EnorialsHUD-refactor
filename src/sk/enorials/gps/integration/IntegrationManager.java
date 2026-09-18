@@ -1,18 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  org.bukkit.Bukkit
- *  org.bukkit.ChatColor
- *  org.bukkit.Location
- *  org.bukkit.Material
- *  org.bukkit.World
- *  org.bukkit.block.Block
- *  org.bukkit.configuration.ConfigurationSection
- *  org.bukkit.entity.EntityType
- *  org.bukkit.entity.Player
- *  org.bukkit.plugin.Plugin
- */
 package sk.enorials.gps.integration;
 
 import java.lang.reflect.Method;
@@ -20,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -28,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -41,7 +26,6 @@ import org.bukkit.plugin.Plugin;
 import sk.enorials.gps.EnorialsGpsPlugin;
 import sk.enorials.gps.NavigationMode;
 import sk.enorials.gps.data.QuestRouteService;
-import sk.enorials.gps.integration.QuestRouteNames;
 import sk.enorials.gps.nav.RouteDescriptor;
 import sk.enorials.gps.nav.target.CitizensNpcTarget;
 import sk.enorials.gps.nav.target.FancyNpcTarget;
@@ -59,1794 +43,1833 @@ import sk.enorials.gps.util.Color;
 import sk.enorials.gps.util.ConditionEvaluator;
 
 public final class IntegrationManager {
-    private final Map<UUID, Map<String, AutoRoute>> externalRoutes = new HashMap<UUID, Map<String, AutoRoute>>();
-    private final EnorialsGpsPlugin plugin;
-    private final ConditionEvaluator conditionEvaluator;
-    private final QuestRouteService questRouteService;
-    private Method itemsAdderByPlacedMethod;
-    private Method itemsAdderIdMethod;
-    private boolean itemsAdderApiChecked;
-    private Method nexoCustomBlockMethod;
-    private Method nexoMechanicIdMethod;
-    private boolean nexoApiChecked;
-    private Class<?> oraxenBlocksClass;
-    private Method oraxenIsBlockMethod;
-    private Method oraxenDirectIdMethod;
-    private Method oraxenMechanicMethod;
-    private Method oraxenMechanicIdMethod;
-    private boolean oraxenApiChecked;
-    private final QuestRouteNames questRouteNames = new QuestRouteNames();
+   private final Map<UUID, Map<String, IntegrationManager.AutoRoute>> externalRoutes = new HashMap<>();
+   private final EnorialsGpsPlugin plugin;
+   private final ConditionEvaluator conditionEvaluator;
+   private final QuestRouteService questRouteService;
+   private Method itemsAdderByPlacedMethod;
+   private Method itemsAdderIdMethod;
+   private boolean itemsAdderApiChecked;
+   private Method nexoCustomBlockMethod;
+   private Method nexoMechanicIdMethod;
+   private boolean nexoApiChecked;
+   private Class<?> oraxenBlocksClass;
+   private Method oraxenIsBlockMethod;
+   private Method oraxenDirectIdMethod;
+   private Method oraxenMechanicMethod;
+   private Method oraxenMechanicIdMethod;
+   private boolean oraxenApiChecked;
+   private final QuestRouteNames questRouteNames = new QuestRouteNames();
 
-    public void putExternalRoute(UUID uUID2, String string, String string2, RouteDescriptor routeDescriptor, NavigationMode navigationMode, String string3) {
-        this.externalRoutes.computeIfAbsent(uUID2, uUID -> new LinkedHashMap()).put(string, new AutoRoute(string, string2, routeDescriptor, navigationMode, string3));
-    }
+   public void putExternalRoute(UUID var1, String var2, String var3, RouteDescriptor var4, NavigationMode var5, String var6) {
+      this.externalRoutes.computeIfAbsent(var1, var0 -> new LinkedHashMap<>()).put(var2, new IntegrationManager.AutoRoute(var2, var3, var4, var5, var6));
+   }
 
-    public boolean removeExternalRoute(UUID uUID, String string) {
-        boolean bl;
-        Map<String, AutoRoute> map = this.externalRoutes.get(uUID);
-        if (map == null) {
-            return false;
-        }
-        boolean bl2 = bl = map.remove(string) != null;
-        if (map.isEmpty()) {
-            this.externalRoutes.remove(uUID);
-        }
-        return bl;
-    }
+   public boolean removeExternalRoute(UUID var1, String var2) {
+      Map var3 = this.externalRoutes.get(var1);
+      if (var3 == null) {
+         return false;
+      }
 
-    public IntegrationManager(EnorialsGpsPlugin enorialsGpsPlugin, QuestRouteService questRouteService) {
-        this.plugin = enorialsGpsPlugin;
-        this.conditionEvaluator = new ConditionEvaluator(enorialsGpsPlugin);
-        this.questRouteService = questRouteService;
-    }
+      boolean var4 = var3.remove(var2) != null;
+      if (var3.isEmpty()) {
+         this.externalRoutes.remove(var1);
+      }
 
-    public boolean isPlayerTargetsEnabled() {
-        return this.plugin.config().getBoolean("integrations.allow_player_targets", true);
-    }
+      return var4;
+   }
 
-    public boolean isLocationTargetsEnabled() {
-        return this.plugin.config().getBoolean("integrations.allow_location_targets", true);
-    }
+   public IntegrationManager(EnorialsGpsPlugin var1, QuestRouteService var2) {
+      this.plugin = var1;
+      this.conditionEvaluator = new ConditionEvaluator(var1);
+      this.questRouteService = var2;
+   }
 
-    public Optional<TargetLocator> resolveLocationInput(Player player, String string) {
-        if (!this.isLocationTargetsEnabled()) {
+   public boolean isPlayerTargetsEnabled() {
+      return this.plugin.config().getBoolean("integrations.allow_player_targets", true);
+   }
+
+   public boolean isLocationTargetsEnabled() {
+      return this.plugin.config().getBoolean("integrations.allow_location_targets", true);
+   }
+
+   public Optional<TargetLocator> resolveLocationInput(Player var1, String var2) {
+      if (!this.isLocationTargetsEnabled()) {
+         return Optional.empty();
+      }
+
+      if (var1 != null && var2 != null && !var2.isBlank()) {
+         String var3 = var2.trim();
+         String var4 = var3.toLowerCase(Locale.ROOT);
+         if (var4.startsWith("warp:")) {
+            return this.resolveWarpAlias(var3.substring("warp:".length()).trim());
+         } else if (var4.startsWith("esswarp:")) {
+            return this.resolveWarpAlias(var3.substring("esswarp:".length()).trim());
+         } else if (var4.startsWith("ess:")) {
+            return this.resolveWarpAlias(var3.substring("ess:".length()).trim());
+         } else if (var4.startsWith("essentials:")) {
+            return this.resolveWarpAlias(var3.substring("essentials:".length()).trim());
+         } else if (var4.startsWith("cmiwarp:")) {
+            return this.resolveCmiWarpTarget(var3.substring("cmiwarp:".length()).trim());
+         } else if (var4.startsWith("cmi:")) {
+            return this.resolveCmiWarpTarget(var3.substring("cmi:".length()).trim());
+         } else if (var4.startsWith("wg:")) {
+            return this.resolveWorldGuardRegionTarget(var1, var3.substring("wg:".length()).trim());
+         } else if (var4.startsWith("worldguard:")) {
+            return this.resolveWorldGuardRegionTarget(var1, var3.substring("worldguard:".length()).trim());
+         } else if (var4.startsWith("region:")) {
+            return this.resolveWorldGuardRegionTarget(var1, var3.substring("region:".length()).trim());
+         } else if (var4.startsWith("towny:")) {
+            return this.resolveTownyTownTarget(var3.substring("towny:".length()).trim());
+         } else if (var4.startsWith("town:")) {
+            return this.resolveTownyTownTarget(var3.substring("town:".length()).trim());
+         } else if (var4.startsWith("dh:")) {
+            return this.resolveDecentHologramTarget(var3.substring("dh:".length()).trim());
+         } else if (var4.startsWith("decentholograms:")) {
+            return this.resolveDecentHologramTarget(var3.substring("decentholograms:".length()).trim());
+         } else {
+            return var4.startsWith("holo:") ? this.resolveDecentHologramTarget(var3.substring("holo:".length()).trim()) : Optional.empty();
+         }
+      } else {
+         return Optional.empty();
+      }
+   }
+
+   public List<String> getWarpNames() {
+      ArrayList var1 = new ArrayList();
+
+      for (String var3 : this.getEssentialsWarpNames()) {
+         if (!this.containsIgnoreCase(var1, var3)) {
+            var1.add(var3);
+         }
+      }
+
+      for (String var5 : this.getCmiWarpNames()) {
+         if (!this.containsIgnoreCase(var1, var5)) {
+            var1.add(var5);
+         }
+      }
+
+      return var1;
+   }
+
+   public List<String> getEssentialsWarpNames() {
+      if (!this.plugin.config().getBoolean("integrations.allow_warp_targets", true)) {
+         return Collections.emptyList();
+      }
+
+      if (!this.isPluginEnabled("Essentials")) {
+         return Collections.emptyList();
+      }
+
+      try {
+         Plugin var1 = Bukkit.getPluginManager().getPlugin("Essentials");
+         if (var1 == null) {
+            return Collections.emptyList();
+         }
+
+         Method var2 = var1.getClass().getMethod("getWarps");
+         Object var3 = var2.invoke(var1);
+         if (var3 == null) {
+            return Collections.emptyList();
+         }
+
+         Method var4 = this.findFirstMethod(var3.getClass(), "getList", "getWarpNames", "list");
+         if (var4 == null) {
+            return Collections.emptyList();
+         }
+
+         Object var5 = var4.invoke(var3);
+         ArrayList var6 = new ArrayList();
+         if (var5 instanceof Collection) {
+            for (Object var9 : (Collection)var5) {
+               if (var9 != null) {
+                  var6.add(String.valueOf(var9));
+               }
+            }
+         }
+
+         return var6;
+      } catch (Exception var10) {
+         return Collections.emptyList();
+      }
+   }
+
+   public List<String> getCmiWarpNames() {
+      if (!this.plugin.config().getBoolean("integrations.allow_warp_targets", true)) {
+         return Collections.emptyList();
+      }
+
+      if (!this.plugin.config().getBoolean("integrations.allow_cmi_warp_targets", true)) {
+         return Collections.emptyList();
+      }
+
+      if (!this.isPluginEnabled("CMI")) {
+         return Collections.emptyList();
+      }
+
+      Object var1 = this.getCmiWarpManager();
+      if (var1 == null) {
+         return Collections.emptyList();
+      }
+
+      ArrayList var2 = new ArrayList();
+      this.collectNamesFromValue(this.invokeNoArg(var1, "getWarps", "getWarpMap", "getWarpsMap", "getAllWarps"), var2);
+      this.collectNamesFromValue(this.invokeNoArg(var1, "getWarpNames", "getNames", "list"), var2);
+      return var2;
+   }
+
+   public List<String> getTownyTownNames() {
+      if (!this.plugin.config().getBoolean("integrations.allow_town_targets", true)) {
+         return Collections.emptyList();
+      }
+
+      if (!this.isPluginEnabled("Towny")) {
+         return Collections.emptyList();
+      }
+
+      try {
+         Class var1 = Class.forName("com.palmergames.bukkit.towny.TownyAPI");
+         Object var2 = var1.getMethod("getInstance").invoke(null);
+         if (var2 == null) {
+            return Collections.emptyList();
+         }
+
+         ArrayList var3 = new ArrayList();
+         this.collectNamesFromValue(this.invokeNoArg(var2, "getTowns"), var3);
+         this.collectNamesFromValue(this.invokeNoArg(var2, "getTownsMap"), var3);
+         return var3;
+      } catch (Exception var4) {
+         return Collections.emptyList();
+      }
+   }
+
+   public List<String> getDecentHologramNames() {
+      if (!this.plugin.config().getBoolean("integrations.allow_hologram_targets", true)) {
+         return Collections.emptyList();
+      }
+
+      if (!this.isPluginEnabled("DecentHolograms")) {
+         return Collections.emptyList();
+      }
+
+      ArrayList var1 = new ArrayList();
+
+      try {
+         Class var2 = Class.forName("eu.decentsoftware.holograms.api.holograms.Hologram");
+         Method var3 = this.findFirstMethod(var2, "getCachedHologramNames");
+         if (var3 != null) {
+            this.collectNamesFromValue(var3.invoke(null), var1);
+         }
+      } catch (Exception var5) {
+      }
+
+      try {
+         Class var6 = Class.forName("eu.decentsoftware.holograms.api.DHAPI");
+         Method var7 = this.findFirstMethod(var6, "getHologramNames");
+         if (var7 != null) {
+            this.collectNamesFromValue(var7.invoke(null), var1);
+         }
+      } catch (Exception var4) {
+      }
+
+      return var1;
+   }
+
+   public List<String> getWorldGuardRegionNames(Player var1) {
+      if (!this.plugin.config().getBoolean("integrations.allow_region_targets", true)) {
+         return Collections.emptyList();
+      } else {
+         return var1 != null && this.isPluginEnabled("WorldGuard") ? this.fetchWorldGuardRegionNames(var1.getWorld()) : Collections.emptyList();
+      }
+   }
+
+   public Optional<TargetLocator> resolveMobInput(String var1) {
+      if (!this.plugin.config().getBoolean("integrations.allow_mob_targets", true)) {
+         return Optional.empty();
+      }
+
+      if (var1 != null && !var1.isBlank()) {
+         String var2 = var1.toLowerCase(Locale.ROOT);
+         if (var2.startsWith("elite:")) {
+            return this.resolvePresetHintMob("elitemobs", var1.substring("elite:".length()));
+         }
+
+         if (var2.startsWith("elitemobs:")) {
+            return this.resolvePresetHintMob("elitemobs", var1.substring("elitemobs:".length()));
+         }
+
+         if (var2.startsWith("modelengine:")) {
+            return this.resolvePresetHintMob("modelengine", var1.substring("modelengine:".length()));
+         }
+
+         if (var2.startsWith("model:")) {
+            return this.resolvePresetHintMob("modelengine", var1.substring("model:".length()));
+         }
+
+         if (var2.startsWith("denizen:")) {
+            return this.resolvePresetHintMob("denizen", var1.substring("denizen:".length()));
+         }
+
+         if (var2.startsWith("mmocore:")) {
+            return this.resolvePresetHintMob("mmocore", var1.substring("mmocore:".length()));
+         }
+
+         if (var2.startsWith("mmoitems:")) {
+            return this.resolvePresetHintMob("mmoitems", var1.substring("mmoitems:".length()));
+         }
+
+         if (var2.startsWith("ecoboss:")) {
+            return this.resolvePresetHintMob("ecobosses", var1.substring("ecoboss:".length()));
+         }
+
+         if (var2.startsWith("ecobosses:")) {
+            return this.resolvePresetHintMob("ecobosses", var1.substring("ecobosses:".length()));
+         }
+
+         if (var2.startsWith("tag:")) {
+            String var8 = var1.substring("tag:".length()).trim();
+            return Optional.of(
+               new HintedEntityTarget(
+                  "tag:" + var8, "Tag " + var8, "*", 1000.0, Collections.emptyList(), List.of(var8), Collections.emptyList(), this.plugin.owner()
+               )
+            );
+         }
+
+         if (var2.startsWith("meta:")) {
+            String var7 = var1.substring("meta:".length()).trim();
+            return Optional.of(
+               new HintedEntityTarget(
+                  "meta:" + var7, "Metadata " + var7, "*", 1000.0, List.of(var7), Collections.emptyList(), Collections.emptyList(), this.plugin.owner()
+               )
+            );
+         }
+
+         if (var2.startsWith("pdc:")) {
+            String var6 = var1.substring("pdc:".length()).trim();
+            return Optional.of(
+               new HintedEntityTarget(
+                  "pdc:" + var6, "PDC " + var6, "*", 1000.0, Collections.emptyList(), Collections.emptyList(), List.of(var6), this.plugin.owner()
+               )
+            );
+         }
+
+         if (var2.startsWith("mythic:")) {
+            String var5 = var1.substring("mythic:".length());
+            return !this.isPluginEnabled("MythicMobs") ? Optional.empty() : Optional.of(new MythicMobTarget(var5, 512.0));
+         }
+
+         try {
+            EntityType var3 = EntityType.valueOf(var1.toUpperCase());
+            return Optional.of(new NearestEntityTypeTarget(var3, 512.0));
+         } catch (IllegalArgumentException var4) {
+            return Optional.of(new NamedEntityTarget(var1, 512.0));
+         }
+      } else {
+         return Optional.empty();
+      }
+   }
+
+   public Optional<TargetLocator> resolveNpcInput(String var1) {
+      if (!this.plugin.config().getBoolean("integrations.allow_npc_targets", true)) {
+         return Optional.empty();
+      }
+
+      if (var1 != null && !var1.isBlank()) {
+         String var2 = var1.toLowerCase(Locale.ROOT);
+         if (var2.startsWith("citizens:")) {
+            String var10 = var1.substring("citizens:".length()).trim();
+            return !this.isPluginEnabled("Citizens") ? Optional.empty() : Optional.of(new CitizensNpcTarget(var10, "NPC " + var10));
+         } else if (var2.startsWith("denizen:")) {
+            String var9 = var1.substring("denizen:".length()).trim();
+            return this.isPluginEnabled("Denizen") && this.isPluginEnabled("Citizens")
+               ? Optional.of(new CitizensNpcTarget(var9, "Denizen NPC " + var9))
+               : Optional.empty();
+         } else if (var2.startsWith("znpcs:")) {
+            String var8 = var1.substring("znpcs:".length()).trim();
+            return !this.isPluginEnabled("ZNPCsPlus") ? Optional.empty() : Optional.of(new ZnpcsPlusNpcTarget(var8, "ZNPC " + var8));
+         } else if (var2.startsWith("znpcsplus:")) {
+            String var7 = var1.substring("znpcsplus:".length()).trim();
+            return !this.isPluginEnabled("ZNPCsPlus") ? Optional.empty() : Optional.of(new ZnpcsPlusNpcTarget(var7, "ZNPC " + var7));
+         } else if (var2.startsWith("fancynpc:")) {
+            String var6 = var1.substring("fancynpc:".length()).trim();
+            return !this.isPluginEnabled("FancyNpcs") ? Optional.empty() : Optional.of(new FancyNpcTarget(var6, "FancyNPC " + var6));
+         } else if (var2.startsWith("fancy:")) {
+            String var5 = var1.substring("fancy:".length()).trim();
+            return !this.isPluginEnabled("FancyNpcs") ? Optional.empty() : Optional.of(new FancyNpcTarget(var5, "FancyNPC " + var5));
+         } else if (var2.startsWith("shopkeeper:")) {
+            String var4 = var1.substring("shopkeeper:".length()).trim();
+            return !this.isPluginEnabled("Shopkeepers") ? Optional.empty() : Optional.of(new ShopkeeperTarget(var4, "Shopkeeper " + var4));
+         } else if (var2.startsWith("shopkeepers:")) {
+            String var3 = var1.substring("shopkeepers:".length()).trim();
+            return !this.isPluginEnabled("Shopkeepers") ? Optional.empty() : Optional.of(new ShopkeeperTarget(var3, "Shopkeeper " + var3));
+         } else {
+            return !this.isPluginEnabled("Citizens") ? Optional.empty() : Optional.of(new CitizensNpcTarget(var1, "NPC " + var1));
+         }
+      } else {
+         return Optional.empty();
+      }
+   }
+
+   public Optional<TargetLocator> resolveBlockInput(Player var1, String var2) {
+      if (!this.plugin.config().getBoolean("integrations.allow_block_targets", true)) {
+         return Optional.empty();
+      }
+
+      if (var1 != null && var2 != null && !var2.isBlank()) {
+         IntegrationManager.BlockQuery var4 = this.parseBlockQuery(var2);
+         if (var4 == null) {
             return Optional.empty();
-        }
-        if (player == null || string == null || string.isBlank()) {
+         }
+
+         double var5 = Math.max(8.0, this.plugin.config().getDouble("integrations.block_search.radius", 64.0));
+         Location var7 = this.findNearestBlock(var1, var4, var5, this.plugin.config().getInt("integrations.block_search.vertical_range", 48));
+         if (var7 == null) {
             return Optional.empty();
-        }
-        String string2 = string.trim();
-        String string3 = string2.toLowerCase(Locale.ROOT);
-        if (string3.startsWith("warp:")) {
-            return this.resolveWarpAlias(string2.substring("warp:".length()).trim());
-        }
-        if (string3.startsWith("esswarp:")) {
-            return this.resolveWarpAlias(string2.substring("esswarp:".length()).trim());
-        }
-        if (string3.startsWith("ess:")) {
-            return this.resolveWarpAlias(string2.substring("ess:".length()).trim());
-        }
-        if (string3.startsWith("essentials:")) {
-            return this.resolveWarpAlias(string2.substring("essentials:".length()).trim());
-        }
-        if (string3.startsWith("cmiwarp:")) {
-            return this.resolveCmiWarpTarget(string2.substring("cmiwarp:".length()).trim());
-        }
-        if (string3.startsWith("cmi:")) {
-            return this.resolveCmiWarpTarget(string2.substring("cmi:".length()).trim());
-        }
-        if (string3.startsWith("wg:")) {
-            return this.resolveWorldGuardRegionTarget(player, string2.substring("wg:".length()).trim());
-        }
-        if (string3.startsWith("worldguard:")) {
-            return this.resolveWorldGuardRegionTarget(player, string2.substring("worldguard:".length()).trim());
-        }
-        if (string3.startsWith("region:")) {
-            return this.resolveWorldGuardRegionTarget(player, string2.substring("region:".length()).trim());
-        }
-        if (string3.startsWith("towny:")) {
-            return this.resolveTownyTownTarget(string2.substring("towny:".length()).trim());
-        }
-        if (string3.startsWith("town:")) {
-            return this.resolveTownyTownTarget(string2.substring("town:".length()).trim());
-        }
-        if (string3.startsWith("dh:")) {
-            return this.resolveDecentHologramTarget(string2.substring("dh:".length()).trim());
-        }
-        if (string3.startsWith("decentholograms:")) {
-            return this.resolveDecentHologramTarget(string2.substring("decentholograms:".length()).trim());
-        }
-        if (string3.startsWith("holo:")) {
-            return this.resolveDecentHologramTarget(string2.substring("holo:".length()).trim());
-        }
-        return Optional.empty();
-    }
+         }
 
-    public List<String> getWarpNames() {
-        ArrayList<String> arrayList = new ArrayList<String>();
-        for (String string : this.getEssentialsWarpNames()) {
-            if (this.containsIgnoreCase(arrayList, string)) continue;
-            arrayList.add(string);
-        }
-        for (String string : this.getCmiWarpNames()) {
-            if (this.containsIgnoreCase(arrayList, string)) continue;
-            arrayList.add(string);
-        }
-        return arrayList;
-    }
+         String var8 = this.buildBlockDisplayName(var4, var7);
+         return Optional.of(new StaticLocationTarget(var8, var7));
+      } else {
+         return Optional.empty();
+      }
+   }
 
-    public List<String> getEssentialsWarpNames() {
-        if (!this.plugin.config().getBoolean("integrations.allow_warp_targets", true)) {
-            return Collections.emptyList();
-        }
-        if (!this.isPluginEnabled("Essentials")) {
-            return Collections.emptyList();
-        }
-        try {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("Essentials");
-            if (plugin == null) {
-                return Collections.emptyList();
-            }
-            Method method = plugin.getClass().getMethod("getWarps", new Class[0]);
-            Object object = method.invoke((Object)plugin, new Object[0]);
-            if (object == null) {
-                return Collections.emptyList();
-            }
-            Method method2 = this.findFirstMethod(object.getClass(), "getList", "getWarpNames", "list");
-            if (method2 == null) {
-                return Collections.emptyList();
-            }
-            Object object2 = method2.invoke(object, new Object[0]);
-            ArrayList<String> arrayList = new ArrayList<String>();
-            if (object2 instanceof Collection) {
-                Collection collection = (Collection)object2;
-                for (Object e : collection) {
-                    if (e == null) continue;
-                    arrayList.add(String.valueOf(e));
-                }
-            }
-            return arrayList;
-        }
-        catch (Exception exception) {
-            return Collections.emptyList();
-        }
-    }
+   public Optional<TargetLocator> resolvePoi(Player var1, String var2) {
+      if (!this.plugin.config().getBoolean("integrations.allow_poi_targets", true)) {
+         return Optional.empty();
+      }
 
-    public List<String> getCmiWarpNames() {
-        if (!this.plugin.config().getBoolean("integrations.allow_warp_targets", true)) {
-            return Collections.emptyList();
-        }
-        if (!this.plugin.config().getBoolean("integrations.allow_cmi_warp_targets", true)) {
-            return Collections.emptyList();
-        }
-        if (!this.isPluginEnabled("CMI")) {
-            return Collections.emptyList();
-        }
-        Object object = this.getCmiWarpManager();
-        if (object == null) {
-            return Collections.emptyList();
-        }
-        ArrayList<String> arrayList = new ArrayList<String>();
-        this.collectNamesFromValue(this.invokeNoArg(object, "getWarps", "getWarpMap", "getWarpsMap", "getAllWarps"), arrayList);
-        this.collectNamesFromValue(this.invokeNoArg(object, "getWarpNames", "getNames", "list"), arrayList);
-        return arrayList;
-    }
-
-    public List<String> getTownyTownNames() {
-        if (!this.plugin.config().getBoolean("integrations.allow_town_targets", true)) {
-            return Collections.emptyList();
-        }
-        if (!this.isPluginEnabled("Towny")) {
-            return Collections.emptyList();
-        }
-        try {
-            Class<?> clazz = Class.forName("com.palmergames.bukkit.towny.TownyAPI");
-            Object object = clazz.getMethod("getInstance", new Class[0]).invoke(null, new Object[0]);
-            if (object == null) {
-                return Collections.emptyList();
-            }
-            ArrayList<String> arrayList = new ArrayList<String>();
-            this.collectNamesFromValue(this.invokeNoArg(object, "getTowns"), arrayList);
-            this.collectNamesFromValue(this.invokeNoArg(object, "getTownsMap"), arrayList);
-            return arrayList;
-        }
-        catch (Exception exception) {
-            return Collections.emptyList();
-        }
-    }
-
-    public List<String> getDecentHologramNames() {
-        Method method;
-        Class<?> clazz;
-        if (!this.plugin.config().getBoolean("integrations.allow_hologram_targets", true)) {
-            return Collections.emptyList();
-        }
-        if (!this.isPluginEnabled("DecentHolograms")) {
-            return Collections.emptyList();
-        }
-        ArrayList<String> arrayList = new ArrayList<String>();
-        try {
-            clazz = Class.forName("eu.decentsoftware.holograms.api.holograms.Hologram");
-            method = this.findFirstMethod(clazz, "getCachedHologramNames");
-            if (method != null) {
-                this.collectNamesFromValue(method.invoke(null, new Object[0]), arrayList);
-            }
-        }
-        catch (Exception exception) {
-            // empty catch block
-        }
-        try {
-            clazz = Class.forName("eu.decentsoftware.holograms.api.DHAPI");
-            method = this.findFirstMethod(clazz, "getHologramNames");
-            if (method != null) {
-                this.collectNamesFromValue(method.invoke(null, new Object[0]), arrayList);
-            }
-        }
-        catch (Exception exception) {
-            // empty catch block
-        }
-        return arrayList;
-    }
-
-    public List<String> getWorldGuardRegionNames(Player player) {
-        if (!this.plugin.config().getBoolean("integrations.allow_region_targets", true)) {
-            return Collections.emptyList();
-        }
-        if (player == null || !this.isPluginEnabled("WorldGuard")) {
-            return Collections.emptyList();
-        }
-        return this.fetchWorldGuardRegionNames(player.getWorld());
-    }
-
-    public Optional<TargetLocator> resolveMobInput(String string) {
-        if (!this.plugin.config().getBoolean("integrations.allow_mob_targets", true)) {
+      ConfigurationSection var3 = this.plugin.config().getConfigurationSection("poi.points");
+      if (var3 != null && var3.isConfigurationSection(var2)) {
+         ConfigurationSection var4 = var3.getConfigurationSection(var2);
+         if (var4 == null) {
             return Optional.empty();
-        }
-        if (string == null || string.isBlank()) {
-            return Optional.empty();
-        }
-        String string2 = string.toLowerCase(Locale.ROOT);
-        if (string2.startsWith("elite:")) {
-            return this.resolvePresetHintMob("elitemobs", string.substring("elite:".length()));
-        }
-        if (string2.startsWith("elitemobs:")) {
-            return this.resolvePresetHintMob("elitemobs", string.substring("elitemobs:".length()));
-        }
-        if (string2.startsWith("modelengine:")) {
-            return this.resolvePresetHintMob("modelengine", string.substring("modelengine:".length()));
-        }
-        if (string2.startsWith("model:")) {
-            return this.resolvePresetHintMob("modelengine", string.substring("model:".length()));
-        }
-        if (string2.startsWith("denizen:")) {
-            return this.resolvePresetHintMob("denizen", string.substring("denizen:".length()));
-        }
-        if (string2.startsWith("mmocore:")) {
-            return this.resolvePresetHintMob("mmocore", string.substring("mmocore:".length()));
-        }
-        if (string2.startsWith("mmoitems:")) {
-            return this.resolvePresetHintMob("mmoitems", string.substring("mmoitems:".length()));
-        }
-        if (string2.startsWith("ecoboss:")) {
-            return this.resolvePresetHintMob("ecobosses", string.substring("ecoboss:".length()));
-        }
-        if (string2.startsWith("ecobosses:")) {
-            return this.resolvePresetHintMob("ecobosses", string.substring("ecobosses:".length()));
-        }
-        if (string2.startsWith("tag:")) {
-            String string3 = string.substring("tag:".length()).trim();
-            return Optional.of(new HintedEntityTarget("tag:" + string3, "Tag " + string3, "*", 1000.0, Collections.emptyList(), List.of(string3), Collections.emptyList(), (Plugin)this.plugin.owner()));
-        }
-        if (string2.startsWith("meta:")) {
-            String string4 = string.substring("meta:".length()).trim();
-            return Optional.of(new HintedEntityTarget("meta:" + string4, "Metadata " + string4, "*", 1000.0, List.of(string4), Collections.emptyList(), Collections.emptyList(), (Plugin)this.plugin.owner()));
-        }
-        if (string2.startsWith("pdc:")) {
-            String string5 = string.substring("pdc:".length()).trim();
-            return Optional.of(new HintedEntityTarget("pdc:" + string5, "PDC " + string5, "*", 1000.0, Collections.emptyList(), Collections.emptyList(), List.of(string5), (Plugin)this.plugin.owner()));
-        }
-        if (string2.startsWith("mythic:")) {
-            String string6 = string.substring("mythic:".length());
-            if (!this.isPluginEnabled("MythicMobs")) {
-                return Optional.empty();
-            }
-            return Optional.of(new MythicMobTarget(string6, 512.0));
-        }
-        try {
-            EntityType entityType = EntityType.valueOf((String)string.toUpperCase());
-            return Optional.of(new NearestEntityTypeTarget(entityType, 512.0));
-        }
-        catch (IllegalArgumentException illegalArgumentException) {
-            return Optional.of(new NamedEntityTarget(string, 512.0));
-        }
-    }
+         }
 
-    public Optional<TargetLocator> resolveNpcInput(String string) {
-        if (!this.plugin.config().getBoolean("integrations.allow_npc_targets", true)) {
+         if (!this.conditionEvaluator.checkAll(var1, var4.getStringList("conditions"))) {
             return Optional.empty();
-        }
-        if (string == null || string.isBlank()) {
-            return Optional.empty();
-        }
-        String string2 = string.toLowerCase(Locale.ROOT);
-        if (string2.startsWith("citizens:")) {
-            String string3 = string.substring("citizens:".length()).trim();
-            if (!this.isPluginEnabled("Citizens")) {
-                return Optional.empty();
+         }
+
+         TargetLocator var5 = this.buildPoiTarget(var1, var2, var4);
+         return Optional.ofNullable(var5);
+      } else {
+         return Optional.empty();
+      }
+   }
+
+   public Map<String, TargetLocator> getVisiblePois(Player var1) {
+      ConfigurationSection var2 = this.plugin.config().getConfigurationSection("poi.points");
+      if (var2 == null) {
+         return Collections.emptyMap();
+      }
+
+      LinkedHashMap var3 = new LinkedHashMap();
+
+      for (String var5 : var2.getKeys(false)) {
+         this.resolvePoi(var1, var5).ifPresent(var2x -> var3.put(var5, var2x));
+      }
+
+      return var3;
+   }
+
+   public Map<String, String> getVisiblePoiDisplayNames(Player var1) {
+      if (!this.plugin.config().getBoolean("integrations.allow_poi_targets", true)) {
+         return Collections.emptyMap();
+      }
+
+      ConfigurationSection var2 = this.plugin.config().getConfigurationSection("poi.points");
+      if (var2 == null) {
+         return Collections.emptyMap();
+      }
+
+      LinkedHashMap var3 = new LinkedHashMap();
+
+      for (String var5 : var2.getKeys(false)) {
+         ConfigurationSection var6 = var2.getConfigurationSection(var5);
+         if (var6 != null && this.conditionEvaluator.checkAll(var1, var6.getStringList("conditions"))) {
+            var3.put(var5, var6.getString("display_name", var5));
+         }
+      }
+
+      return var3;
+   }
+
+   public Set<String> getAvailablePoiKeys() {
+      ConfigurationSection var1 = this.plugin.config().getConfigurationSection("poi.points");
+      return var1 == null ? Collections.emptySet() : var1.getKeys(false);
+   }
+
+   public String getPoiDisplayName(String var1) {
+      if (var1 != null && !var1.isBlank()) {
+         ConfigurationSection var2 = this.plugin.config().getConfigurationSection("poi.points");
+         if (var2 != null && var2.isConfigurationSection(var1)) {
+            ConfigurationSection var3 = var2.getConfigurationSection(var1);
+            return var3 == null ? var1 : var3.getString("display_name", var1);
+         } else {
+            return var1;
+         }
+      } else {
+         return "";
+      }
+   }
+
+   public Optional<TargetLocator> resolveDescriptor(Player var1, RouteDescriptor var2) {
+      switch (var2.type()) {
+         case PLAYER:
+            if (!this.isPlayerTargetsEnabled()) {
+               return Optional.empty();
+            } else {
+               String var4 = var2.value();
+
+               try {
+                  UUID var5 = UUID.fromString(var4);
+                  Player var9 = Bukkit.getPlayer(var5);
+                  return var9 == null ? Optional.empty() : Optional.of(new PlayerTarget(var9.getUniqueId(), var9.getName()));
+               } catch (IllegalArgumentException var8) {
+                  Player var6 = Bukkit.getPlayerExact(var4);
+                  return var6 == null ? Optional.empty() : Optional.of(new PlayerTarget(var6.getUniqueId(), var6.getName()));
+               }
             }
-            return Optional.of(new CitizensNpcTarget(string3, "NPC " + string3));
-        }
-        if (string2.startsWith("denizen:")) {
-            String string4 = string.substring("denizen:".length()).trim();
-            if (!this.isPluginEnabled("Denizen") || !this.isPluginEnabled("Citizens")) {
-                return Optional.empty();
+         case MOB:
+            return this.resolveMobInput(var2.value());
+         case NPC:
+            return this.resolveNpcInput(var2.value());
+         case POI:
+            return this.resolvePoi(var1, var2.value());
+         case LOCATION:
+            if (!this.isLocationTargetsEnabled()) {
+               return Optional.empty();
             }
-            return Optional.of(new CitizensNpcTarget(string4, "Denizen NPC " + string4));
-        }
-        if (string2.startsWith("znpcs:")) {
-            String string5 = string.substring("znpcs:".length()).trim();
-            if (!this.isPluginEnabled("ZNPCsPlus")) {
-                return Optional.empty();
+
+            return this.resolveLocationDescriptor(var1, var2.value());
+         default:
+            throw new IncompatibleClassChangeError();
+      }
+   }
+
+   public boolean betonQuestEnabled() {
+      return this.isPluginEnabled("BetonQuest") && this.plugin.config().getBoolean("betonquest.enabled", true);
+   }
+
+   public Map<String, IntegrationManager.AutoRoute> getAutoRoutes(Player var1) {
+      LinkedHashMap<String, IntegrationManager.AutoRoute> var2 = new LinkedHashMap<>();
+
+      for (IntegrationManager.AutoRoute var4 : this.externalRoutes.getOrDefault(var1.getUniqueId(), Map.of()).values()) {
+         if ((!var4.source().startsWith("betonquest") || this.betonQuestEnabled()) && this.resolveDescriptor(var1, var4.descriptor()).isPresent()) {
+            var2.put(var4.key(), var4);
+         }
+      }
+
+      Map<String, QuestRouteService.StoredRoute> var17 = this.questRouteService.getRoutes(var1.getUniqueId());
+
+      for (Entry<String, QuestRouteService.StoredRoute> var5 : var17.entrySet()) {
+         QuestRouteService.StoredRoute var6 = var5.getValue();
+         if ((this.betonQuestEnabled() || !var6.source().startsWith("betonquest")) && !this.resolveDescriptor(var1, var6.descriptor()).isEmpty()) {
+            var2.put(
+               var5.getKey(),
+               new IntegrationManager.AutoRoute(var5.getKey(), var6.displayName(), var6.descriptor(), var6.mode(), var6.source())
+            );
+         }
+      }
+
+      if (!this.betonQuestEnabled()) {
+         return var2;
+      }
+
+      ConfigurationSection var19 = this.plugin.config().getConfigurationSection("betonquest.auto_routes");
+      if (var19 == null) {
+         return var2;
+      }
+
+      for (String var21 : var19.getKeys(false)) {
+         ConfigurationSection var7 = var19.getConfigurationSection(var21);
+         if (var7 != null && this.conditionEvaluator.checkAll(var1, var7.getStringList("conditions"))) {
+            String var8 = var7.getString("type", "").toUpperCase();
+            String var9 = var7.getString("value", "");
+            String var10 = this.questRouteNames.name(var1, var7, var7.getString("display", var21));
+            NavigationMode var11 = NavigationMode.fromConfig(var7.getString("mode", this.plugin.getDefaultMode().name().toLowerCase()));
+            String var12 = var7.getString("source", "betonquest-auto");
+
+            try {
+               RouteDescriptor var13 = new RouteDescriptor(RouteDescriptor.Type.valueOf(var8), var9);
+               if (!this.resolveDescriptor(var1, var13).isEmpty()) {
+                  String var14 = var7.getString("quest", "").trim();
+                  String var15 = var14.isEmpty() ? var21 : var14;
+                  if (!var14.isEmpty()) {
+                     var12 = "betonquest-quest:" + var14;
+                  }
+
+                  var2.putIfAbsent(var15, new IntegrationManager.AutoRoute(var15, var10, var13, var11, var12));
+               }
+            } catch (IllegalArgumentException var16) {
             }
-            return Optional.of(new ZnpcsPlusNpcTarget(string5, "ZNPC " + string5));
-        }
-        if (string2.startsWith("znpcsplus:")) {
-            String string6 = string.substring("znpcsplus:".length()).trim();
-            if (!this.isPluginEnabled("ZNPCsPlus")) {
-                return Optional.empty();
-            }
-            return Optional.of(new ZnpcsPlusNpcTarget(string6, "ZNPC " + string6));
-        }
-        if (string2.startsWith("fancynpc:")) {
-            String string7 = string.substring("fancynpc:".length()).trim();
+         }
+      }
+
+      return var2;
+   }
+
+   public void putDynamicQuestRoute(UUID var1, String var2, String var3, RouteDescriptor var4, NavigationMode var5, String var6) {
+      this.questRouteService.putRoute(var1, var2, var3, var4, var5, var6);
+   }
+
+   public Optional<TargetLocator> resolveAutoRoute(Player var1, IntegrationManager.AutoRoute var2) {
+      return this.resolveDescriptor(var1, var2.descriptor()).map(var2x -> new TargetLocator() {
+         @Override
+         public String id() {
+            return var2x.id();
+         }
+
+         @Override
+         public String displayName() {
+            return ChatColor.stripColor(Color.colorize(var2.displayName()));
+         }
+
+         @Override
+         public Location resolve(Player var1) {
+            return var2x.resolve(var1);
+         }
+      });
+   }
+
+   public boolean removeDynamicQuestRoute(UUID var1, String var2) {
+      return this.questRouteService.removeRoute(var1, var2);
+   }
+
+   public int clearDynamicQuestRoutes(UUID var1) {
+      return this.questRouteService.clearRoutes(var1);
+   }
+
+   public Set<String> getDynamicQuestRouteKeys(UUID var1) {
+      return this.questRouteService.getRoutes(var1).keySet();
+   }
+
+   private TargetLocator buildPoiTarget(Player var1, String var2, ConfigurationSection var3) {
+      String var4 = var3.getString("display_name", var2);
+      if (var3.getBoolean("spawn", false)) {
+         return new WorldSpawnTarget(var4, var3.getString("world"));
+      }
+
+      if (var3.contains("world") && var3.contains("x") && var3.contains("y") && var3.contains("z")) {
+         String var18 = var3.getString("world");
+         if (Bukkit.getWorld(var18) == null) {
+            return null;
+         }
+
+         Location var19 = new Location(Bukkit.getWorld(var18), var3.getDouble("x"), var3.getDouble("y"), var3.getDouble("z"));
+         return new StaticLocationTarget(var4, var19);
+      } else {
+         if (var3.contains("citizens_id")) {
+            return !this.isPluginEnabled("Citizens") ? null : new CitizensNpcTarget(String.valueOf(var3.getInt("citizens_id")), var4);
+         }
+
+         if (var3.contains("citizens_name")) {
+            return !this.isPluginEnabled("Citizens") ? null : new CitizensNpcTarget(var3.getString("citizens_name"), var4);
+         }
+
+         if (var3.contains("fancynpc")) {
             if (!this.isPluginEnabled("FancyNpcs")) {
-                return Optional.empty();
+               return null;
             }
-            return Optional.of(new FancyNpcTarget(string7, "FancyNPC " + string7));
-        }
-        if (string2.startsWith("fancy:")) {
-            String string8 = string.substring("fancy:".length()).trim();
-            if (!this.isPluginEnabled("FancyNpcs")) {
-                return Optional.empty();
-            }
-            return Optional.of(new FancyNpcTarget(string8, "FancyNPC " + string8));
-        }
-        if (string2.startsWith("shopkeeper:")) {
-            String string9 = string.substring("shopkeeper:".length()).trim();
+
+            String var17 = var3.getString("fancynpc", "").trim();
+            return var17.isEmpty() ? null : new FancyNpcTarget(var17, var4);
+         } else if (var3.contains("shopkeeper")) {
             if (!this.isPluginEnabled("Shopkeepers")) {
-                return Optional.empty();
+               return null;
             }
-            return Optional.of(new ShopkeeperTarget(string9, "Shopkeeper " + string9));
-        }
-        if (string2.startsWith("shopkeepers:")) {
-            String string10 = string.substring("shopkeepers:".length()).trim();
-            if (!this.isPluginEnabled("Shopkeepers")) {
-                return Optional.empty();
+
+            String var16 = var3.getString("shopkeeper", "").trim();
+            return var16.isEmpty() ? null : new ShopkeeperTarget(var16, var4);
+         } else {
+            if (var3.contains("mythic_mob")) {
+               return !this.isPluginEnabled("MythicMobs") ? null : new MythicMobTarget(var3.getString("mythic_mob"), 1000.0);
             }
-            return Optional.of(new ShopkeeperTarget(string10, "Shopkeeper " + string10));
-        }
-        if (!this.isPluginEnabled("Citizens")) {
-            return Optional.empty();
-        }
-        return Optional.of(new CitizensNpcTarget(string, "NPC " + string));
-    }
 
-    public Optional<TargetLocator> resolveBlockInput(Player player, String string) {
-        int n;
-        if (!this.plugin.config().getBoolean("integrations.allow_block_targets", true)) {
-            return Optional.empty();
-        }
-        if (player == null || string == null || string.isBlank()) {
-            return Optional.empty();
-        }
-        BlockQuery blockQuery = this.parseBlockQuery(string);
-        if (blockQuery == null) {
-            return Optional.empty();
-        }
-        double d = Math.max(8.0, this.plugin.config().getDouble("integrations.block_search.radius", 64.0));
-        Location location = this.findNearestBlock(player, blockQuery, d, n = this.plugin.config().getInt("integrations.block_search.vertical_range", 48));
-        if (location == null) {
-            return Optional.empty();
-        }
-        String string2 = this.buildBlockDisplayName(blockQuery, location);
-        return Optional.of(new StaticLocationTarget(string2, location));
-    }
-
-    public Optional<TargetLocator> resolvePoi(Player player, String string) {
-        if (!this.plugin.config().getBoolean("integrations.allow_poi_targets", true)) {
-            return Optional.empty();
-        }
-        ConfigurationSection configurationSection = this.plugin.config().getConfigurationSection("poi.points");
-        if (configurationSection == null || !configurationSection.isConfigurationSection(string)) {
-            return Optional.empty();
-        }
-        ConfigurationSection configurationSection2 = configurationSection.getConfigurationSection(string);
-        if (configurationSection2 == null) {
-            return Optional.empty();
-        }
-        if (!this.conditionEvaluator.checkAll(player, configurationSection2.getStringList("conditions"))) {
-            return Optional.empty();
-        }
-        TargetLocator targetLocator = this.buildPoiTarget(player, string, configurationSection2);
-        return Optional.ofNullable(targetLocator);
-    }
-
-    public Map<String, TargetLocator> getVisiblePois(Player player) {
-        ConfigurationSection configurationSection = this.plugin.config().getConfigurationSection("poi.points");
-        if (configurationSection == null) {
-            return Collections.emptyMap();
-        }
-        LinkedHashMap<String, TargetLocator> linkedHashMap = new LinkedHashMap<String, TargetLocator>();
-        for (String string : configurationSection.getKeys(false)) {
-            this.resolvePoi(player, string).ifPresent(targetLocator -> linkedHashMap.put(string, (TargetLocator)targetLocator));
-        }
-        return linkedHashMap;
-    }
-
-    public Map<String, String> getVisiblePoiDisplayNames(Player player) {
-        if (!this.plugin.config().getBoolean("integrations.allow_poi_targets", true)) {
-            return Collections.emptyMap();
-        }
-        ConfigurationSection configurationSection = this.plugin.config().getConfigurationSection("poi.points");
-        if (configurationSection == null) {
-            return Collections.emptyMap();
-        }
-        LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<String, String>();
-        for (String string : configurationSection.getKeys(false)) {
-            ConfigurationSection configurationSection2 = configurationSection.getConfigurationSection(string);
-            if (configurationSection2 == null || !this.conditionEvaluator.checkAll(player, configurationSection2.getStringList("conditions"))) continue;
-            linkedHashMap.put(string, configurationSection2.getString("display_name", string));
-        }
-        return linkedHashMap;
-    }
-
-    public Set<String> getAvailablePoiKeys() {
-        ConfigurationSection configurationSection = this.plugin.config().getConfigurationSection("poi.points");
-        if (configurationSection == null) {
-            return Collections.emptySet();
-        }
-        return configurationSection.getKeys(false);
-    }
-
-    public String getPoiDisplayName(String string) {
-        if (string == null || string.isBlank()) {
-            return "";
-        }
-        ConfigurationSection configurationSection = this.plugin.config().getConfigurationSection("poi.points");
-        if (configurationSection == null || !configurationSection.isConfigurationSection(string)) {
-            return string;
-        }
-        ConfigurationSection configurationSection2 = configurationSection.getConfigurationSection(string);
-        if (configurationSection2 == null) {
-            return string;
-        }
-        return configurationSection2.getString("display_name", string);
-    }
-
-    public Optional<TargetLocator> resolveDescriptor(Player player, RouteDescriptor routeDescriptor) {
-        Optional<TargetLocator> optional;
-        switch (routeDescriptor.type()) {
-            default: {
-                throw new IncompatibleClassChangeError();
+            if (var3.contains("elite_mob")) {
+               return this.buildPresetHintTarget("elitemobs", var3.getString("elite_mob"), var4, 1000.0);
             }
-            case PLAYER: {
-                if (!this.isPlayerTargetsEnabled()) {
-                    Optional<TargetLocator> optional2;
-                    Optional<TargetLocator> optional3 = optional2 = Optional.empty();
-                    return optional3;
-                }
-                String string = routeDescriptor.value();
-                try {
-                    Optional<TargetLocator> optional4;
-                    UUID uUID = UUID.fromString(string);
-                    Player player2 = Bukkit.getPlayer((UUID)uUID);
-                    if (player2 == null) {
-                        Optional<TargetLocator> optional5;
-                        Optional<TargetLocator> optional6 = optional5 = Optional.empty();
-                        return optional6;
-                    }
-                    Optional<TargetLocator> optional7 = optional4 = Optional.of(new PlayerTarget(player2.getUniqueId(), player2.getName()));
-                    return optional7;
-                }
-                catch (IllegalArgumentException illegalArgumentException) {
-                    Optional<TargetLocator> optional8;
-                    Player player3 = Bukkit.getPlayerExact((String)string);
-                    if (player3 == null) {
-                        Optional<TargetLocator> optional9;
-                        Optional<TargetLocator> optional10 = optional9 = Optional.empty();
-                        return optional10;
-                    }
-                    Optional<TargetLocator> optional11 = optional8 = Optional.of(new PlayerTarget(player3.getUniqueId(), player3.getName()));
-                    return optional11;
-                }
-            }
-            case MOB: {
-                Optional<TargetLocator> optional12;
-                Optional<TargetLocator> optional13 = optional12 = this.resolveMobInput(routeDescriptor.value());
-                return optional13;
-            }
-            case NPC: {
-                Optional<TargetLocator> optional14;
-                Optional<TargetLocator> optional15 = optional14 = this.resolveNpcInput(routeDescriptor.value());
-                return optional15;
-            }
-            case POI: {
-                Optional<TargetLocator> optional16;
-                Optional<TargetLocator> optional17 = optional16 = this.resolvePoi(player, routeDescriptor.value());
-                return optional17;
-            }
-            case LOCATION: 
-        }
-        if (!this.isLocationTargetsEnabled()) {
-            Optional<TargetLocator> optional18;
-            Optional<TargetLocator> optional19 = optional18 = Optional.empty();
-            return optional19;
-        }
-        Optional<TargetLocator> optional20 = optional = this.resolveLocationDescriptor(player, routeDescriptor.value());
-        return optional20;
-    }
 
-    public boolean betonQuestEnabled() {
-        return this.isPluginEnabled("BetonQuest") && this.plugin.config().getBoolean("betonquest.enabled", true);
-    }
+            if (var3.contains("modelengine_model")) {
+               return this.buildPresetHintTarget("modelengine", var3.getString("modelengine_model"), var4, 1000.0);
+            }
 
-    public Map<String, AutoRoute> getAutoRoutes(Player player) {
-        Object object22;
-        LinkedHashMap<String, AutoRoute> linkedHashMap = new LinkedHashMap<String, AutoRoute>();
-        for (Object object22 : this.externalRoutes.getOrDefault(player.getUniqueId(), Map.of()).values()) {
-            if (((AutoRoute)object22).source().startsWith("betonquest") && !this.betonQuestEnabled() || !this.resolveDescriptor(player, ((AutoRoute)object22).descriptor()).isPresent()) continue;
-            linkedHashMap.put(((AutoRoute)object22).key(), (AutoRoute)object22);
-        }
-        Map<String, QuestRouteService.StoredRoute> map = this.questRouteService.getRoutes(player.getUniqueId());
-        for (Map.Entry object3 : map.entrySet()) {
-            Object object = (QuestRouteService.StoredRoute)object3.getValue();
-            if (!this.betonQuestEnabled() && ((QuestRouteService.StoredRoute)object).source().startsWith("betonquest") || this.resolveDescriptor(player, ((QuestRouteService.StoredRoute)object).descriptor()).isEmpty()) continue;
-            linkedHashMap.put((String)object3.getKey(), new AutoRoute((String)object3.getKey(), ((QuestRouteService.StoredRoute)object).displayName(), ((QuestRouteService.StoredRoute)object).descriptor(), ((QuestRouteService.StoredRoute)object).mode(), ((QuestRouteService.StoredRoute)object).source()));
-        }
-        if (!this.betonQuestEnabled()) {
-            return linkedHashMap;
-        }
-        object22 = this.plugin.config().getConfigurationSection("betonquest.auto_routes");
-        if (object22 == null) {
-            return linkedHashMap;
-        }
-        for (Object object : object22.getKeys(false)) {
-            ConfigurationSection configurationSection = object22.getConfigurationSection((String)object);
-            if (configurationSection == null || !this.conditionEvaluator.checkAll(player, configurationSection.getStringList("conditions"))) continue;
-            String string = configurationSection.getString("type", "").toUpperCase();
-            String string2 = configurationSection.getString("value", "");
-            String string3 = this.questRouteNames.name(player, configurationSection, configurationSection.getString("display", (String)object));
-            NavigationMode navigationMode = NavigationMode.fromConfig(configurationSection.getString("mode", this.plugin.getDefaultMode().name().toLowerCase()));
-            Object object3 = configurationSection.getString("source", "betonquest-auto");
+            if (var3.contains("denizen_npc")) {
+               if (this.isPluginEnabled("Denizen") && this.isPluginEnabled("Citizens")) {
+                  String var15 = var3.getString("denizen_npc", "").trim();
+                  return var15.isEmpty() ? null : new CitizensNpcTarget(var15, var4);
+               } else {
+                  return null;
+               }
+            } else if (var3.contains("znpcs_id")) {
+               if (!this.isPluginEnabled("ZNPCsPlus")) {
+                  return null;
+               }
+
+               String var14 = String.valueOf(var3.get("znpcs_id", "")).trim();
+               return var14.isEmpty() ? null : new ZnpcsPlusNpcTarget(var14, var4);
+            } else if (var3.contains("znpcs_name")) {
+               if (!this.isPluginEnabled("ZNPCsPlus")) {
+                  return null;
+               }
+
+               String var13 = var3.getString("znpcs_name", "").trim();
+               return var13.isEmpty() ? null : new ZnpcsPlusNpcTarget(var13, var4);
+            } else {
+               if (var3.contains("ecoboss_mob")) {
+                  return this.buildPresetHintTarget("ecobosses", var3.getString("ecoboss_mob"), var4, 1000.0);
+               }
+
+               if (var3.contains("essentials_warp")) {
+                  return this.resolveLocationPoi(var1, "warp:" + var3.getString("essentials_warp"), var4);
+               }
+
+               if (var3.contains("cmi_warp")) {
+                  return this.resolveLocationPoi(var1, "cmiwarp:" + var3.getString("cmi_warp"), var4);
+               }
+
+               if (var3.contains("worldguard_region")) {
+                  String var12 = var3.getString("worldguard_region", "").trim();
+                  String var6 = var3.getString("worldguard_world", "").trim();
+                  String var7 = var6.isBlank() ? var12 : var6 + ":" + var12;
+                  return this.resolveLocationPoi(var1, "wg:" + var7, var4);
+               }
+
+               if (var3.contains("towny_town")) {
+                  return this.resolveLocationPoi(var1, "town:" + var3.getString("towny_town"), var4);
+               }
+
+               if (var3.contains("decent_hologram")) {
+                  return this.resolveLocationPoi(var1, "dh:" + var3.getString("decent_hologram"), var4);
+               }
+
+               if (var3.contains("vanilla_block")) {
+                  return this.resolveBlockPoi(var1, "vanilla:" + var3.getString("vanilla_block"), var4);
+               }
+
+               if (var3.contains("itemsadder_block")) {
+                  return this.resolveBlockPoi(var1, "itemsadder:" + var3.getString("itemsadder_block"), var4);
+               }
+
+               if (var3.contains("ia_block")) {
+                  return this.resolveBlockPoi(var1, "ia:" + var3.getString("ia_block"), var4);
+               }
+
+               if (var3.contains("nexo_block")) {
+                  return this.resolveBlockPoi(var1, "nexo:" + var3.getString("nexo_block"), var4);
+               }
+
+               if (var3.contains("oraxen_block")) {
+                  return this.resolveBlockPoi(var1, "oraxen:" + var3.getString("oraxen_block"), var4);
+               }
+
+               if (var3.contains("entity_tag")) {
+                  String var11 = var3.getString("entity_tag");
+                  return var11 != null && !var11.isBlank()
+                     ? new HintedEntityTarget(
+                        "poi-tag:" + var11, var4, "*", 1000.0, Collections.emptyList(), List.of(var11), Collections.emptyList(), this.plugin.owner()
+                     )
+                     : null;
+               }
+
+               if (var3.contains("entity_metadata")) {
+                  String var10 = var3.getString("entity_metadata");
+                  return var10 != null && !var10.isBlank()
+                     ? new HintedEntityTarget(
+                        "poi-meta:" + var10, var4, "*", 1000.0, List.of(var10), Collections.emptyList(), Collections.emptyList(), this.plugin.owner()
+                     )
+                     : null;
+               }
+
+               if (var3.contains("entity_pdc")) {
+                  String var9 = var3.getString("entity_pdc");
+                  return var9 != null && !var9.isBlank()
+                     ? new HintedEntityTarget(
+                        "poi-pdc:" + var9, var4, "*", 1000.0, Collections.emptyList(), Collections.emptyList(), List.of(var9), this.plugin.owner()
+                     )
+                     : null;
+               }
+
+               if (var3.contains("entity_type")) {
+                  try {
+                     EntityType var5 = EntityType.valueOf(var3.getString("entity_type", "").toUpperCase());
+                     return new NearestEntityTypeTarget(var5, 1000.0);
+                  } catch (Exception var8) {
+                     return null;
+                  }
+               } else {
+                  return var3.contains("entity_name") ? new NamedEntityTarget(var3.getString("entity_name"), 1000.0) : null;
+               }
+            }
+         }
+      }
+   }
+
+   private TargetLocator resolveBlockPoi(Player var1, String var2, String var3) {
+      Optional var4 = this.resolveBlockInput(var1, var2);
+      if (var4.isEmpty()) {
+         return null;
+      }
+
+      Location var5 = ((TargetLocator)var4.get()).resolve(var1);
+      return var5 == null ? null : new StaticLocationTarget(var3, var5);
+   }
+
+   private TargetLocator resolveLocationPoi(Player var1, String var2, String var3) {
+      Optional var4 = this.resolveLocationInput(var1, var2);
+      if (var4.isEmpty()) {
+         return null;
+      }
+
+      Location var5 = ((TargetLocator)var4.get()).resolve(var1);
+      return var5 == null ? null : new StaticLocationTarget(var3, var5);
+   }
+
+   private boolean isPluginEnabled(String var1) {
+      Plugin var2 = Bukkit.getPluginManager().getPlugin(var1);
+      return var2 != null && var2.isEnabled();
+   }
+
+   private Optional<TargetLocator> resolvePresetHintMob(String var1, String var2) {
+      TargetLocator var3 = this.buildPresetHintTarget(var1, var2, var1 + " " + var2, 1000.0);
+      return Optional.ofNullable(var3);
+   }
+
+   private TargetLocator buildPresetHintTarget(String var1, String var2, String var3, double var4) {
+      ConfigurationSection var6 = this.plugin.config().getConfigurationSection("integrations.hints." + var1);
+      if (var6 == null) {
+         return null;
+      }
+
+      String var7 = var6.getString("plugin");
+      if (var7 != null && !var7.isBlank() && !this.isPluginEnabled(var7)) {
+         return null;
+      }
+
+      String var8 = var2 != null && !var2.isBlank() ? var2.trim() : "*";
+      return new HintedEntityTarget(
+         var1 + ":" + var8,
+         var3,
+         var8,
+         var4,
+         var6.getStringList("metadata_keys"),
+         var6.getStringList("scoreboard_tags"),
+         var6.getStringList("pdc_keys"),
+         this.plugin.owner()
+      );
+   }
+
+   private Optional<TargetLocator> resolveWarpAlias(String var1) {
+      Optional var2 = this.resolveEssentialsWarpTarget(var1);
+      return var2.isPresent() ? var2 : this.resolveCmiWarpTarget(var1);
+   }
+
+   private Optional<TargetLocator> resolveEssentialsWarpTarget(String var1) {
+      if (!this.plugin.config().getBoolean("integrations.allow_warp_targets", true)) {
+         return Optional.empty();
+      }
+
+      if (var1 == null || var1.isBlank()) {
+         return Optional.empty();
+      }
+
+      if (!this.isPluginEnabled("Essentials")) {
+         return Optional.empty();
+      }
+
+      String var2 = var1.trim();
+
+      try {
+         Plugin var4 = Bukkit.getPluginManager().getPlugin("Essentials");
+         if (var4 == null) {
+            return Optional.empty();
+         }
+
+         Method var5 = this.findFirstMethod(var4.getClass(), "getWarps");
+         if (var5 == null) {
+            return Optional.empty();
+         }
+
+         Object var6 = var5.invoke(var4);
+         if (var6 == null) {
+            return Optional.empty();
+         }
+
+         Method var7 = this.findFirstMethod(var6.getClass(), new Class[]{String.class}, "getWarp", "getWarpLocation", "get");
+         if (var7 == null) {
+            return Optional.empty();
+         }
+
+         Object var8 = var7.invoke(var6, var2);
+         Location var3;
+         return var8 instanceof Location && (var3 = (Location)var8).getWorld() != null
+            ? Optional.of(new StaticLocationTarget("Warp " + var2, var3))
+            : Optional.empty();
+      } catch (Exception var9) {
+         return Optional.empty();
+      }
+   }
+
+   private Optional<TargetLocator> resolveCmiWarpTarget(String var1) {
+      if (!this.plugin.config().getBoolean("integrations.allow_warp_targets", true)) {
+         return Optional.empty();
+      }
+
+      if (!this.plugin.config().getBoolean("integrations.allow_cmi_warp_targets", true)) {
+         return Optional.empty();
+      }
+
+      if (var1 == null || var1.isBlank()) {
+         return Optional.empty();
+      }
+
+      if (!this.isPluginEnabled("CMI")) {
+         return Optional.empty();
+      }
+
+      Object var2 = this.getCmiWarpManager();
+      if (var2 == null) {
+         return Optional.empty();
+      }
+
+      String var3 = var1.trim();
+      Object var4 = this.findCmiWarp(var2, var3);
+      if (var4 == null) {
+         return Optional.empty();
+      }
+
+      Location var5 = this.extractFlexibleLocation(var4);
+      return var5 != null && var5.getWorld() != null ? Optional.of(new StaticLocationTarget("Warp " + var3, var5)) : Optional.empty();
+   }
+
+   private Object getCmiWarpManager() {
+      try {
+         Class var1 = Class.forName("com.Zrips.CMI.CMI");
+         Method var2 = this.findFirstMethod(var1, "getInstance");
+         if (var2 == null) {
+            return null;
+         }
+
+         Object var3 = var2.invoke(null);
+         return var3 == null ? null : this.invokeNoArg(var3, "getWarpManager", "getWarpsManager", "getCMIWarpManager");
+      } catch (Exception var4) {
+         return null;
+      }
+   }
+
+   private Object findCmiWarp(Object var1, String var2) {
+      if (var1 != null && var2 != null && !var2.isBlank()) {
+         Method var4 = this.findFirstMethod(var1.getClass(), new Class[]{String.class}, "getWarp", "getByName", "get");
+         if (var4 != null) {
             try {
-                Object object4;
-                RouteDescriptor illegalArgumentException = new RouteDescriptor(RouteDescriptor.Type.valueOf(string), string2);
-                if (this.resolveDescriptor(player, illegalArgumentException).isEmpty()) continue;
-                String string4 = configurationSection.getString("quest", "").trim();
-                Object object5 = object4 = string4.isEmpty() ? object : string4;
-                if (!string4.isEmpty()) {
-                    object3 = "betonquest-quest:" + string4;
-                }
-                linkedHashMap.putIfAbsent((String)object4, new AutoRoute((String)object4, string3, illegalArgumentException, navigationMode, (String)object3));
+               Object var5 = var4.invoke(var1, var2);
+               if (var5 != null) {
+                  return var5;
+               }
+            } catch (Exception var9) {
             }
-            catch (IllegalArgumentException illegalArgumentException) {}
-        }
-        return linkedHashMap;
-    }
+         }
 
-    public void putDynamicQuestRoute(UUID uUID, String string, String string2, RouteDescriptor routeDescriptor, NavigationMode navigationMode, String string3) {
-        this.questRouteService.putRoute(uUID, string, string2, routeDescriptor, navigationMode, string3);
-    }
-
-    public Optional<TargetLocator> resolveAutoRoute(Player player, AutoRoute autoRoute) {
-        return this.resolveDescriptor(player, autoRoute.descriptor()).map(targetLocator -> new TargetLocator(){
-            final /* synthetic */ TargetLocator val$target;
-            final /* synthetic */ AutoRoute val$route;
-            final /* synthetic */ IntegrationManager this$0;
-            {
-                this.val$target = targetLocator;
-                this.val$route = autoRoute;
-                this.this$0 = integrationManager;
+         Object var3;
+         if ((var3 = this.invokeNoArg(var1, "getWarps", "getWarpMap", "getWarpsMap", "getAllWarps")) instanceof Map) {
+            Map var11 = (Map)var3;
+            Object var12 = var11.get(var2);
+            if (var12 != null) {
+               return var12;
             }
 
-            @Override
-            public String id() {
-                return this.val$target.id();
+            for (Object var8Object : var11.entrySet()) {
+               Entry<?, ?> var8 = (Entry<?, ?>)var8Object;
+               if (var8.getKey() != null && String.valueOf(var8.getKey()).equalsIgnoreCase(var2)) {
+                  return var8.getValue();
+               }
+
+               if (this.matchesNamedValue(var8.getValue(), var2)) {
+                  return var8.getValue();
+               }
             }
 
-            @Override
-            public String displayName() {
-                return ChatColor.stripColor((String)Color.colorize(this.val$route.displayName()));
+            return null;
+         } else {
+            if (var3 instanceof Iterable) {
+               for (Object var7 : (Iterable)var3) {
+                  if (this.matchesNamedValue(var7, var2)) {
+                     return var7;
+                  }
+               }
             }
 
-            @Override
-            public Location resolve(Player player) {
-                return this.val$target.resolve(player);
-            }
-        });
-    }
+            return null;
+         }
+      } else {
+         return null;
+      }
+   }
 
-    public boolean removeDynamicQuestRoute(UUID uUID, String string) {
-        return this.questRouteService.removeRoute(uUID, string);
-    }
+   private boolean matchesNamedValue(Object var1, String var2) {
+      if (var1 != null && var2 != null && !var2.isBlank()) {
+         Object var3 = this.invokeNoArg(var1, "getName", "name", "getWarpName");
+         return var3 != null && String.valueOf(var3).equalsIgnoreCase(var2);
+      } else {
+         return false;
+      }
+   }
 
-    public int clearDynamicQuestRoutes(UUID uUID) {
-        return this.questRouteService.clearRoutes(uUID);
-    }
+   private Optional<TargetLocator> resolveTownyTownTarget(String var1) {
+      if (!this.plugin.config().getBoolean("integrations.allow_town_targets", true)) {
+         return Optional.empty();
+      }
 
-    public Set<String> getDynamicQuestRouteKeys(UUID uUID) {
-        return this.questRouteService.getRoutes(uUID).keySet();
-    }
+      if (var1 == null || var1.isBlank()) {
+         return Optional.empty();
+      }
 
-    private TargetLocator buildPoiTarget(Player player, String string, ConfigurationSection configurationSection) {
-        String string2 = configurationSection.getString("display_name", string);
-        if (configurationSection.getBoolean("spawn", false)) {
-            return new WorldSpawnTarget(string2, configurationSection.getString("world"));
-        }
-        if (configurationSection.contains("world") && configurationSection.contains("x") && configurationSection.contains("y") && configurationSection.contains("z")) {
-            String string3 = configurationSection.getString("world");
-            if (Bukkit.getWorld((String)string3) == null) {
-                return null;
-            }
-            Location location = new Location(Bukkit.getWorld((String)string3), configurationSection.getDouble("x"), configurationSection.getDouble("y"), configurationSection.getDouble("z"));
-            return new StaticLocationTarget(string2, location);
-        }
-        if (configurationSection.contains("citizens_id")) {
-            if (!this.isPluginEnabled("Citizens")) {
-                return null;
-            }
-            return new CitizensNpcTarget(String.valueOf(configurationSection.getInt("citizens_id")), string2);
-        }
-        if (configurationSection.contains("citizens_name")) {
-            if (!this.isPluginEnabled("Citizens")) {
-                return null;
-            }
-            return new CitizensNpcTarget(configurationSection.getString("citizens_name"), string2);
-        }
-        if (configurationSection.contains("fancynpc")) {
-            if (!this.isPluginEnabled("FancyNpcs")) {
-                return null;
-            }
-            String string4 = configurationSection.getString("fancynpc", "").trim();
-            if (string4.isEmpty()) {
-                return null;
-            }
-            return new FancyNpcTarget(string4, string2);
-        }
-        if (configurationSection.contains("shopkeeper")) {
-            if (!this.isPluginEnabled("Shopkeepers")) {
-                return null;
-            }
-            String string5 = configurationSection.getString("shopkeeper", "").trim();
-            if (string5.isEmpty()) {
-                return null;
-            }
-            return new ShopkeeperTarget(string5, string2);
-        }
-        if (configurationSection.contains("mythic_mob")) {
-            if (!this.isPluginEnabled("MythicMobs")) {
-                return null;
-            }
-            return new MythicMobTarget(configurationSection.getString("mythic_mob"), 1000.0);
-        }
-        if (configurationSection.contains("elite_mob")) {
-            return this.buildPresetHintTarget("elitemobs", configurationSection.getString("elite_mob"), string2, 1000.0);
-        }
-        if (configurationSection.contains("modelengine_model")) {
-            return this.buildPresetHintTarget("modelengine", configurationSection.getString("modelengine_model"), string2, 1000.0);
-        }
-        if (configurationSection.contains("denizen_npc")) {
-            if (!this.isPluginEnabled("Denizen") || !this.isPluginEnabled("Citizens")) {
-                return null;
-            }
-            String string6 = configurationSection.getString("denizen_npc", "").trim();
-            if (string6.isEmpty()) {
-                return null;
-            }
-            return new CitizensNpcTarget(string6, string2);
-        }
-        if (configurationSection.contains("znpcs_id")) {
-            if (!this.isPluginEnabled("ZNPCsPlus")) {
-                return null;
-            }
-            String string7 = String.valueOf(configurationSection.get("znpcs_id", (Object)"")).trim();
-            if (string7.isEmpty()) {
-                return null;
-            }
-            return new ZnpcsPlusNpcTarget(string7, string2);
-        }
-        if (configurationSection.contains("znpcs_name")) {
-            if (!this.isPluginEnabled("ZNPCsPlus")) {
-                return null;
-            }
-            String string8 = configurationSection.getString("znpcs_name", "").trim();
-            if (string8.isEmpty()) {
-                return null;
-            }
-            return new ZnpcsPlusNpcTarget(string8, string2);
-        }
-        if (configurationSection.contains("ecoboss_mob")) {
-            return this.buildPresetHintTarget("ecobosses", configurationSection.getString("ecoboss_mob"), string2, 1000.0);
-        }
-        if (configurationSection.contains("essentials_warp")) {
-            return this.resolveLocationPoi(player, "warp:" + configurationSection.getString("essentials_warp"), string2);
-        }
-        if (configurationSection.contains("cmi_warp")) {
-            return this.resolveLocationPoi(player, "cmiwarp:" + configurationSection.getString("cmi_warp"), string2);
-        }
-        if (configurationSection.contains("worldguard_region")) {
-            String string9 = configurationSection.getString("worldguard_region", "").trim();
-            String string10 = configurationSection.getString("worldguard_world", "").trim();
-            String string11 = string10.isBlank() ? string9 : string10 + ":" + string9;
-            return this.resolveLocationPoi(player, "wg:" + string11, string2);
-        }
-        if (configurationSection.contains("towny_town")) {
-            return this.resolveLocationPoi(player, "town:" + configurationSection.getString("towny_town"), string2);
-        }
-        if (configurationSection.contains("decent_hologram")) {
-            return this.resolveLocationPoi(player, "dh:" + configurationSection.getString("decent_hologram"), string2);
-        }
-        if (configurationSection.contains("vanilla_block")) {
-            return this.resolveBlockPoi(player, "vanilla:" + configurationSection.getString("vanilla_block"), string2);
-        }
-        if (configurationSection.contains("itemsadder_block")) {
-            return this.resolveBlockPoi(player, "itemsadder:" + configurationSection.getString("itemsadder_block"), string2);
-        }
-        if (configurationSection.contains("ia_block")) {
-            return this.resolveBlockPoi(player, "ia:" + configurationSection.getString("ia_block"), string2);
-        }
-        if (configurationSection.contains("nexo_block")) {
-            return this.resolveBlockPoi(player, "nexo:" + configurationSection.getString("nexo_block"), string2);
-        }
-        if (configurationSection.contains("oraxen_block")) {
-            return this.resolveBlockPoi(player, "oraxen:" + configurationSection.getString("oraxen_block"), string2);
-        }
-        if (configurationSection.contains("entity_tag")) {
-            String string12 = configurationSection.getString("entity_tag");
-            if (string12 == null || string12.isBlank()) {
-                return null;
-            }
-            return new HintedEntityTarget("poi-tag:" + string12, string2, "*", 1000.0, Collections.emptyList(), List.of(string12), Collections.emptyList(), (Plugin)this.plugin.owner());
-        }
-        if (configurationSection.contains("entity_metadata")) {
-            String string13 = configurationSection.getString("entity_metadata");
-            if (string13 == null || string13.isBlank()) {
-                return null;
-            }
-            return new HintedEntityTarget("poi-meta:" + string13, string2, "*", 1000.0, List.of(string13), Collections.emptyList(), Collections.emptyList(), (Plugin)this.plugin.owner());
-        }
-        if (configurationSection.contains("entity_pdc")) {
-            String string14 = configurationSection.getString("entity_pdc");
-            if (string14 == null || string14.isBlank()) {
-                return null;
-            }
-            return new HintedEntityTarget("poi-pdc:" + string14, string2, "*", 1000.0, Collections.emptyList(), Collections.emptyList(), List.of(string14), (Plugin)this.plugin.owner());
-        }
-        if (configurationSection.contains("entity_type")) {
+      if (!this.isPluginEnabled("Towny")) {
+         return Optional.empty();
+      }
+
+      String var2 = var1.trim();
+
+      try {
+         Class var4 = Class.forName("com.palmergames.bukkit.towny.TownyAPI");
+         Object var5 = var4.getMethod("getInstance").invoke(null);
+         if (var5 == null) {
+            return Optional.empty();
+         }
+
+         Method var6 = this.findFirstMethod(var5.getClass(), new Class[]{String.class}, "getTown", "getTownOrNull");
+         if (var6 == null) {
+            return Optional.empty();
+         }
+
+         Object var7 = var6.invoke(var5, var2);
+         if (var7 == null) {
+            return Optional.empty();
+         }
+
+         Location var8 = null;
+
+         try {
+            var8 = this.extractFlexibleLocation(this.invokeNoArg(var7, "getSpawnOrNull", "getSpawnLocation"));
+         } catch (Exception var11) {
+         }
+
+         Method var3;
+         if (var8 == null && (var3 = this.findFirstMethod(var7.getClass(), "getSpawn")) != null) {
             try {
-                EntityType entityType = EntityType.valueOf((String)configurationSection.getString("entity_type", "").toUpperCase());
-                return new NearestEntityTypeTarget(entityType, 1000.0);
+               var8 = this.extractFlexibleLocation(var3.invoke(var7));
+            } catch (Exception var10) {
             }
-            catch (Exception exception) {
-                return null;
-            }
-        }
-        if (configurationSection.contains("entity_name")) {
-            return new NamedEntityTarget(configurationSection.getString("entity_name"), 1000.0);
-        }
-        return null;
-    }
+         }
 
-    private TargetLocator resolveBlockPoi(Player player, String string, String string2) {
-        Optional<TargetLocator> optional = this.resolveBlockInput(player, string);
-        if (optional.isEmpty()) {
+         if (var8 == null) {
+            var8 = this.extractFlexibleLocation(this.invokeNoArg(var7, "getHomeBlock", "getHomeBlockOrNull"));
+         }
+
+         return var8 != null && var8.getWorld() != null ? Optional.of(new StaticLocationTarget("Town " + var2, var8)) : Optional.empty();
+      } catch (Exception var12) {
+         return Optional.empty();
+      }
+   }
+
+   private Optional<TargetLocator> resolveDecentHologramTarget(String var1) {
+      if (!this.plugin.config().getBoolean("integrations.allow_hologram_targets", true)) {
+         return Optional.empty();
+      }
+
+      if (var1 == null || var1.isBlank()) {
+         return Optional.empty();
+      }
+
+      if (!this.isPluginEnabled("DecentHolograms")) {
+         return Optional.empty();
+      }
+
+      String var2 = var1.trim();
+
+      try {
+         Class var3 = Class.forName("eu.decentsoftware.holograms.api.DHAPI");
+         Method var4 = this.findFirstMethod(var3, new Class[]{String.class}, "getHologram");
+         if (var4 == null) {
+            return Optional.empty();
+         }
+
+         Object var5 = var4.invoke(null, var2);
+         if (var5 == null) {
+            return Optional.empty();
+         }
+
+         Location var6 = this.extractFlexibleLocation(var5);
+         return var6 != null && var6.getWorld() != null ? Optional.of(new StaticLocationTarget("Hologram " + var2, var6)) : Optional.empty();
+      } catch (Exception var7) {
+         return Optional.empty();
+      }
+   }
+
+   private Optional<TargetLocator> resolveWorldGuardRegionTarget(Player var1, String var2) {
+      if (!this.plugin.config().getBoolean("integrations.allow_region_targets", true)) {
+         return Optional.empty();
+      }
+
+      if (var1 == null || var2 == null || var2.isBlank()) {
+         return Optional.empty();
+      }
+
+      if (!this.isPluginEnabled("WorldGuard")) {
+         return Optional.empty();
+      }
+
+      String var3 = var1.getWorld().getName();
+      String var4 = var2.trim();
+      int var5 = var4.indexOf(58);
+      if (var5 > 0) {
+         var3 = var4.substring(0, var5).trim();
+         var4 = var4.substring(var5 + 1).trim();
+      }
+
+      if (!var3.isBlank() && !var4.isBlank()) {
+         World var6 = Bukkit.getWorld(var3);
+         if (var6 == null) {
+            return Optional.empty();
+         }
+
+         Location var7 = this.fetchWorldGuardRegionCenter(var6, var4);
+         return var7 == null ? Optional.empty() : Optional.of(new StaticLocationTarget("Region " + var4, var7));
+      } else {
+         return Optional.empty();
+      }
+   }
+
+   private Location fetchWorldGuardRegionCenter(World var1, String var2) {
+      Object var3 = this.getWorldGuardRegionManager(var1);
+      if (var3 == null) {
+         return null;
+      }
+
+      Object var4 = this.findWorldGuardRegion(var3, var2);
+      if (var4 == null) {
+         return null;
+      }
+
+      Object var5 = this.invokeNoArg(var4, "getMinimumPoint", "getMin");
+      Object var6 = this.invokeNoArg(var4, "getMaximumPoint", "getMax");
+      if (var5 != null && var6 != null) {
+         Double var7 = this.readVectorComponent(var5, 'x');
+         Double var8 = this.readVectorComponent(var5, 'y');
+         Double var9 = this.readVectorComponent(var5, 'z');
+         Double var10 = this.readVectorComponent(var6, 'x');
+         Double var11 = this.readVectorComponent(var6, 'y');
+         Double var12 = this.readVectorComponent(var6, 'z');
+         if (var7 != null && var8 != null && var9 != null && var10 != null && var11 != null && var12 != null) {
+            double var13 = (var7 + var10) / 2.0 + 0.5;
+            double var15 = (var8 + var11) / 2.0;
+            double var17 = (var9 + var12) / 2.0 + 0.5;
+            return new Location(var1, var13, var15, var17);
+         } else {
             return null;
-        }
-        Location location = optional.get().resolve(player);
-        if (location == null) {
+         }
+      } else {
+         return null;
+      }
+   }
+
+   private List<String> fetchWorldGuardRegionNames(World var1) {
+      Object var2 = this.getWorldGuardRegionManager(var1);
+      if (var2 == null) {
+         return Collections.emptyList();
+      } else if (!(this.invokeNoArg(var2, "getRegions") instanceof Map var4)) {
+         return Collections.emptyList();
+      } else {
+         ArrayList var5 = new ArrayList();
+
+         for (Object var7 : var4.keySet()) {
+            if (var7 != null) {
+               var5.add(String.valueOf(var7));
+            }
+         }
+
+         return var5;
+      }
+   }
+
+   private Object getWorldGuardRegionManager(World var1) {
+      if (var1 == null) {
+         return null;
+      }
+
+      try {
+         Class var2 = Class.forName("com.sk89q.worldguard.WorldGuard");
+         Object var3 = var2.getMethod("getInstance").invoke(null);
+         Object var4 = var3.getClass().getMethod("getPlatform").invoke(var3);
+         Object var5 = var4.getClass().getMethod("getRegionContainer").invoke(var4);
+         Class var6 = Class.forName("com.sk89q.worldedit.bukkit.BukkitAdapter");
+         Object var7 = var6.getMethod("adapt", World.class).invoke(null, var1);
+         if (var7 == null) {
             return null;
-        }
-        return new StaticLocationTarget(string2, location);
-    }
+         }
 
-    private TargetLocator resolveLocationPoi(Player player, String string, String string2) {
-        Optional<TargetLocator> optional = this.resolveLocationInput(player, string);
-        if (optional.isEmpty()) {
+         Class var8 = Class.forName("com.sk89q.worldedit.world.World");
+         Method var9 = var5.getClass().getMethod("get", var8);
+         return var9.invoke(var5, var7);
+      } catch (Exception var10) {
+         return null;
+      }
+   }
+
+   private Object findWorldGuardRegion(Object var1, String var2) {
+      if (var1 != null && var2 != null && !var2.isBlank()) {
+         String var3 = var2.trim();
+
+         try {
+            Method var5 = this.findFirstMethod(var1.getClass(), new Class[]{String.class}, "getRegion", "get");
+            Object var4;
+            if (var5 != null && (var4 = var5.invoke(var1, var3)) != null) {
+               return var4;
+            }
+         } catch (Exception var9) {
+         }
+
+         if (!(this.invokeNoArg(var1, "getRegions") instanceof Map var11)) {
             return null;
-        }
-        Location location = optional.get().resolve(player);
-        if (location == null) {
+         } else {
+            Object var6 = var11.get(var3);
+            if (var6 != null) {
+               return var6;
+            }
+
+            for (Object var8Object : var11.entrySet()) {
+               Entry<?, ?> var8 = (Entry<?, ?>)var8Object;
+               if (var8.getKey() != null && String.valueOf(var8.getKey()).equalsIgnoreCase(var3)) {
+                  return var8.getValue();
+               }
+            }
+
             return null;
-        }
-        return new StaticLocationTarget(string2, location);
-    }
+         }
+      } else {
+         return null;
+      }
+   }
 
-    private boolean isPluginEnabled(String string) {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin(string);
-        return plugin != null && plugin.isEnabled();
-    }
+   private Object invokeNoArg(Object var1, String... var2) {
+      if (var1 == null) {
+         return null;
+      }
 
-    private Optional<TargetLocator> resolvePresetHintMob(String string, String string2) {
-        TargetLocator targetLocator = this.buildPresetHintTarget(string, string2, string + " " + string2, 1000.0);
-        return Optional.ofNullable(targetLocator);
-    }
+      Method var3 = this.findFirstMethod(var1.getClass(), var2);
+      if (var3 == null) {
+         return null;
+      }
 
-    private TargetLocator buildPresetHintTarget(String string, String string2, String string3, double d) {
-        ConfigurationSection configurationSection = this.plugin.config().getConfigurationSection("integrations.hints." + string);
-        if (configurationSection == null) {
-            return null;
-        }
-        String string4 = configurationSection.getString("plugin");
-        if (string4 != null && !string4.isBlank() && !this.isPluginEnabled(string4)) {
-            return null;
-        }
-        String string5 = string2 == null || string2.isBlank() ? "*" : string2.trim();
-        return new HintedEntityTarget(string + ":" + string5, string3, string5, d, configurationSection.getStringList("metadata_keys"), configurationSection.getStringList("scoreboard_tags"), configurationSection.getStringList("pdc_keys"), (Plugin)this.plugin.owner());
-    }
+      try {
+         return var3.invoke(var1);
+      } catch (Exception var5) {
+         return null;
+      }
+   }
 
-    private Optional<TargetLocator> resolveWarpAlias(String string) {
-        Optional<TargetLocator> optional = this.resolveEssentialsWarpTarget(string);
-        if (optional.isPresent()) {
-            return optional;
-        }
-        return this.resolveCmiWarpTarget(string);
-    }
+   private Double readVectorComponent(Object var1, char var2) {
+      String[] var4;
+      switch (var2) {
+         case 'x':
+            String[] var14 = new String[]{"getX", "x", null};
+            var4 = var14;
+            var14[2] = "getBlockX";
+            break;
+         case 'y':
+            String[] var13 = new String[]{"getY", "y", null};
+            var4 = var13;
+            var13[2] = "getBlockY";
+            break;
+         case 'z':
+            String[] var5 = new String[]{"getZ", "z", null};
+            var4 = var5;
+            var5[2] = "getBlockZ";
+            break;
+         default:
+            var4 = new String[0];
+      }
 
-    private Optional<TargetLocator> resolveEssentialsWarpTarget(String string) {
-        if (!this.plugin.config().getBoolean("integrations.allow_warp_targets", true)) {
-            return Optional.empty();
-        }
-        if (string == null || string.isBlank()) {
-            return Optional.empty();
-        }
-        if (!this.isPluginEnabled("Essentials")) {
-            return Optional.empty();
-        }
-        String string2 = string.trim();
-        try {
-            Location location;
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("Essentials");
-            if (plugin == null) {
-                return Optional.empty();
+      for (String var8 : var4) {
+         try {
+            Method var9 = var1.getClass().getMethod(var8);
+            if (var9.invoke(var1) instanceof Number var11) {
+               return var11.doubleValue();
             }
-            Method method = this.findFirstMethod(plugin.getClass(), "getWarps");
-            if (method == null) {
-                return Optional.empty();
-            }
-            Object object = method.invoke((Object)plugin, new Object[0]);
-            if (object == null) {
-                return Optional.empty();
-            }
-            Method method2 = this.findFirstMethod(object.getClass(), new Class[]{String.class}, "getWarp", "getWarpLocation", "get");
-            if (method2 == null) {
-                return Optional.empty();
-            }
-            Object object2 = method2.invoke(object, string2);
-            if (!(object2 instanceof Location) || (location = (Location)object2).getWorld() == null) {
-                return Optional.empty();
-            }
-            return Optional.of(new StaticLocationTarget("Warp " + string2, location));
-        }
-        catch (Exception exception) {
-            return Optional.empty();
-        }
-    }
+         } catch (Exception var12) {
+         }
+      }
 
-    private Optional<TargetLocator> resolveCmiWarpTarget(String string) {
-        if (!this.plugin.config().getBoolean("integrations.allow_warp_targets", true)) {
-            return Optional.empty();
-        }
-        if (!this.plugin.config().getBoolean("integrations.allow_cmi_warp_targets", true)) {
-            return Optional.empty();
-        }
-        if (string == null || string.isBlank()) {
-            return Optional.empty();
-        }
-        if (!this.isPluginEnabled("CMI")) {
-            return Optional.empty();
-        }
-        Object object = this.getCmiWarpManager();
-        if (object == null) {
-            return Optional.empty();
-        }
-        String string2 = string.trim();
-        Object object2 = this.findCmiWarp(object, string2);
-        if (object2 == null) {
-            return Optional.empty();
-        }
-        Location location = this.extractFlexibleLocation(object2);
-        if (location == null || location.getWorld() == null) {
-            return Optional.empty();
-        }
-        return Optional.of(new StaticLocationTarget("Warp " + string2, location));
-    }
+      return null;
+   }
 
-    private Object getCmiWarpManager() {
-        try {
-            Class<?> clazz = Class.forName("com.Zrips.CMI.CMI");
-            Method method = this.findFirstMethod(clazz, "getInstance");
-            if (method == null) {
-                return null;
-            }
-            Object object = method.invoke(null, new Object[0]);
-            if (object == null) {
-                return null;
-            }
-            return this.invokeNoArg(object, "getWarpManager", "getWarpsManager", "getCMIWarpManager");
-        }
-        catch (Exception exception) {
-            return null;
-        }
-    }
+   private boolean containsIgnoreCase(List<String> var1, String var2) {
+      if (var2 == null) {
+         return false;
+      }
 
-    private Object findCmiWarp(Object object, String string) {
-        Object object2;
-        Object object3;
-        if (object == null || string == null || string.isBlank()) {
-            return null;
-        }
-        Method method = this.findFirstMethod(object.getClass(), new Class[]{String.class}, "getWarp", "getByName", "get");
-        if (method != null) {
-            try {
-                object3 = method.invoke(object, string);
-                if (object3 != null) {
-                    return object3;
-                }
-            }
-            catch (Exception exception) {
-                // empty catch block
-            }
-        }
-        if ((object2 = this.invokeNoArg(object, "getWarps", "getWarpMap", "getWarpsMap", "getAllWarps")) instanceof Map) {
-            object3 = (Map)object2;
-            Object v = object3.get(string);
-            if (v != null) {
-                return v;
-            }
-            for (Map.Entry entry : object3.entrySet()) {
-                if (entry.getKey() != null && String.valueOf(entry.getKey()).equalsIgnoreCase(string)) {
-                    return entry.getValue();
-                }
-                if (!this.matchesNamedValue(entry.getValue(), string)) continue;
-                return entry.getValue();
-            }
-            return null;
-        }
-        if (object2 instanceof Iterable) {
-            object3 = (Iterable)object2;
-            Iterator iterator = object3.iterator();
-            while (iterator.hasNext()) {
-                Object t = iterator.next();
-                if (!this.matchesNamedValue(t, string)) continue;
-                return t;
-            }
-        }
-        return null;
-    }
-
-    private boolean matchesNamedValue(Object object, String string) {
-        if (object == null || string == null || string.isBlank()) {
-            return false;
-        }
-        Object object2 = this.invokeNoArg(object, "getName", "name", "getWarpName");
-        return object2 != null && String.valueOf(object2).equalsIgnoreCase(string);
-    }
-
-    private Optional<TargetLocator> resolveTownyTownTarget(String string) {
-        if (!this.plugin.config().getBoolean("integrations.allow_town_targets", true)) {
-            return Optional.empty();
-        }
-        if (string == null || string.isBlank()) {
-            return Optional.empty();
-        }
-        if (!this.isPluginEnabled("Towny")) {
-            return Optional.empty();
-        }
-        String string2 = string.trim();
-        try {
-            Method method;
-            Class<?> clazz = Class.forName("com.palmergames.bukkit.towny.TownyAPI");
-            Object object = clazz.getMethod("getInstance", new Class[0]).invoke(null, new Object[0]);
-            if (object == null) {
-                return Optional.empty();
-            }
-            Method method2 = this.findFirstMethod(object.getClass(), new Class[]{String.class}, "getTown", "getTownOrNull");
-            if (method2 == null) {
-                return Optional.empty();
-            }
-            Object object2 = method2.invoke(object, string2);
-            if (object2 == null) {
-                return Optional.empty();
-            }
-            Location location = null;
-            try {
-                location = this.extractFlexibleLocation(this.invokeNoArg(object2, "getSpawnOrNull", "getSpawnLocation"));
-            }
-            catch (Exception exception) {
-                // empty catch block
-            }
-            if (location == null && (method = this.findFirstMethod(object2.getClass(), "getSpawn")) != null) {
-                try {
-                    location = this.extractFlexibleLocation(method.invoke(object2, new Object[0]));
-                }
-                catch (Exception exception) {
-                    // empty catch block
-                }
-            }
-            if (location == null) {
-                location = this.extractFlexibleLocation(this.invokeNoArg(object2, "getHomeBlock", "getHomeBlockOrNull"));
-            }
-            if (location == null || location.getWorld() == null) {
-                return Optional.empty();
-            }
-            return Optional.of(new StaticLocationTarget("Town " + string2, location));
-        }
-        catch (Exception exception) {
-            return Optional.empty();
-        }
-    }
-
-    private Optional<TargetLocator> resolveDecentHologramTarget(String string) {
-        if (!this.plugin.config().getBoolean("integrations.allow_hologram_targets", true)) {
-            return Optional.empty();
-        }
-        if (string == null || string.isBlank()) {
-            return Optional.empty();
-        }
-        if (!this.isPluginEnabled("DecentHolograms")) {
-            return Optional.empty();
-        }
-        String string2 = string.trim();
-        try {
-            Class<?> clazz = Class.forName("eu.decentsoftware.holograms.api.DHAPI");
-            Method method = this.findFirstMethod(clazz, new Class[]{String.class}, "getHologram");
-            if (method == null) {
-                return Optional.empty();
-            }
-            Object object = method.invoke(null, string2);
-            if (object == null) {
-                return Optional.empty();
-            }
-            Location location = this.extractFlexibleLocation(object);
-            if (location == null || location.getWorld() == null) {
-                return Optional.empty();
-            }
-            return Optional.of(new StaticLocationTarget("Hologram " + string2, location));
-        }
-        catch (Exception exception) {
-            return Optional.empty();
-        }
-    }
-
-    private Optional<TargetLocator> resolveWorldGuardRegionTarget(Player player, String string) {
-        if (!this.plugin.config().getBoolean("integrations.allow_region_targets", true)) {
-            return Optional.empty();
-        }
-        if (player == null || string == null || string.isBlank()) {
-            return Optional.empty();
-        }
-        if (!this.isPluginEnabled("WorldGuard")) {
-            return Optional.empty();
-        }
-        String string2 = player.getWorld().getName();
-        String string3 = string.trim();
-        int n = string3.indexOf(58);
-        if (n > 0) {
-            string2 = string3.substring(0, n).trim();
-            string3 = string3.substring(n + 1).trim();
-        }
-        if (string2.isBlank() || string3.isBlank()) {
-            return Optional.empty();
-        }
-        World world = Bukkit.getWorld((String)string2);
-        if (world == null) {
-            return Optional.empty();
-        }
-        Location location = this.fetchWorldGuardRegionCenter(world, string3);
-        if (location == null) {
-            return Optional.empty();
-        }
-        return Optional.of(new StaticLocationTarget("Region " + string3, location));
-    }
-
-    private Location fetchWorldGuardRegionCenter(World world, String string) {
-        Object object = this.getWorldGuardRegionManager(world);
-        if (object == null) {
-            return null;
-        }
-        Object object2 = this.findWorldGuardRegion(object, string);
-        if (object2 == null) {
-            return null;
-        }
-        Object object3 = this.invokeNoArg(object2, "getMinimumPoint", "getMin");
-        Object object4 = this.invokeNoArg(object2, "getMaximumPoint", "getMax");
-        if (object3 == null || object4 == null) {
-            return null;
-        }
-        Double d = this.readVectorComponent(object3, 'x');
-        Double d2 = this.readVectorComponent(object3, 'y');
-        Double d3 = this.readVectorComponent(object3, 'z');
-        Double d4 = this.readVectorComponent(object4, 'x');
-        Double d5 = this.readVectorComponent(object4, 'y');
-        Double d6 = this.readVectorComponent(object4, 'z');
-        if (d == null || d2 == null || d3 == null || d4 == null || d5 == null || d6 == null) {
-            return null;
-        }
-        double d7 = (d + d4) / 2.0 + 0.5;
-        double d8 = (d2 + d5) / 2.0;
-        double d9 = (d3 + d6) / 2.0 + 0.5;
-        return new Location(world, d7, d8, d9);
-    }
-
-    private List<String> fetchWorldGuardRegionNames(World world) {
-        Object object = this.getWorldGuardRegionManager(world);
-        if (object == null) {
-            return Collections.emptyList();
-        }
-        Object object2 = this.invokeNoArg(object, "getRegions");
-        if (!(object2 instanceof Map)) {
-            return Collections.emptyList();
-        }
-        Map map = (Map)object2;
-        ArrayList<String> arrayList = new ArrayList<String>();
-        for (Object k : map.keySet()) {
-            if (k == null) continue;
-            arrayList.add(String.valueOf(k));
-        }
-        return arrayList;
-    }
-
-    private Object getWorldGuardRegionManager(World world) {
-        if (world == null) {
-            return null;
-        }
-        try {
-            Class<?> clazz = Class.forName("com.sk89q.worldguard.WorldGuard");
-            Object object = clazz.getMethod("getInstance", new Class[0]).invoke(null, new Object[0]);
-            Object object2 = object.getClass().getMethod("getPlatform", new Class[0]).invoke(object, new Object[0]);
-            Object object3 = object2.getClass().getMethod("getRegionContainer", new Class[0]).invoke(object2, new Object[0]);
-            Class<?> clazz2 = Class.forName("com.sk89q.worldedit.bukkit.BukkitAdapter");
-            Object object4 = clazz2.getMethod("adapt", World.class).invoke(null, world);
-            if (object4 == null) {
-                return null;
-            }
-            Class<?> clazz3 = Class.forName("com.sk89q.worldedit.world.World");
-            Method method = object3.getClass().getMethod("get", clazz3);
-            return method.invoke(object3, object4);
-        }
-        catch (Exception exception) {
-            return null;
-        }
-    }
-
-    private Object findWorldGuardRegion(Object object, String string) {
-        Object object2;
-        Object object3;
-        if (object == null || string == null || string.isBlank()) {
-            return null;
-        }
-        String string2 = string.trim();
-        try {
-            object3 = this.findFirstMethod(object.getClass(), new Class[]{String.class}, "getRegion", "get");
-            if (object3 != null && (object2 = ((Method)object3).invoke(object, string2)) != null) {
-                return object2;
-            }
-        }
-        catch (Exception exception) {
-            // empty catch block
-        }
-        object2 = this.invokeNoArg(object, "getRegions");
-        if (!(object2 instanceof Map)) {
-            return null;
-        }
-        object3 = (Map)object2;
-        Object v = object3.get(string2);
-        if (v != null) {
-            return v;
-        }
-        for (Map.Entry entry : object3.entrySet()) {
-            if (entry.getKey() == null || !String.valueOf(entry.getKey()).equalsIgnoreCase(string2)) continue;
-            return entry.getValue();
-        }
-        return null;
-    }
-
-    private Object invokeNoArg(Object object, String ... stringArray) {
-        if (object == null) {
-            return null;
-        }
-        Method method = this.findFirstMethod(object.getClass(), stringArray);
-        if (method == null) {
-            return null;
-        }
-        try {
-            return method.invoke(object, new Object[0]);
-        }
-        catch (Exception exception) {
-            return null;
-        }
-    }
-
-    private Double readVectorComponent(Object object, char c) {
-        String[] stringArray;
-        switch (c) {
-            case 'x': {
-                String[] stringArray2 = new String[3];
-                stringArray2[0] = "getX";
-                stringArray2[1] = "x";
-                stringArray = stringArray2;
-                stringArray2[2] = "getBlockX";
-                break;
-            }
-            case 'y': {
-                String[] stringArray2 = new String[3];
-                stringArray2[0] = "getY";
-                stringArray2[1] = "y";
-                stringArray = stringArray2;
-                stringArray2[2] = "getBlockY";
-                break;
-            }
-            case 'z': {
-                String[] stringArray2 = new String[3];
-                stringArray2[0] = "getZ";
-                stringArray2[1] = "z";
-                stringArray = stringArray2;
-                stringArray2[2] = "getBlockZ";
-                break;
-            }
-            default: {
-                stringArray = new String[]{};
-            }
-        }
-        String[] stringArray3 = stringArray;
-        for (String string : stringArray) {
-            try {
-                Method method = object.getClass().getMethod(string, new Class[0]);
-                Object object2 = method.invoke(object, new Object[0]);
-                if (!(object2 instanceof Number)) continue;
-                Number number = (Number)object2;
-                return number.doubleValue();
-            }
-            catch (Exception exception) {
-                // empty catch block
-            }
-        }
-        return null;
-    }
-
-    private boolean containsIgnoreCase(List<String> list, String string) {
-        if (string == null) {
-            return false;
-        }
-        for (String string2 : list) {
-            if (!string.equalsIgnoreCase(string2)) continue;
+      for (String var4 : var1) {
+         if (var2.equalsIgnoreCase(var4)) {
             return true;
-        }
-        return false;
-    }
+         }
+      }
 
-    private void collectNamesFromValue(Object object, List<String> list) {
-        if (object == null || list == null) {
-            return;
-        }
-        if (object instanceof Map) {
-            Map map = (Map)object;
-            for (Map.Entry entry : map.entrySet()) {
-                String string;
-                if (entry.getKey() != null && !(string = String.valueOf(entry.getKey()).trim()).isEmpty() && !this.containsIgnoreCase(list, string)) {
-                    list.add(string);
-                }
-                this.addNameFromObject(entry.getValue(), list);
+      return false;
+   }
+
+   private void collectNamesFromValue(Object var1, List<String> var2) {
+      if (var1 != null && var2 != null) {
+         if (var1 instanceof Map<?, ?> var7) {
+            for (Entry<?, ?> var9 : var7.entrySet()) {
+               String var6;
+               if (var9.getKey() != null && !(var6 = String.valueOf(var9.getKey()).trim()).isEmpty() && !this.containsIgnoreCase(var2, var6)) {
+                  var2.add(var6);
+               }
+
+               this.addNameFromObject(var9.getValue(), var2);
             }
-            return;
-        }
-        if (object instanceof Iterable) {
-            Iterable iterable = (Iterable)object;
-            for (Object t : iterable) {
-                this.addNameFromObject(t, list);
+         } else if (!(var1 instanceof Iterable)) {
+            this.addNameFromObject(var1, var2);
+         } else {
+            for (Object var5 : (Iterable)var1) {
+               this.addNameFromObject(var5, var2);
             }
-            return;
-        }
-        this.addNameFromObject(object, list);
-    }
+         }
+      }
+   }
 
-    private void addNameFromObject(Object object, List<String> list) {
-        String string;
-        if (object == null || list == null) {
-            return;
-        }
-        if (object instanceof String) {
-            String string2 = (String)object;
-            String string3 = string2.trim();
-            if (!string3.isEmpty() && !this.containsIgnoreCase(list, string3)) {
-                list.add(string3);
+   private void addNameFromObject(Object var1, List<String> var2) {
+      if (var1 != null && var2 != null) {
+         if (var1 instanceof String var6) {
+            String var7 = var6.trim();
+            if (!var7.isEmpty() && !this.containsIgnoreCase(var2, var7)) {
+               var2.add(var7);
             }
-            return;
-        }
-        Object object2 = this.invokeNoArg(object, "getName", "name", "getWarpName");
-        if (object2 != null && !(string = String.valueOf(object2).trim()).isEmpty() && !this.containsIgnoreCase(list, string)) {
-            list.add(string);
-            return;
-        }
-        String string4 = String.valueOf(object).trim();
-        if (!(string4.isEmpty() || string4.contains("@") || this.containsIgnoreCase(list, string4))) {
-            list.add(string4);
-        }
-    }
+         } else {
+            Object var4 = this.invokeNoArg(var1, "getName", "name", "getWarpName");
+            String var3;
+            if (var4 != null && !(var3 = String.valueOf(var4).trim()).isEmpty() && !this.containsIgnoreCase(var2, var3)) {
+               var2.add(var3);
+            } else {
+               String var5 = String.valueOf(var1).trim();
+               if (!var5.isEmpty() && !var5.contains("@") && !this.containsIgnoreCase(var2, var5)) {
+                  var2.add(var5);
+               }
+            }
+         }
+      }
+   }
 
-    private Location extractFlexibleLocation(Object object) {
-        String string;
-        World world;
-        Location location;
-        if (object == null) {
-            return null;
-        }
-        if (object instanceof Location) {
-            Location location2 = (Location)object;
-            return location2;
-        }
-        Object object2 = this.invokeNoArg(object, "getLocation", "getLoc", "toLocation", "getBukkitLoc", "getBukkitLocation");
-        if (object2 instanceof Location) {
-            Location location3 = (Location)object2;
-            return location3;
-        }
-        if (object2 != null && object2 != object && (location = this.extractFlexibleLocation(object2)) != null) {
-            return location;
-        }
-        Object object3 = this.invokeNoArg(object, "getWorld");
-        World world2 = object3 instanceof World ? (world = (World)object3) : null;
-        World world3 = world2;
-        if (world2 == null && object3 != null) {
-            world2 = Bukkit.getWorld((String)String.valueOf(object3));
-        }
-        if (world2 == null && (string = this.stringValue(this.invokeNoArg(object, "getWorldName", "getName"))) != null) {
-            world2 = Bukkit.getWorld((String)string);
-        }
-        if (world2 == null) {
-            return null;
-        }
-        Double d = this.numericValue(this.invokeNoArg(object, "getX", "getBlockX", "x"));
-        Double d2 = this.numericValue(this.invokeNoArg(object, "getY", "getBlockY", "y"));
-        Double d3 = this.numericValue(this.invokeNoArg(object, "getZ", "getBlockZ", "z"));
-        if (d == null || d2 == null || d3 == null) {
-            return null;
-        }
-        return new Location(world2, d.doubleValue(), d2.doubleValue(), d3.doubleValue());
-    }
+   private Location extractFlexibleLocation(Object var1) {
+      if (var1 == null) {
+         return null;
+      } else if (var1 instanceof Location var12) {
+         return var12;
+      } else {
+         Object var6 = this.invokeNoArg(var1, "getLocation", "getLoc", "toLocation", "getBukkitLoc", "getBukkitLocation");
+         if (var6 instanceof Location var13) {
+            return var13;
+         } else {
+            Location var5;
+            if (var6 != null && var6 != var1 && (var5 = this.extractFlexibleLocation(var6)) != null) {
+               return var5;
+            }
 
-    private Double numericValue(Object object) {
-        if (object instanceof Number) {
-            Number number = (Number)object;
-            return number.doubleValue();
-        }
-        if (object instanceof String) {
-            String string = (String)object;
+            Object var7 = this.invokeNoArg(var1, "getWorld");
+            World var3;
+            World var4 = var7 instanceof World ? (var3 = (World)var7) : null;
+            if (var4 == null && var7 != null) {
+               var4 = Bukkit.getWorld(String.valueOf(var7));
+            }
+
+            String var2;
+            if (var4 == null && (var2 = this.stringValue(this.invokeNoArg(var1, "getWorldName", "getName"))) != null) {
+               var4 = Bukkit.getWorld(var2);
+            }
+
+            if (var4 == null) {
+               return null;
+            }
+
+            Double var9 = this.numericValue(this.invokeNoArg(var1, "getX", "getBlockX", "x"));
+            Double var10 = this.numericValue(this.invokeNoArg(var1, "getY", "getBlockY", "y"));
+            Double var11 = this.numericValue(this.invokeNoArg(var1, "getZ", "getBlockZ", "z"));
+            return var9 != null && var10 != null && var11 != null ? new Location(var4, var9, var10, var11) : null;
+         }
+      }
+   }
+
+   private Double numericValue(Object var1) {
+      if (var1 instanceof Number var5) {
+         return var5.doubleValue();
+      } else {
+         if (var1 instanceof String var2) {
             try {
-                return Double.parseDouble(string);
+               return Double.parseDouble(var2);
+            } catch (NumberFormatException var4) {
             }
-            catch (NumberFormatException numberFormatException) {
-                // empty catch block
+         }
+
+         return null;
+      }
+   }
+
+   private String stringValue(Object var1) {
+      if (var1 == null) {
+         return null;
+      }
+
+      String var2 = String.valueOf(var1).trim();
+      return var2.isEmpty() ? null : var2;
+   }
+
+   private IntegrationManager.BlockQuery parseBlockQuery(String var1) {
+      String var2 = var1 == null ? "" : var1.trim();
+      if (var2.isEmpty()) {
+         return null;
+      } else {
+         String var4 = var2.toLowerCase(Locale.ROOT);
+         if (var4.startsWith("itemsadder:")) {
+            return new IntegrationManager.BlockQuery(IntegrationManager.BlockProvider.ITEMSADDER, var2.substring("itemsadder:".length()).trim(), null);
+         } else if (var4.startsWith("ia:")) {
+            return new IntegrationManager.BlockQuery(IntegrationManager.BlockProvider.ITEMSADDER, var2.substring("ia:".length()).trim(), null);
+         } else if (var4.startsWith("nexo:")) {
+            return new IntegrationManager.BlockQuery(IntegrationManager.BlockProvider.NEXO, var2.substring("nexo:".length()).trim(), null);
+         } else if (var4.startsWith("oraxen:")) {
+            return new IntegrationManager.BlockQuery(IntegrationManager.BlockProvider.ORAXEN, var2.substring("oraxen:".length()).trim(), null);
+         } else if (var4.startsWith("minecraft:")) {
+            Material var8 = this.parseMaterial(var2.substring("minecraft:".length()));
+            return var8 == null
+               ? null
+               : new IntegrationManager.BlockQuery(IntegrationManager.BlockProvider.VANILLA, var8.name().toLowerCase(Locale.ROOT), var8);
+         } else if (var4.startsWith("vanilla:")) {
+            Material var7 = this.parseMaterial(var2.substring("vanilla:".length()));
+            return var7 == null
+               ? null
+               : new IntegrationManager.BlockQuery(IntegrationManager.BlockProvider.VANILLA, var7.name().toLowerCase(Locale.ROOT), var7);
+         } else if (var4.startsWith("block:")) {
+            Material var6 = this.parseMaterial(var2.substring("block:".length()));
+            return var6 == null
+               ? null
+               : new IntegrationManager.BlockQuery(IntegrationManager.BlockProvider.VANILLA, var6.name().toLowerCase(Locale.ROOT), var6);
+         } else {
+            Material var5 = this.parseMaterial(var2);
+            if (var5 != null) {
+               return new IntegrationManager.BlockQuery(IntegrationManager.BlockProvider.VANILLA, var5.name().toLowerCase(Locale.ROOT), var5);
+            } else {
+               return var2.contains(":") ? new IntegrationManager.BlockQuery(IntegrationManager.BlockProvider.ANY_CUSTOM, var2, null) : null;
             }
-        }
-        return null;
-    }
+         }
+      }
+   }
 
-    private String stringValue(Object object) {
-        if (object == null) {
-            return null;
-        }
-        String string = String.valueOf(object).trim();
-        return string.isEmpty() ? null : string;
-    }
+   private String buildBlockDisplayName(IntegrationManager.BlockQuery var1, Location var2) {
+      String var3 = switch (var1.provider()) {
+         case VANILLA -> "Block";
+         case ITEMSADDER -> "ItemsAdder";
+         case NEXO -> "Nexo";
+         case ORAXEN -> "Oraxen";
+         case ANY_CUSTOM -> "Custom block";
+      };
+      String var4 = var1.provider() == IntegrationManager.BlockProvider.VANILLA && var1.material() != null
+         ? var1.material().name().toLowerCase(Locale.ROOT)
+         : var1.query();
+      return var3 + " " + var4 + " @ " + var2.getBlockX() + " " + var2.getBlockY() + " " + var2.getBlockZ();
+   }
 
-    private BlockQuery parseBlockQuery(String string) {
-        String string2 = string == null ? "" : string.trim();
-        String string3 = string2;
-        if (string2.isEmpty()) {
-            return null;
-        }
-        String string4 = string2.toLowerCase(Locale.ROOT);
-        if (string4.startsWith("itemsadder:")) {
-            return new BlockQuery(BlockProvider.ITEMSADDER, string2.substring("itemsadder:".length()).trim(), null);
-        }
-        if (string4.startsWith("ia:")) {
-            return new BlockQuery(BlockProvider.ITEMSADDER, string2.substring("ia:".length()).trim(), null);
-        }
-        if (string4.startsWith("nexo:")) {
-            return new BlockQuery(BlockProvider.NEXO, string2.substring("nexo:".length()).trim(), null);
-        }
-        if (string4.startsWith("oraxen:")) {
-            return new BlockQuery(BlockProvider.ORAXEN, string2.substring("oraxen:".length()).trim(), null);
-        }
-        if (string4.startsWith("minecraft:")) {
-            Material material = this.parseMaterial(string2.substring("minecraft:".length()));
-            return material == null ? null : new BlockQuery(BlockProvider.VANILLA, material.name().toLowerCase(Locale.ROOT), material);
-        }
-        if (string4.startsWith("vanilla:")) {
-            Material material = this.parseMaterial(string2.substring("vanilla:".length()));
-            return material == null ? null : new BlockQuery(BlockProvider.VANILLA, material.name().toLowerCase(Locale.ROOT), material);
-        }
-        if (string4.startsWith("block:")) {
-            Material material = this.parseMaterial(string2.substring("block:".length()));
-            return material == null ? null : new BlockQuery(BlockProvider.VANILLA, material.name().toLowerCase(Locale.ROOT), material);
-        }
-        Material material = this.parseMaterial(string2);
-        if (material != null) {
-            return new BlockQuery(BlockProvider.VANILLA, material.name().toLowerCase(Locale.ROOT), material);
-        }
-        if (string2.contains(":")) {
-            return new BlockQuery(BlockProvider.ANY_CUSTOM, string2, null);
-        }
-        return null;
-    }
+   private Location findNearestBlock(Player var1, IntegrationManager.BlockQuery var2, double var3, int var5) {
+      World var6 = var1.getWorld();
+      Location var7 = var1.getLocation();
+      double var8 = var3 * var3;
+      int var10 = (int)Math.floor(var7.getX() - var3);
+      int var11 = (int)Math.ceil(var7.getX() + var3);
+      int var12 = (int)Math.floor(var7.getZ() - var3);
+      int var13 = (int)Math.ceil(var7.getZ() + var3);
+      int var14 = var6.getMinHeight();
+      int var15 = var6.getMaxHeight() - 1;
+      int var16 = var14;
+      int var17 = var15;
+      if (var5 >= 0) {
+         int var18 = var7.getBlockY();
+         var16 = Math.max(var14, var18 - var5);
+         var17 = Math.min(var15, var18 + var5);
+      }
 
-    private String buildBlockDisplayName(BlockQuery blockQuery, Location location) {
-        String string = switch (blockQuery.provider().ordinal()) {
-            default -> throw new IncompatibleClassChangeError();
-            case 0 -> "Block";
-            case 1 -> "ItemsAdder";
-            case 2 -> "Nexo";
-            case 3 -> "Oraxen";
-            case 4 -> "Custom block";
-        };
-        String string2 = blockQuery.provider() == BlockProvider.VANILLA && blockQuery.material() != null ? blockQuery.material().name().toLowerCase(Locale.ROOT) : blockQuery.query();
-        return string + " " + string2 + " @ " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ();
-    }
+      int var49 = Math.floorDiv(var10, 16);
+      int var19 = Math.floorDiv(var11, 16);
+      int var20 = Math.floorDiv(var12, 16);
+      int var21 = Math.floorDiv(var13, 16);
+      Location var22 = null;
+      double var23 = Double.MAX_VALUE;
 
-    private Location findNearestBlock(Player player, BlockQuery blockQuery, double d, int n) {
-        int n2;
-        World world = player.getWorld();
-        Location location = player.getLocation();
-        double d2 = d * d;
-        int n3 = (int)Math.floor(location.getX() - d);
-        int n4 = (int)Math.ceil(location.getX() + d);
-        int n5 = (int)Math.floor(location.getZ() - d);
-        int n6 = (int)Math.ceil(location.getZ() + d);
-        int n7 = world.getMinHeight();
-        int n8 = world.getMaxHeight() - 1;
-        int n9 = n7;
-        int n10 = n8;
-        if (n >= 0) {
-            n2 = location.getBlockY();
-            n9 = Math.max(n7, n2 - n);
-            n10 = Math.min(n8, n2 + n);
-        }
-        n2 = Math.floorDiv(n3, 16);
-        int n11 = Math.floorDiv(n4, 16);
-        int n12 = Math.floorDiv(n5, 16);
-        int n13 = Math.floorDiv(n6, 16);
-        Location location2 = null;
-        double d3 = Double.MAX_VALUE;
-        for (int i = n2; i <= n11; ++i) {
-            for (int j = n12; j <= n13; ++j) {
-                if (!world.isChunkLoaded(i, j)) continue;
-                int n14 = i << 4;
-                int n15 = n14 + 15;
-                int n16 = j << 4;
-                int n17 = n16 + 15;
-                int n18 = Math.max(n3, n14);
-                int n19 = Math.min(n4, n15);
-                int n20 = Math.max(n5, n16);
-                int n21 = Math.min(n6, n17);
-                for (int k = n18; k <= n19; ++k) {
-                    for (int i2 = n20; i2 <= n21; ++i2) {
-                        double d4;
-                        double d5 = (double)k + 0.5 - location.getX();
-                        double d6 = d5 * d5 + (d4 = (double)i2 + 0.5 - location.getZ()) * d4;
-                        if (d6 > d2) continue;
-                        for (int i3 = n9; i3 <= n10; ++i3) {
-                            double d7;
-                            double d8;
-                            Block block = world.getBlockAt(k, i3, i2);
-                            if (block.getType().isAir() || !this.matchesBlock(block, blockQuery) || (d8 = d6 + (d7 = (double)i3 + 0.5 - location.getY()) * d7) > d2 || d8 >= d3) continue;
-                            d3 = d8;
-                            location2 = block.getLocation().add(0.5, 0.5, 0.5);
+      for (int var25 = var49; var25 <= var19; var25++) {
+         for (int var26 = var20; var26 <= var21; var26++) {
+            if (var6.isChunkLoaded(var25, var26)) {
+               int var27 = var25 << 4;
+               int var28 = var27 + 15;
+               int var29 = var26 << 4;
+               int var30 = var29 + 15;
+               int var31 = Math.max(var10, var27);
+               int var32 = Math.min(var11, var28);
+               int var33 = Math.max(var12, var29);
+               int var34 = Math.min(var13, var30);
+
+               for (int var35 = var31; var35 <= var32; var35++) {
+                  for (int var36 = var33; var36 <= var34; var36++) {
+                     double var39 = var35 + 0.5 - var7.getX();
+                     double var37;
+                     double var41 = var39 * var39 + (var37 = var36 + 0.5 - var7.getZ()) * var37;
+                     if (!(var41 > var8)) {
+                        for (int var43 = var16; var43 <= var17; var43++) {
+                           Block var48 = var6.getBlockAt(var35, var43, var36);
+                           double var44;
+                           double var46;
+                           if (!var48.getType().isAir()
+                              && this.matchesBlock(var48, var2)
+                              && !((var46 = var41 + (var44 = var43 + 0.5 - var7.getY()) * var44) > var8)
+                              && !(var46 >= var23)) {
+                              var23 = var46;
+                              var22 = var48.getLocation().add(0.5, 0.5, 0.5);
+                           }
                         }
-                    }
-                }
+                     }
+                  }
+               }
             }
-        }
-        return location2;
-    }
+         }
+      }
 
-    private boolean matchesBlock(Block block, BlockQuery blockQuery) {
-        return switch (blockQuery.provider().ordinal()) {
-            default -> throw new IncompatibleClassChangeError();
-            case 0 -> {
-                if (blockQuery.material() != null && block.getType() == blockQuery.material()) {
-                    yield true;
-                }
-                yield false;
-            }
-            case 1 -> this.matchesIdentifier(this.resolveItemsAdderBlockId(block), blockQuery.query());
-            case 2 -> this.matchesIdentifier(this.resolveNexoBlockId(block), blockQuery.query());
-            case 3 -> this.matchesIdentifier(this.resolveOraxenBlockId(block), blockQuery.query());
-            case 4 -> this.matchesIdentifier(this.resolveItemsAdderBlockId(block), blockQuery.query()) || this.matchesIdentifier(this.resolveNexoBlockId(block), blockQuery.query()) || this.matchesIdentifier(this.resolveOraxenBlockId(block), blockQuery.query());
-        };
-    }
+      return var22;
+   }
 
-    private boolean matchesIdentifier(String string, String string2) {
-        if (string == null || string.isBlank()) {
-            return false;
-        }
-        String string3 = string.trim().toLowerCase(Locale.ROOT);
-        String string4 = string2 == null ? "" : string2.trim().toLowerCase(Locale.ROOT);
-        String string5 = string4;
-        if (string4.isEmpty() || string4.equals("*")) {
+   private boolean matchesBlock(Block var1, IntegrationManager.BlockQuery var2) {
+      return switch (var2.provider()) {
+         case VANILLA -> var2.material() != null && var1.getType() == var2.material();
+         case ITEMSADDER -> this.matchesIdentifier(this.resolveItemsAdderBlockId(var1), var2.query());
+         case NEXO -> this.matchesIdentifier(this.resolveNexoBlockId(var1), var2.query());
+         case ORAXEN -> this.matchesIdentifier(this.resolveOraxenBlockId(var1), var2.query());
+         case ANY_CUSTOM -> this.matchesIdentifier(this.resolveItemsAdderBlockId(var1), var2.query())
+            || this.matchesIdentifier(this.resolveNexoBlockId(var1), var2.query())
+            || this.matchesIdentifier(this.resolveOraxenBlockId(var1), var2.query());
+      };
+   }
+
+   private boolean matchesIdentifier(String var1, String var2) {
+      if (var1 != null && !var1.isBlank()) {
+         String var4 = var1.trim().toLowerCase(Locale.ROOT);
+         String var3 = var2 == null ? "" : var2.trim().toLowerCase(Locale.ROOT);
+         if (var3.isEmpty() || var3.equals("*")) {
             return true;
-        }
-        if (string4.contains("*")) {
-            String string6 = "\\Q" + string4.replace("*", "\\E.*\\Q") + "\\E";
-            return string3.matches(string6);
-        }
-        return string3.equals(string4) || string3.endsWith(":" + string4);
-    }
+         } else if (var3.contains("*")) {
+            String var6 = "\\Q" + var3.replace("*", "\\E.*\\Q") + "\\E";
+            return var4.matches(var6);
+         } else {
+            return var4.equals(var3) || var4.endsWith(":" + var3);
+         }
+      } else {
+         return false;
+      }
+   }
 
-    private Material parseMaterial(String string) {
-        if (string == null || string.isBlank()) {
-            return null;
-        }
-        String string2 = string.trim().toUpperCase(Locale.ROOT).replace('-', '_').replace(' ', '_');
-        try {
-            return Material.valueOf((String)string2);
-        }
-        catch (IllegalArgumentException illegalArgumentException) {
-            return null;
-        }
-    }
+   private Material parseMaterial(String var1) {
+      if (var1 != null && !var1.isBlank()) {
+         String var2 = var1.trim().toUpperCase(Locale.ROOT).replace('-', '_').replace(' ', '_');
 
-    private String resolveItemsAdderBlockId(Block block) {
-        if (!this.isPluginEnabled("ItemsAdder")) {
+         try {
+            return Material.valueOf(var2);
+         } catch (IllegalArgumentException var4) {
             return null;
-        }
-        if (!this.initItemsAdderApi()) {
+         }
+      } else {
+         return null;
+      }
+   }
+
+   private String resolveItemsAdderBlockId(Block var1) {
+      if (!this.isPluginEnabled("ItemsAdder")) {
+         return null;
+      }
+
+      if (!this.initItemsAdderApi()) {
+         return null;
+      }
+
+      try {
+         Object var2 = this.itemsAdderByPlacedMethod.invoke(null, var1);
+         return var2 == null ? null : this.normalizeId(this.itemsAdderIdMethod.invoke(var2));
+      } catch (Exception var3) {
+         return null;
+      }
+   }
+
+   private boolean initItemsAdderApi() {
+      if (this.itemsAdderApiChecked) {
+         return this.itemsAdderByPlacedMethod != null && this.itemsAdderIdMethod != null;
+      }
+
+      this.itemsAdderApiChecked = true;
+
+      try {
+         Class var1 = Class.forName("dev.lone.itemsadder.api.CustomBlock");
+         this.itemsAdderByPlacedMethod = this.findFirstMethod(var1, new Class[]{Block.class}, "byAlreadyPlaced");
+         this.itemsAdderIdMethod = this.findFirstMethod(var1, "getNamespacedID", "getNamespacedId", "getId");
+      } catch (Exception var2) {
+         this.itemsAdderByPlacedMethod = null;
+         this.itemsAdderIdMethod = null;
+      }
+
+      return this.itemsAdderByPlacedMethod != null && this.itemsAdderIdMethod != null;
+   }
+
+   private String resolveNexoBlockId(Block var1) {
+      if (!this.isPluginEnabled("Nexo")) {
+         return null;
+      }
+
+      if (!this.initNexoApi()) {
+         return null;
+      }
+
+      try {
+         Object var2 = this.nexoCustomBlockMethod.invoke(null, var1);
+         return var2 != null && this.nexoMechanicIdMethod != null ? this.normalizeId(this.nexoMechanicIdMethod.invoke(var2)) : null;
+      } catch (Exception var3) {
+         return null;
+      }
+   }
+
+   private boolean initNexoApi() {
+      if (this.nexoApiChecked) {
+         return this.nexoCustomBlockMethod != null && this.nexoMechanicIdMethod != null;
+      }
+
+      this.nexoApiChecked = true;
+
+      try {
+         Class var1 = Class.forName("com.nexomc.nexo.api.NexoBlocks");
+         this.nexoCustomBlockMethod = this.findFirstMethod(var1, new Class[]{Block.class}, "customBlockMechanic");
+         if (this.nexoCustomBlockMethod != null) {
+            Class var2 = this.nexoCustomBlockMethod.getReturnType();
+            this.nexoMechanicIdMethod = this.findFirstMethod(var2, "getItemID", "getItemId", "getID", "getId");
+         }
+      } catch (Exception var3) {
+         this.nexoCustomBlockMethod = null;
+         this.nexoMechanicIdMethod = null;
+      }
+
+      return this.nexoCustomBlockMethod != null && this.nexoMechanicIdMethod != null;
+   }
+
+   private String resolveOraxenBlockId(Block var1) {
+      if (!this.isPluginEnabled("Oraxen")) {
+         return null;
+      }
+
+      if (!this.initOraxenApi()) {
+         return null;
+      }
+
+      try {
+         Boolean var3;
+         Object var4;
+         if (this.oraxenIsBlockMethod != null
+            && (var4 = this.invokeByBlockOrLocation(this.oraxenIsBlockMethod, var1)) instanceof Boolean
+            && !((Boolean)var4)) {
             return null;
-        }
-        try {
-            Object object = this.itemsAdderByPlacedMethod.invoke(null, block);
-            if (object == null) {
-                return null;
+         }
+
+         String var2;
+         if (this.oraxenDirectIdMethod != null && (var2 = this.normalizeId(this.invokeByBlockOrLocation(this.oraxenDirectIdMethod, var1))) != null) {
+            return var2;
+         }
+
+         if (this.oraxenMechanicMethod != null) {
+            Object var5 = this.invokeByBlockOrLocation(this.oraxenMechanicMethod, var1);
+            if (var5 == null) {
+               return null;
             }
-            return this.normalizeId(this.itemsAdderIdMethod.invoke(object, new Object[0]));
-        }
-        catch (Exception exception) {
-            return null;
-        }
-    }
 
-    private boolean initItemsAdderApi() {
-        if (this.itemsAdderApiChecked) {
-            return this.itemsAdderByPlacedMethod != null && this.itemsAdderIdMethod != null;
-        }
-        this.itemsAdderApiChecked = true;
-        try {
-            Class<?> clazz = Class.forName("dev.lone.itemsadder.api.CustomBlock");
-            this.itemsAdderByPlacedMethod = this.findFirstMethod(clazz, new Class[]{Block.class}, "byAlreadyPlaced");
-            this.itemsAdderIdMethod = this.findFirstMethod(clazz, "getNamespacedID", "getNamespacedId", "getId");
-        }
-        catch (Exception exception) {
-            this.itemsAdderByPlacedMethod = null;
-            this.itemsAdderIdMethod = null;
-        }
-        return this.itemsAdderByPlacedMethod != null && this.itemsAdderIdMethod != null;
-    }
-
-    private String resolveNexoBlockId(Block block) {
-        if (!this.isPluginEnabled("Nexo")) {
-            return null;
-        }
-        if (!this.initNexoApi()) {
-            return null;
-        }
-        try {
-            Object object = this.nexoCustomBlockMethod.invoke(null, block);
-            if (object == null || this.nexoMechanicIdMethod == null) {
-                return null;
+            if (this.oraxenMechanicIdMethod == null || !this.oraxenMechanicIdMethod.getDeclaringClass().isInstance(var5)) {
+               this.oraxenMechanicIdMethod = this.findFirstMethod(var5.getClass(), "getItemID", "getItemId", "getID", "getId", "getModelName", "getModel");
             }
-            return this.normalizeId(this.nexoMechanicIdMethod.invoke(object, new Object[0]));
-        }
-        catch (Exception exception) {
-            return null;
-        }
-    }
 
-    private boolean initNexoApi() {
-        if (this.nexoApiChecked) {
-            return this.nexoCustomBlockMethod != null && this.nexoMechanicIdMethod != null;
-        }
-        this.nexoApiChecked = true;
-        try {
-            Class<?> clazz = Class.forName("com.nexomc.nexo.api.NexoBlocks");
-            this.nexoCustomBlockMethod = this.findFirstMethod(clazz, new Class[]{Block.class}, "customBlockMechanic");
-            if (this.nexoCustomBlockMethod != null) {
-                Class<?> clazz2 = this.nexoCustomBlockMethod.getReturnType();
-                this.nexoMechanicIdMethod = this.findFirstMethod(clazz2, "getItemID", "getItemId", "getID", "getId");
+            if (this.oraxenMechanicIdMethod != null) {
+               return this.normalizeId(this.oraxenMechanicIdMethod.invoke(var5));
             }
-        }
-        catch (Exception exception) {
-            this.nexoCustomBlockMethod = null;
-            this.nexoMechanicIdMethod = null;
-        }
-        return this.nexoCustomBlockMethod != null && this.nexoMechanicIdMethod != null;
-    }
+         }
+      } catch (Exception var6) {
+      }
 
-    private String resolveOraxenBlockId(Block block) {
-        if (!this.isPluginEnabled("Oraxen")) {
-            return null;
-        }
-        if (!this.initOraxenApi()) {
-            return null;
-        }
-        try {
-            String string;
-            Boolean bl;
-            Object object;
-            if (this.oraxenIsBlockMethod != null && (object = this.invokeByBlockOrLocation(this.oraxenIsBlockMethod, block)) instanceof Boolean && !(bl = (Boolean)object).booleanValue()) {
-                return null;
-            }
-            if (this.oraxenDirectIdMethod != null && (string = this.normalizeId(this.invokeByBlockOrLocation(this.oraxenDirectIdMethod, block))) != null) {
-                return string;
-            }
-            if (this.oraxenMechanicMethod != null) {
-                Object object2 = this.invokeByBlockOrLocation(this.oraxenMechanicMethod, block);
-                if (object2 == null) {
-                    return null;
-                }
-                if (this.oraxenMechanicIdMethod == null || !this.oraxenMechanicIdMethod.getDeclaringClass().isInstance(object2)) {
-                    this.oraxenMechanicIdMethod = this.findFirstMethod(object2.getClass(), "getItemID", "getItemId", "getID", "getId", "getModelName", "getModel");
-                }
-                if (this.oraxenMechanicIdMethod != null) {
-                    return this.normalizeId(this.oraxenMechanicIdMethod.invoke(object2, new Object[0]));
-                }
-            }
-        }
-        catch (Exception exception) {
-            // empty catch block
-        }
-        return null;
-    }
+      return null;
+   }
 
-    private boolean initOraxenApi() {
-        if (this.oraxenApiChecked) {
-            return this.oraxenBlocksClass != null;
-        }
-        this.oraxenApiChecked = true;
-        try {
-            this.oraxenBlocksClass = Class.forName("io.th0rgal.oraxen.api.OraxenBlocks");
-            this.oraxenIsBlockMethod = this.findFirstMethod(this.oraxenBlocksClass, new Class[]{Block.class}, "isOraxenBlock", "isCustomBlock", "isOraxenNoteBlock", "isOraxenStringBlock");
-            this.oraxenDirectIdMethod = this.findFirstMethod(this.oraxenBlocksClass, new Class[]{Block.class}, "getBlockID", "getBlockId", "getIdByBlock", "getIDByBlock", "getId");
-            if (this.oraxenDirectIdMethod == null) {
-                this.oraxenDirectIdMethod = this.findFirstMethod(this.oraxenBlocksClass, new Class[]{Location.class}, "getBlockID", "getBlockId", "getIdByLocation", "getIDByLocation", "getId");
-            }
-            this.oraxenMechanicMethod = this.findFirstMethod(this.oraxenBlocksClass, new Class[]{Block.class}, "getNoteBlockMechanic", "getStringBlockMechanic", "getBlockMechanic", "getMechanic", "getOraxenBlock");
-            if (this.oraxenMechanicMethod == null) {
-                this.oraxenMechanicMethod = this.findFirstMethod(this.oraxenBlocksClass, new Class[]{Location.class}, "getNoteBlockMechanic", "getStringBlockMechanic", "getBlockMechanic", "getMechanic", "getOraxenBlock");
-            }
-        }
-        catch (Exception exception) {
-            this.oraxenBlocksClass = null;
-            this.oraxenIsBlockMethod = null;
-            this.oraxenDirectIdMethod = null;
-            this.oraxenMechanicMethod = null;
-        }
-        return this.oraxenBlocksClass != null;
-    }
+   private boolean initOraxenApi() {
+      if (this.oraxenApiChecked) {
+         return this.oraxenBlocksClass != null;
+      }
 
-    private Object invokeByBlockOrLocation(Method method, Block block) throws Exception {
-        Class<?>[] classArray = method.getParameterTypes();
-        if (classArray.length != 1) {
-            return null;
-        }
-        if (Block.class.isAssignableFrom(classArray[0])) {
-            return method.invoke(null, block);
-        }
-        if (Location.class.isAssignableFrom(classArray[0])) {
-            return method.invoke(null, block.getLocation());
-        }
-        return null;
-    }
+      this.oraxenApiChecked = true;
 
-    private Method findFirstMethod(Class<?> clazz, String ... stringArray) {
-        if (clazz == null) {
-            return null;
-        }
-        for (String string : stringArray) {
-            try {
-                return clazz.getMethod(string, new Class[0]);
-            }
-            catch (NoSuchMethodException noSuchMethodException) {
-            }
-        }
-        return null;
-    }
+      try {
+         this.oraxenBlocksClass = Class.forName("io.th0rgal.oraxen.api.OraxenBlocks");
+         this.oraxenIsBlockMethod = this.findFirstMethod(
+            this.oraxenBlocksClass, new Class[]{Block.class}, "isOraxenBlock", "isCustomBlock", "isOraxenNoteBlock", "isOraxenStringBlock"
+         );
+         this.oraxenDirectIdMethod = this.findFirstMethod(
+            this.oraxenBlocksClass, new Class[]{Block.class}, "getBlockID", "getBlockId", "getIdByBlock", "getIDByBlock", "getId"
+         );
+         if (this.oraxenDirectIdMethod == null) {
+            this.oraxenDirectIdMethod = this.findFirstMethod(
+               this.oraxenBlocksClass, new Class[]{Location.class}, "getBlockID", "getBlockId", "getIdByLocation", "getIDByLocation", "getId"
+            );
+         }
 
-    private Method findFirstMethod(Class<?> clazz, Class<?>[] classArray, String ... stringArray) {
-        if (clazz == null) {
-            return null;
-        }
-        for (String string : stringArray) {
-            try {
-                return clazz.getMethod(string, classArray);
-            }
-            catch (NoSuchMethodException noSuchMethodException) {
-            }
-        }
-        return null;
-    }
+         this.oraxenMechanicMethod = this.findFirstMethod(
+            this.oraxenBlocksClass,
+            new Class[]{Block.class},
+            "getNoteBlockMechanic",
+            "getStringBlockMechanic",
+            "getBlockMechanic",
+            "getMechanic",
+            "getOraxenBlock"
+         );
+         if (this.oraxenMechanicMethod == null) {
+            this.oraxenMechanicMethod = this.findFirstMethod(
+               this.oraxenBlocksClass,
+               new Class[]{Location.class},
+               "getNoteBlockMechanic",
+               "getStringBlockMechanic",
+               "getBlockMechanic",
+               "getMechanic",
+               "getOraxenBlock"
+            );
+         }
+      } catch (Exception var2) {
+         this.oraxenBlocksClass = null;
+         this.oraxenIsBlockMethod = null;
+         this.oraxenDirectIdMethod = null;
+         this.oraxenMechanicMethod = null;
+      }
 
-    private String normalizeId(Object object) {
-        if (object == null) {
-            return null;
-        }
-        String string = String.valueOf(object).trim();
-        if (string.isEmpty() || "null".equalsIgnoreCase(string)) {
-            return null;
-        }
-        return string;
-    }
+      return this.oraxenBlocksClass != null;
+   }
 
-    private Optional<TargetLocator> resolveLocationDescriptor(Player player, String string) {
-        String string2 = string == null ? "" : string.trim();
-        String string3 = string2;
-        if (string2.isEmpty()) {
-            return Optional.empty();
-        }
-        Optional<TargetLocator> optional = this.resolveLocationInput(player, string2);
-        if (optional.isPresent()) {
-            return optional;
-        }
-        String[] stringArray = string2.split("[,;\\s]+");
-        if (stringArray.length < 3) {
-            return Optional.empty();
-        }
-        String string4 = null;
-        Double d = null;
-        Double d2 = null;
-        Double d3 = null;
-        if (stringArray.length >= 4 && Bukkit.getWorld((String)stringArray[0]) != null) {
-            string4 = stringArray[0];
-            d = this.parseDouble(stringArray[1]);
-            d2 = this.parseDouble(stringArray[2]);
-            d3 = this.parseDouble(stringArray[3]);
-        } else if (stringArray.length >= 4 && Bukkit.getWorld((String)stringArray[3]) != null) {
-            string4 = stringArray[3];
-            d = this.parseDouble(stringArray[0]);
-            d2 = this.parseDouble(stringArray[1]);
-            d3 = this.parseDouble(stringArray[2]);
-        } else if (stringArray.length >= 3) {
-            string4 = player.getWorld().getName();
-            d = this.parseDouble(stringArray[0]);
-            d2 = this.parseDouble(stringArray[1]);
-            d3 = this.parseDouble(stringArray[2]);
-        }
-        if (string4 == null || d == null || d2 == null || d3 == null || Bukkit.getWorld((String)string4) == null) {
-            return Optional.empty();
-        }
-        return Optional.of(new StaticLocationTarget("Location " + d.intValue() + " " + d2.intValue() + " " + d3.intValue(), new Location(Bukkit.getWorld((String)string4), d.doubleValue(), d2.doubleValue(), d3.doubleValue())));
-    }
+   private Object invokeByBlockOrLocation(Method var1, Block var2) throws Exception {
+      Class[] var3 = var1.getParameterTypes();
+      if (var3.length != 1) {
+         return null;
+      } else if (Block.class.isAssignableFrom(var3[0])) {
+         return var1.invoke(null, var2);
+      } else {
+         return Location.class.isAssignableFrom(var3[0]) ? var1.invoke(null, var2.getLocation()) : null;
+      }
+   }
 
-    private Double parseDouble(String string) {
-        try {
-            return Double.parseDouble(string);
-        }
-        catch (NumberFormatException numberFormatException) {
-            return null;
-        }
-    }
+   private Method findFirstMethod(Class<?> var1, String... var2) {
+      if (var1 == null) {
+         return null;
+      }
 
-    public record AutoRoute(String key, String displayName, RouteDescriptor descriptor, NavigationMode mode, String source) {
-    }
+      for (String var6 : var2) {
+         try {
+            return var1.getMethod(var6);
+         } catch (NoSuchMethodException var8) {
+         }
+      }
 
-    private record BlockQuery(BlockProvider provider, String query, Material material) {
-    }
+      return null;
+   }
 
-    private static enum BlockProvider {
-        VANILLA,
-        ITEMSADDER,
-        NEXO,
-        ORAXEN,
-        ANY_CUSTOM;
+   private Method findFirstMethod(Class<?> var1, Class<?>[] var2, String... var3) {
+      if (var1 == null) {
+         return null;
+      }
 
-    }
+      for (String var7 : var3) {
+         try {
+            return var1.getMethod(var7, var2);
+         } catch (NoSuchMethodException var9) {
+         }
+      }
+
+      return null;
+   }
+
+   private String normalizeId(Object var1) {
+      if (var1 == null) {
+         return null;
+      }
+
+      String var2 = String.valueOf(var1).trim();
+      return !var2.isEmpty() && !"null".equalsIgnoreCase(var2) ? var2 : null;
+   }
+
+   private Optional<TargetLocator> resolveLocationDescriptor(Player var1, String var2) {
+      String var3 = var2 == null ? "" : var2.trim();
+      if (var3.isEmpty()) {
+         return Optional.empty();
+      }
+
+      Optional var5 = this.resolveLocationInput(var1, var3);
+      if (var5.isPresent()) {
+         return var5;
+      }
+
+      String[] var6 = var3.split("[,;\\s]+");
+      if (var6.length < 3) {
+         return Optional.empty();
+      }
+
+      String var7 = null;
+      Double var8 = null;
+      Double var9 = null;
+      Double var10 = null;
+      if (var6.length >= 4 && Bukkit.getWorld(var6[0]) != null) {
+         var7 = var6[0];
+         var8 = this.parseDouble(var6[1]);
+         var9 = this.parseDouble(var6[2]);
+         var10 = this.parseDouble(var6[3]);
+      } else if (var6.length >= 4 && Bukkit.getWorld(var6[3]) != null) {
+         var7 = var6[3];
+         var8 = this.parseDouble(var6[0]);
+         var9 = this.parseDouble(var6[1]);
+         var10 = this.parseDouble(var6[2]);
+      } else if (var6.length >= 3) {
+         var7 = var1.getWorld().getName();
+         var8 = this.parseDouble(var6[0]);
+         var9 = this.parseDouble(var6[1]);
+         var10 = this.parseDouble(var6[2]);
+      }
+
+      return var7 != null && var8 != null && var9 != null && var10 != null && Bukkit.getWorld(var7) != null
+         ? Optional.of(
+            new StaticLocationTarget(
+               "Location " + var8.intValue() + " " + var9.intValue() + " " + var10.intValue(), new Location(Bukkit.getWorld(var7), var8, var9, var10)
+            )
+         )
+         : Optional.empty();
+   }
+
+   private Double parseDouble(String var1) {
+      try {
+         return Double.parseDouble(var1);
+      } catch (NumberFormatException var3) {
+         return null;
+      }
+   }
+
+   public record AutoRoute(String key, String displayName, RouteDescriptor descriptor, NavigationMode mode, String source) {
+   }
+
+   private enum BlockProvider {
+      VANILLA,
+      ITEMSADDER,
+      NEXO,
+      ORAXEN,
+      ANY_CUSTOM;
+   }
+
+   private record BlockQuery(IntegrationManager.BlockProvider provider, String query, Material material) {
+   }
 }
-

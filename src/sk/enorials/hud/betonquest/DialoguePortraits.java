@@ -61,7 +61,6 @@ import java.util.function.Consumer;
 import javax.imageio.ImageIO;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.trait.SkinTrait;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -338,17 +337,25 @@ implements AutoCloseable {
 
         static String url(Entity entity) {
             try {
-                NPC nPC = CitizensAPI.getNPCRegistry().getNPC(entity);
-                if (nPC == null || !nPC.hasTrait(SkinTrait.class)) {
+                NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+                if (npc == null) {
                     return null;
                 }
-                String string = ((SkinTrait)nPC.getTraitNullable(SkinTrait.class)).getTexture();
-                if (string == null) {
+                Class<?> skinTrait = Class.forName("net.citizensnpcs.trait.SkinTrait");
+                if (!npc.hasTrait(skinTrait.asSubclass(net.citizensnpcs.api.trait.Trait.class))) {
                     return null;
                 }
-                return JsonParser.parseString((String)new String(Base64.getDecoder().decode(string), StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("textures").getAsJsonObject("SKIN").get("url").getAsString();
+                Object trait = npc.getTraitNullable(skinTrait.asSubclass(net.citizensnpcs.api.trait.Trait.class));
+                if (trait == null) {
+                    return null;
+                }
+                Object encodedTexture = skinTrait.getMethod("getTexture").invoke(trait);
+                if (!(encodedTexture instanceof String texture) || texture == null) {
+                    return null;
+                }
+                return JsonParser.parseString(new String(Base64.getDecoder().decode(texture), StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("textures").getAsJsonObject("SKIN").get("url").getAsString();
             }
-            catch (LinkageError | RuntimeException throwable) {
+            catch (ReflectiveOperationException | LinkageError | RuntimeException exception) {
                 return null;
             }
         }
